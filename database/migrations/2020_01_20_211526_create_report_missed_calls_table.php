@@ -23,9 +23,15 @@ class CreateReportMissedCallsTable extends Migration
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->string('phone', 13);
             $table->dateTime('time_start');
-            $table->string('user_id', 32);
+            $table->BigInteger('user_id');
             $table->string('call_id', 128);
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->index('type');
+            $table->index('priority');
+            $table->index('time_start');
         });
     }
 

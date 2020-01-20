@@ -19,9 +19,15 @@ class CreateReportMissedGraphsTable extends Migration
             $table->string('last_name', 20);
             $table->integer('count')->default(0);
             $table->integer('order')->default(0);
-            $table->string('user_id', 32);
+            $table->BigInteger('user_id');
             $table->dateTime('day');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->index('day');
+            $table->index('order');
+            $table->index('count');
         });
     }
 
