@@ -25,6 +25,9 @@ class CreateUsersTable extends Migration
             $table->dateTime('date_login');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('role');
+            $table->index('date_login');
         });
     }
 
