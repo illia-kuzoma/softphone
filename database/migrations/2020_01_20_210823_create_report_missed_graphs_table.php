@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateReportMissedGraphsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,14 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('report_missed_graphs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('user_id', 32);
-            $table->string('email', 32)->unique();
             $table->string('first_name', 20);
             $table->string('last_name', 20);
-            $table->string('password', 32);
-            $table->enum('role', ['agent', 'team_lead', 'user']);
-            $table->string('token', 256);
-            $table->string('photo', 256);
-            $table->dateTime('date_login');
+            $table->integer('count')->default(0);
+            $table->integer('order')->default(0);
+            $table->string('user_id', 32);
+            $table->dateTime('day');
             $table->timestamps();
         });
     }
@@ -35,6 +32,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('report_missed_graphs');
     }
 }
