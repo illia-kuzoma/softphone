@@ -14,7 +14,6 @@ class CreateReportMissedCallsTable extends Migration
     public function up()
     {
         Schema::create('report_missed_calls', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->enum('type', ['call']);
             $table->string('first_name', 20);
             $table->string('last_name', 20);
