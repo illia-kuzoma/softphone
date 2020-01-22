@@ -27,7 +27,6 @@ class CreateUsersTable extends Migration
             $table->softDeletes();
 
             $table->index('role');
-            $table->index('date_login');
         });
     }
 
