@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class ReportMissedCall extends Model
 {
     const PAGES_PER_PAGE = 20;
-    /**
-     * @var string
-     */
-    protected $table = 'report_missed_calls';
 
     private $_fake_data_diagrama = [
         [

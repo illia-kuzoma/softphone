@@ -15,10 +15,10 @@ class User extends Model
     ];
 
     /**
-     * @param $uid
-     * @return array
+     * @param null $uid
+     * @return object
      */
-    public function getData($uid = null): array
+    public function getData($uid = null): object
     {
         $data = $this->_fake_user_data;
         // .... logic

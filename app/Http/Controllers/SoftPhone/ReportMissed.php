@@ -13,9 +13,9 @@ class ReportMissed extends Controller
     /**
      * @param null $dateStart
      * @param null $period
-     * @return string
+     * @return false|string
      */
-    public function getAll($dateStart=null, $period=null)
+    public function getAll($dateStart=null, $period=null): string
     {
 
 //        $missedCalls = MissedCall::all();
@@ -42,7 +42,7 @@ class ReportMissed extends Controller
      * @param null $sortBy
      * @return string
      */
-    public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy=null)
+    public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy=null): string
     {
         #echo $dateStart . " " . $period;exit;
         $missedCalls = new ReportMissedCall();

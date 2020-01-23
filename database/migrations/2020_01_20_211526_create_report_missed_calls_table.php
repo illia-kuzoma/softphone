@@ -15,7 +15,7 @@ class CreateReportMissedCallsTable extends Migration
     {
         Schema::create('report_missed_calls', function (Blueprint $table) {
             $table->string('id', 128)->unique();
-            $table->enum('type', ['call']);
+            $table->enum('type', ['call', 'team_lead_call', 'user_call']);
             $table->string('first_name', 20);
             $table->string('last_name', 20);
             $table->string('business_name', 200);
