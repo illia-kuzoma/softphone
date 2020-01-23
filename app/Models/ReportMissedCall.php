@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MissedCall extends Model
+class ReportMissedCall extends Model
 {
     const PAGES_PER_PAGE = 20;
     /**
@@ -62,10 +62,12 @@ class MissedCall extends Model
      * @param $page
      * @return array
      */
-    public function getCallList($dateStart = null, $dateEnd = null, $uid = null,
-                                $searchWord = null, $sortField = null, $sortBy = null,
-                                $page = 1): array
+    public function getList($dateStart = null, $dateEnd = null, $uid = null,
+                            $searchWord = null, $sortField = null, $sortBy = null,
+                            $page = 1): array
     {
+
+        #print_R(self::all());exit;
         $calls_cnt = count($this->_fake_data_call_list);
         $pages_count = floor($calls_cnt / self::PAGES_PER_PAGE) + ($calls_cnt%self::PAGES_PER_PAGE)===0?0:1;
         $page = $page; // $page может не быть той же что передал чел.

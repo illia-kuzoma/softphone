@@ -2,11 +2,11 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\MissedCall;
+use App\Models\ReportMissedCall;
 use App\Models\User;
 use Faker\Generator as Faker;
 
-$factory->define(MissedCall::class, function (Faker $faker) {
+$factory->define(ReportMissedCall::class, function (Faker $faker) {
     $user = User::all()->random();
     return [
         'type' => $faker->randomElement(['call', 'team_lead_call', 'user_call']),
