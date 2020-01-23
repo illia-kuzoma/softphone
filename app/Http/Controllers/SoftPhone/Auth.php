@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class Auth extends Controller
 {
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return string
      */
     public function auth()
     {
-        return view('auth.index');
+        $user = new User();
+        $out = [
+            'user' => $user->getData()
+        ];
+        return json_encode($out);
+        #return view('auth.index');
     }
 }

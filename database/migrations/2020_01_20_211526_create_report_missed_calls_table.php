@@ -30,7 +30,6 @@ class CreateReportMissedCallsTable extends Migration
             // user_id will reference to table users in future
             $table->index('business_name');
             $table->index(['contact', 'business_name']);
-            $table->index('time_start');
         });
     }
 
