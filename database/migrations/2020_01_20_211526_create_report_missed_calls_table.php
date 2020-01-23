@@ -14,6 +14,7 @@ class CreateReportMissedCallsTable extends Migration
     public function up()
     {
         Schema::create('report_missed_calls', function (Blueprint $table) {
+            $table->string('id', 128)->unique();
             $table->enum('type', ['call']);
             $table->string('first_name', 20);
             $table->string('last_name', 20);
@@ -23,7 +24,6 @@ class CreateReportMissedCallsTable extends Migration
             $table->string('phone', 13);
             $table->dateTime('time_start')->index();
             $table->BigInteger('user_id');
-            $table->string('call_id', 128);
             $table->timestamps();
             $table->softDeletes();
 
@@ -31,6 +31,7 @@ class CreateReportMissedCallsTable extends Migration
             $table->index('business_name');
             $table->index(['contact', 'business_name']);
         });
+
     }
 
     /**

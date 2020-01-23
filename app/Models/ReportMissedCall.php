@@ -14,13 +14,13 @@ class ReportMissedCall extends Model
 
     private $_fake_data_diagrama = [
         [
-            'user_id' => '1',
+            'uid' => '1',
             'first_name' => 'Ivan',
             'last_name' => 'Petrov',
             'calls_count' => 0,
         ],
         [
-            'user_id' => '2',
+            'uid' => '2',
             'first_name' => 'Ivan2',
             'last_name' => 'Petrov',
             'calls_count' => 4,
@@ -29,7 +29,7 @@ class ReportMissedCall extends Model
 
     private $_fake_data_call_list = [
         [
-            'user_id' => '1',
+            'uid' => '1',
             'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
             'first_name' => 'Ivan',
             'last_name' => 'Petrov',
@@ -40,7 +40,7 @@ class ReportMissedCall extends Model
             'time_create' => '1579996800',
         ],
         [
-            'user_id' => '2',
+            'uid' => '2',
             'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
             'first_name' => 'Ivan2',
             'last_name' => 'Petrov',

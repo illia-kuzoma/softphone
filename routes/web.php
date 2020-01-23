@@ -22,13 +22,13 @@ Route::match(array('POST', 'PUT', 'DELETE'),'/auth', static function () {
 });
 
 // getCalls
-Route::get('/report/missed/call/{startDate?}/{endDate?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', 'SoftPhone\ReportMissed@getCalls');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{endDate?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', static function () {
+Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', 'SoftPhone\ReportMissed@getCalls');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', static function () {
     return redirect(404);
 });
 
 // getAll
-Route::get('/report/missed/{startDate?}/{endDate?}', 'SoftPhone\ReportMissed@getAll');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{endDate?}', static function () {
+Route::get('/report/missed/{startDate?}/{period?}', 'SoftPhone\ReportMissed@getAll');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{period?}', static function () {
     return redirect(404);
 });
