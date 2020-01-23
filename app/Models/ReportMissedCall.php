@@ -54,7 +54,7 @@ class ReportMissedCall extends Model
 
     /**
      * @param $dateStart
-     * @param $dateEnd
+     * @param $period
      * @param $uid
      * @param $searchWord
      * @param $sortField
@@ -62,7 +62,7 @@ class ReportMissedCall extends Model
      * @param $page
      * @return array
      */
-    public function getList($dateStart = null, $dateEnd = null, $uid = null,
+    public function getList($dateStart = null, $period = null, $uid = null,
                             $searchWord = null, $sortField = null, $sortBy = null,
                             $page = 1): array
     {
@@ -82,10 +82,10 @@ class ReportMissedCall extends Model
 
     /**
      * @param $dateStart
-     * @param $dateEnd
+     * @param $period
      * @return array
      */
-    public function getDiagramaList($dateStart = null, $dateEnd = null): array
+    public function getDiagramaList($dateStart = null, $period = null): array
     {
         $data = $this->_fake_data_diagrama;
         // .... logic
