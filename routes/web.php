@@ -22,7 +22,14 @@ Route::post('/auth', 'SoftPhone\Auth@postAuth');
 Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
     return redirect(404);
 });
-
+/*Route::group([
+    'middleware' => ['api', 'cors'],
+    'namespace' => $this->namespace,
+    'prefix' => 'api',
+], function ($router) {
+    //Add you routes here, for example:
+    Route::apiResource('/auth','PostController');
+});*/
 // getCalls
 Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', 'SoftPhone\ReportMissed@getCalls');
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', static function () {
