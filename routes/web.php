@@ -16,8 +16,10 @@ Route::get('/', function () {
 });
 
 // Auth
-Route::get('/auth', 'SoftPhone\Auth@auth');
-Route::match(array('POST', 'PUT', 'DELETE'),'/auth', static function () {
+//Route::get('/auth', 'SoftPhone\Auth@auth');
+Route::get('/auth', 'SoftPhone\Auth@getAuth');
+Route::post('/auth', 'SoftPhone\Auth@postAuth');
+Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
     return redirect(404);
 });
 
