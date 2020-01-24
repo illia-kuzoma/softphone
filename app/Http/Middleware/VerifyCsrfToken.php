@@ -21,5 +21,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
 
         'http://softphone/auth',
+        'http://allcentr.wellnessliving.com/auth',
     ];
 }
