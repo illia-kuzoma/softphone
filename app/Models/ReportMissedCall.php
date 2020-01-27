@@ -26,26 +26,44 @@ class ReportMissedCall extends Model
     private $_fake_data_call_list = [
         [
             'uid' => '1',
-            'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
-            'first_name' => 'Ivan',
-            'last_name' => 'Petrov',
-            'business_name' => 'Bavaria Motors LLC',
-            'contact' => 'UFO',
+            'business' => [
+                'business_name' => "Bavaria Motors LLC",
+                'business_link' => "https://zoho.url.com",
+            ],
+            'contact'=> [
+                'contact_name'=> "UFO",
+                'contact_link'=> "https://ufo.url.com",
+            ],
+            'user_data' =>[
+                'full_name' => 'Petrov Ivan',
+                'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
+                'first_name' => 'Ivan',
+                'last_name' => 'Petrov',
+            ],
             'priority' => 'low',
             'phone' => '+380508008080',
             'time_create' => '1579996800',
         ],
         [
             'uid' => '2',
-            'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
-            'first_name' => 'Ivan2',
-            'last_name' => 'Petrov',
-            'business_name' => 'Bavaria Motors LLC',
-            'contact' => 'UFO',
-            'priority' => 'low',
-            'phone' => '+380508008082',
-            'time_create' => '1579996802',
-        ]
+            'business' => [
+                'business_name' => "Bavaria1 Motors LLC",
+                'business_link' => "https://zoho.url.com",
+            ],
+            'contact'=> [
+                'contact_name'=> "UFO1",
+                'contact_link'=> "https://ufo.url.com",
+            ],
+            'user_data' =>[
+                'full_name' => 'Petrov1 Ivan',
+                'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
+                'first_name' => 'Ivan',
+                'last_name' => 'Petrov1',
+            ],
+            'priority' => 'High',
+            'phone' => '+3805080080811',
+            'time_create' => '1579996811',
+        ],
     ];
 
     /**
