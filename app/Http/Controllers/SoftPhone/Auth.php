@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SoftPhone;
 use App\Http\Controllers\Controller;
 use App\Models\ReportMissedCall;
 use App\Models\User;
+use App\Zoho\AuthByPassword;
 use Illuminate\Http\Request;
 
 class Auth extends Controller
@@ -15,12 +16,10 @@ class Auth extends Controller
      */
     public function getAuth(Request $request)
     {
-        $user = new User();
         $out = [
-            'user' => $user->getData()
+            'error' =>['message'=>"Please enter correct login and password."]
         ];
         return json_encode($out);
-        #return view('auth.index');
     }
 
     /**
@@ -29,14 +28,12 @@ class Auth extends Controller
      */
     public function postAuth()
     {
-        $user = new User();
-        $missedCalls = new ReportMissedCall();
-        $out = [
-            'diagrama' => $missedCalls->getDiagramaList(),
-            'calls' => $missedCalls->getList(),
-            'user' => $user->getData(),
-        ];
-        return json_encode($out);
-        #return view('auth.index');
+        $zo = new AuthByPassword();
+        $res = $zo->getToken();
+        if($res)
+        {
+            return \Redirect::to('/report/missed/');
+        }
+        return \Redirect::to('auth');
     }
 }
