@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28ebbf14ec1ff977fd071e2ec6c425dd",
+    "content-hash": "b98a74544e705da86d71f431c8d041e4",
     "packages": [
         {
             "name": "darkaonline/l5-swagger",
@@ -3423,6 +3423,45 @@
                 "service discovery"
             ],
             "time": "2019-11-30T13:35:44+00:00"
+        },
+        {
+            "name": "zohocrm/php-sdk",
+            "version": "2.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zoho/zcrm-php-sdk.git",
+                "reference": "c663ebf9719dfa930d491a0214ca24e6a6c08724"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zoho/zcrm-php-sdk/zipball/c663ebf9719dfa930d491a0214ca24e6a6c08724",
+                "reference": "c663ebf9719dfa930d491a0214ca24e6a6c08724",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.7"
+            },
+            "type": "sdk",
+            "autoload": {
+                "psr-4": {
+                    "zcrmsdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Zoho CRM API Team",
+                    "email": "support@zohocrm.com",
+                    "homepage": "https://www.zoho.com/crm/help/customer-support.html",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Zoho CRM API SDK for PHP",
+            "homepage": "https://github.com/zoho/zcrm-php-sdk",
+            "time": "2019-12-02T12:37:00+00:00"
         }
     ],
     "packages-dev": [
