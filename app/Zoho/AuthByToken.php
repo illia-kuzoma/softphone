@@ -1,12 +1,8 @@
 <?php
 
-namespace zoho;
+namespace App\Zoho;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 use zcrmsdk\oauth\ZohoOAuth;
-
-include_once "Config.php";
-include_once "Auth.php";
-include_once "Log.php";
 
 class AuthByToken extends Auth
 {
@@ -14,10 +10,14 @@ class AuthByToken extends Auth
   private static $grantToken = '1000.b1d32d8167e5ce6e822eba87559ddba2.7c6265c5dbb57b91e067df8f3b04b140';
   private static $refreshToken = '';
   public $token_file_name = '';
+    /**
+     * @var Config
+     */
+    private $config;
 
-  public function __construct()
+    public function __construct()
   {
-    new Config([
+      $this->config = new Config([
       "redirect_uri"=>self::redirect_uri,
       "currentUserEmail"=>self::userEmail
     ]);
@@ -27,7 +27,7 @@ class AuthByToken extends Auth
 
   public function setGrantToken()
   {
-    $path = $this->getPathToToken('zcrm_oauthtokens.txt');
+    $path = $this->config->getPathToToken('zcrm_oauthtokens.txt');
     if(file_exists($path))
     {
       $oAuthTokens = unserialize(file_get_contents($path));
@@ -63,4 +63,3 @@ class AuthByToken extends Auth
   }
 }
 
-echo (new AuthByToken())->generateAccessToken();
