@@ -18,7 +18,7 @@
   @import "assets/less/main";
   #app{
     max-width: 1920px;
-    min-width: 930px;
+    min-width: 990px;
     background-color: #fafbfe;
     margin-right: auto;
     margin-left: auto;
