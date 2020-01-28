@@ -16,8 +16,6 @@ class Auth extends Controller
      */
     public function getAuth(Request $request)
     {
-        print_r($_POST);
-        print_r($_GET);exit;
         $out = [
             'error' => true,
             'message'=>"Please enter correct login and password."
