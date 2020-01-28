@@ -1,10 +1,11 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/** @var Factory $factory */
 
 use App\Models\ReportMissedGraph;
 use App\Models\User;
 use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factory;
 
 $factory->define(ReportMissedGraph::class, function (Faker $faker) {
     $user = User::all()->random();
@@ -14,8 +15,8 @@ $factory->define(ReportMissedGraph::class, function (Faker $faker) {
         'count' => $faker->randomNumber(),
         'order' => $faker->randomNumber(),
         'user_id' => $user->id,
-        'day' => $faker->dateTime,
-        'created_at' => $faker->dateTimeBetween('-30 days', '-1 days'),
-        'updated_at' => $faker->dateTimeBetween('-30 days', '-1 days'),
+        'day' => $faker->dateTime(),
+        'created_at' => $faker->dateTimeBetween('-30 days', 'now'),
+        'updated_at' => $faker->dateTimeBetween('-30 days', 'now'),
     ];
 });

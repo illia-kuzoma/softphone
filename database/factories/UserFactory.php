@@ -1,9 +1,10 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/** @var Factory $factory */
 
 use App\Models\User;
 use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 /*
@@ -19,15 +20,15 @@ use Illuminate\Support\Str;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'email' => $faker->unique()->safeEmail,
-        'first_name' => $faker->firstName,
+        'email' => $faker->email,
+        'first_name' => $faker->firstNameMale,
         'last_name' => $faker->lastName,
-        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi', // password
+        'password' => $faker->password,
         'role'  => $faker->randomElement(['agent', 'team_lead', 'user']),
         'token' => Str::random(10),
         'photo' => $faker->image('public/storage/images',640,480, null, false),
-        'date_login' => $faker->dateTime,
-        'created_at' => $faker->dateTimeBetween('-30 days', '-1 days'),
-        'updated_at' => $faker->dateTimeBetween('-30 days', '-1 days'),
+        'date_login' => $faker->dateTime(),
+        'created_at' => $faker->dateTimeBetween('-30 days', 'now'),
+        'updated_at' => $faker->dateTimeBetween('-30 days', 'now'),
     ];
 });

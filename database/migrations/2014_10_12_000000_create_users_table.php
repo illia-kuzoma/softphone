@@ -24,7 +24,6 @@ class CreateUsersTable extends Migration
             $table->string('photo', 256)->nullable();
             $table->dateTime('date_login');
             $table->timestamps();
-            $table->softDeletes();
 
             $table->index('role');
         });

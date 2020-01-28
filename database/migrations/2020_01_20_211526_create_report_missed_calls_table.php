@@ -25,7 +25,6 @@ class CreateReportMissedCallsTable extends Migration
             $table->dateTime('time_start')->index();
             $table->BigInteger('user_id');
             $table->timestamps();
-            $table->softDeletes();
 
             // user_id will reference to table users in future
             $table->index('business_name');

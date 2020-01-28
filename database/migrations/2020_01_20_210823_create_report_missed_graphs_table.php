@@ -22,7 +22,6 @@ class CreateReportMissedGraphsTable extends Migration
             $table->BigInteger('user_id');
             $table->dateTime('day');
             $table->timestamps();
-            $table->softDeletes();
 
             // user_id will reference to table users in future
         });
