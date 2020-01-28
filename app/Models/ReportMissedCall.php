@@ -26,11 +26,15 @@ class ReportMissedCall extends Model
 
         // set dateStart
         $dateStart = $dateStart ?? '';
-        $dateStart = ! empty( $dateStart ) ? date( 'Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
+        $dateStart = ! empty( $dateStart ) ? date( 'Y-m-d', strtotime( $dateStart ) ) : '';
+        $search_condition = '=';
 
         // set period
         $period = $period ?? '';
         $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
+        if ( !empty($period) ) {
+            $search_condition = '>=';
+        }
 
         // set uid
         $uid = $uid ?? '';
@@ -43,7 +47,7 @@ class ReportMissedCall extends Model
         $sortField = $sortField ?? 'id';
 
         $call_list = \DB::table( 'report_missed_calls' )
-                        ->where( 'time_start', '>=', $dateStart )
+                        ->whereDate('time_start', $search_condition, $dateStart)
                         ->orderBy( $sortField, $sortBy )
                         ->get();
 
