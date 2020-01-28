@@ -1,5 +1,5 @@
 <?php
-namespace zoho;
+namespace App\Zoho;
 
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 
@@ -15,12 +15,13 @@ class Config
     if(!is_dir($dir))
     {
       Log::put(sprintf("Mkdir %s", $dir));
-      mkdir($dir,0777);
+      mkdir($dir,0777, true);
+      chmod($dir,0777);
     }
     return $dir;
   }
 
-  protected function getPathToToken($name)
+  public function getPathToToken($name)
   {
     return $this->getTokenPath() . $name . $this->token_file_name;
   }

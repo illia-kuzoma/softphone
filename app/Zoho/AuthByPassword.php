@@ -1,12 +1,21 @@
 <?php
 
-namespace zoho;
-include_once "Auth.php";
-include_once "Log.php";
+namespace App\Zoho;
 
 class AuthByPassword extends Auth
 {
   public $token_file_name = "_token_by_pass.txt";
+
+  private $config;
+    public function __construct()
+    {
+        $this->config = new Config([
+            "redirect_uri"=>self::redirect_uri,
+            "currentUserEmail"=>self::userEmail
+        ]);
+
+        #self::setGrantToken();
+    }
 
   public function recheckUserName(&$username = null, &$password = null)
   {
@@ -21,7 +30,7 @@ class AuthByPassword extends Auth
   {
     $this->recheckUserName($username, $password);
 
-    $token_path = $this->getPathToToken($username);
+    $token_path = $this->config->getPathToToken($username);
     if(file_exists($token_path) && !$new)
     {
       $token = file_get_contents($token_path);
@@ -34,6 +43,7 @@ class AuthByPassword extends Auth
     {
       Log::put(sprintf("file_put_contents %s", $token_path));
       file_put_contents($token_path, '');
+      chmod($token_path, 0777);
     }
 
     $param = "SCOPE=ZohoCRM/crmapi&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
@@ -75,5 +85,3 @@ class AuthByPassword extends Auth
   }
 
 }
-
-echo "\n".(new AuthByPassword())->getMyRecords();

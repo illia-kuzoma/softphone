@@ -1,8 +1,5 @@
 <?php
-namespace zoho;
-
-include_once "Config.php";
-include_once "Auth.php";
+namespace App\Zoho;
 
 use zcrmsdk\crm\crud\ZCRMRecord;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
@@ -157,4 +154,3 @@ class Calls
     }
   }
 }
-(new Calls())->getRecords();
