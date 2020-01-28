@@ -27,10 +27,10 @@ class Auth extends Controller
      * @param  Request  $request
      * @return string
      */
-    public function postAuth()
+    public function postAuth(Request $request)
     {
         $zo = new AuthByPassword();
-        $res = $zo->getToken();
+        $res = $zo->getToken($request->post('email'));
         if($res)
         {
             return \Redirect::to('/report/missed/');

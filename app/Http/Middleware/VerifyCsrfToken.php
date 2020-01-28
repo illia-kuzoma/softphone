@@ -20,7 +20,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
 
-        'http://softphone/auth',
+        'http://softphone/auth*',
         'http://callcentr.wellnessliving.com/auth',
     ];
 }
