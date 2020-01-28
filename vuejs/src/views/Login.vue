@@ -91,6 +91,7 @@
 <script>
   import router from '../router'
   import HttpService from '@/services/HttpService'
+  // import store from '../store'
 
   export default {
     name: 'Login',
@@ -113,6 +114,7 @@
         }
       },
       login(){
+        var self = this
         HttpService.methods.post('http://callcentr.wellnessliving.com/auth',{
           'email':this.email,
           'password':this.password,
@@ -121,20 +123,26 @@
             // console.log(response.status)
             // console.log(result)
             if(response.status === 200){
+              // console.log('do something with user data',response.data.user)
+              self.$store.state.user = response.data.user
+              // this.store.state.user = response.data.user;
+              // console.log('login get store',self.$store.state.user)
               router.push('/dashboard')
-              console.log('do something with user data',response.data.user)
             }
           })
           .catch(function (error) {
             console.log(error)
-            this.isValid = false
+            // this.isValid = false
           })
       },
+
       forgotFunc(){
         console.log('forgot password')
       }
     },
-
+    created: function(){
+      // console.log(store)
+    },
   };
 </script>
 

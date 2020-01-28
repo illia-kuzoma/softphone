@@ -193,51 +193,50 @@
         this.tableCallsData=data.data;
         this.tablePage = data.page;
         this.tablePageCount = data.pages_count;
-        this.tableCallsData=[
-          {
-            'uid': "1",
-            'business_name': "Bavaria Motors LLC",
-            'contact': "UFO",
-            'priority': "low",
-            'phone': "+380508008080",
-            'time_create': "1579996800",
-            'user_data':{
-                'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-                'first_name': "Ivan",
-                'last_name': "Petrov",
-                'full_name': "Ivan Petrov"
-              }
-          },
-          {
-            'uid': "12",
-            'business_name': "Bavaria Motors LLC",
-            'contact': "UFO",
-            'priority': "low",
-            'phone': "+380508008080",
-            'time_create': "1579996800",
-            'user_data':{
-                'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-                'first_name': "Ivan",
-                'last_name': "Petrov",
-                'full_name': "Ivan Petrov"
-              },
-          },
-          {
-            'uid': "13",
-            'business_name': " Motors LLC",
-            'contact': "U2O",
-            'priority': "low",
-            'phone': "+380508008222",
-            'time_create': "1571296800",
-            'user_data':{
-                'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-                'first_name': "Ivan1111",
-                'last_name': "Petrov1111",
-                'full_name': "Ivan Petrov1111"
-              },
-          },
-
-        ]
+  this.tableCallsData=[
+    {
+      'uid': "1",
+      'business_name': "Bavaria Motors LLC",
+      'contact': "UFO",
+      'priority': "low",
+      'phone': "+380508008080",
+      'time_create': "1579996800",
+      'user_data':{
+          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
+          'first_name': "Ivan",
+          'last_name': "Petrov",
+          'full_name': "Ivan Petrov"
+        }
+    },
+    {
+      'uid': "12",
+      'business_name': "Bavaria Motors LLC",
+      'contact': "UFO",
+      'priority': "low",
+      'phone': "+380508008080",
+      'time_create': "1579996800",
+      'user_data':{
+          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
+          'first_name': "Ivan",
+          'last_name': "Petrov",
+          'full_name': "Ivan Petrov"
+        },
+    },
+    {
+      'uid': "13",
+      'business_name': " Motors LLC",
+      'contact': "U2O",
+      'priority': "low",
+      'phone': "+380508008222",
+      'time_create': "1571296800",
+      'user_data':{
+          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
+          'first_name': "Ivan1111",
+          'last_name': "Petrov1111",
+          'full_name': "Ivan Petrov1111"
+        },
+    },
+  ]
       },
       getDate(timeStamp){
         var utc = new Date(timeStamp * 1000)
@@ -246,7 +245,6 @@
         return time+" "+date
       },
       setDate(range){
-        console.log(range) 
         switch(range) {
           case 'today':  
 
