@@ -11,17 +11,6 @@
         labels: [],
         datasets: [{
             label: 'MISSED CALLS',
-            // backgroundColor: "#727cf5",
-            // backgroundColor: ["rgba(197, 197, 197, 0.1)"],
-            // borderColor: '#FE7325',
-            // borderWidth: 2,
-            // backgroundColor: '#f87979',
-            // fillColor : "rgba(151,187,205,0.5)",
-            // strokeColor : "rgba(151,187,205,1)",
-            // pointColor : "rgba(151,187,205,1)",
-             // pointStrokeColor : "#fff",
-             // borderWidth: 1,
-            // backgroundColor: this.gradient,
             data: []
         }],
         chartObject:null,
@@ -49,7 +38,6 @@
             }
           }],
         },
-
         // events: ['click'],
         // maintainAspectRatio: true,
         // onClick: function(evt) {
@@ -97,17 +85,18 @@
       },
       cellClickEvent(element){
         console.log(element)
+        this.$emit('clicked', element)
       }
     },
     watch:{
       chartObject(newValue) {
+        console.log(newValue)
         this.renderChart({},{})
         this.setGistData(newValue)
       }
     },
     mounted () {
       this.setGistData(this.chartObject)
-
     },
   }
 </script>

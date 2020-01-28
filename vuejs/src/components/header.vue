@@ -28,6 +28,8 @@
 </template>
 
 <script>
+  // import store from '../store'
+
   export default {
       name: 'HeaderComponent',
       data: () => ({
@@ -39,18 +41,25 @@
               this.isShowDropdown = true
           },
           getUserData(){
-            this.userData = {
-              uid: 1,
-              photo_url: "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-              first_name: "Ivan",
-              last_name: "Petrov",
-              role: "user"
-            }
+            var userD = this.$store.state.user
+            this.userData = userD
+            console.log('login', userD)
+
+            // this.userData = {
+            //   uid: 1,
+            //   photo_url: "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
+            //   first_name: "Ivan",
+            //   last_name: "Petrov",
+            //   role: "user"
+            // }
           },
 
       },
       created: function(){
         this.getUserData();
+        // console.log(store)
+        // console.log(this.$store.state.user)
+
       },
   }
 </script>
