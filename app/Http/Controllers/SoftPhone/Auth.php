@@ -16,6 +16,8 @@ class Auth extends Controller
      */
     public function getAuth(Request $request)
     {
+        print_r($_POST);
+        print_r($_GET);exit;
         $out = [
             'error' => true,
             'message'=>"Please enter correct login and password."
@@ -27,8 +29,15 @@ class Auth extends Controller
      * @param  Request  $request
      * @return string
      */
-    public function postAuth()
+    public function postAuth(Request $request)
     {
+        print_r($_POST);
+        print_r($_GET);
+        print_r($request->post());
+
+        exit;
+        $email = $request->input('email');
+echo $email."!!!";exit;
         $zo = new AuthByPassword();
         $res = $zo->getToken();
         if($res)
