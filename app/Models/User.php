@@ -6,22 +6,52 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    private $_fake_user_data = [
-        'uid' => '56651777',
-        'photo_url' => 'https://contacts.zoho.com/file?ID=56651777&fs=thumb',
-        'first_name' => 'Ivan',
-        'last_name' => 'Petrov',
-        'role' => 'user'
-    ];
 
     /**
-     * @param null $uid
+     * @param null $user_id
+     *
      * @return array
      */
-    public function getData($uid = null): array
+    public function getData($user_id = null): array
     {
-        $data = $this->_fake_user_data;
+        $users = \DB::table('users')->get()->sortBy('id');
+        $data = [];
+        foreach ( $users as $user ) {
+            $data[] = [
+                'uid' => $user->id,
+                'photo_url' => $user->photo,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'role' => $user->role
+            ];
+        }
+        if ( empty($data) ) {
+            $data = $this->_fake_user_data;
+        }
+
         // .... logic
         return ($data);
+    }
+
+    /**
+     * getUserData
+     * @param $user_id
+     *
+     * @return array
+     */
+    public function getUserData($user_id): array
+    {
+        $users = \DB::table('users')->where('id', '=', $user_id)->get()->sortBy('id');
+        $data = [];
+
+        if (!empty($users)) {
+            foreach ( $users as $user ) {
+                $data['full_name']  = $user->last_name . ' ' . $user->first_name;
+                $data['photo_url']  = $user->photo;
+                $data['first_name'] = $user->first_name;
+                $data['last_name']  = $user->last_name;
+            }
+        }
+        return $data;
     }
 }

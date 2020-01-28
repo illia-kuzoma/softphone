@@ -8,72 +8,15 @@ class ReportMissedCall extends Model
 {
     const PAGES_PER_PAGE = 20;
 
-    private $_fake_data_diagrama = [
-        [
-            'uid' => '1',
-            'first_name' => 'Ivan',
-            'last_name' => 'Petrov',
-            'calls_count' => 0,
-        ],
-        [
-            'uid' => '2',
-            'first_name' => 'Ivan2',
-            'last_name' => 'Petrov',
-            'calls_count' => 4,
-        ]
-    ];
-
-    private $_fake_data_call_list = [
-        [
-            'uid' => '1',
-            'business' => [
-                'business_name' => "Bavaria Motors LLC",
-                'business_link' => "https://zoho.url.com",
-            ],
-            'contact'=> [
-                'contact_name'=> "UFO",
-                'contact_link'=> "https://ufo.url.com",
-            ],
-            'user_data' =>[
-                'full_name' => 'Petrov Ivan',
-                'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
-                'first_name' => 'Ivan',
-                'last_name' => 'Petrov',
-            ],
-            'priority' => 'low',
-            'phone' => '+380508008080',
-            'time_create' => '1579996800',
-        ],
-        [
-            'uid' => '2',
-            'business' => [
-                'business_name' => "Bavaria1 Motors LLC",
-                'business_link' => "https://zoho.url.com",
-            ],
-            'contact'=> [
-                'contact_name'=> "UFO1",
-                'contact_link'=> "https://ufo.url.com",
-            ],
-            'user_data' =>[
-                'full_name' => 'Petrov1 Ivan',
-                'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
-                'first_name' => 'Ivan',
-                'last_name' => 'Petrov1',
-            ],
-            'priority' => 'High',
-            'phone' => '+3805080080811',
-            'time_create' => '1579996811',
-        ],
-    ];
-
     /**
-     * @param $dateStart
-     * @param $period
-     * @param $uid
-     * @param $searchWord
-     * @param $sortField
-     * @param $sortBy
-     * @param $page
+     * @param null $dateStart
+     * @param null $period
+     * @param null $uid
+     * @param null $searchWord
+     * @param null $sortField
+     * @param string $sortBy
+     * @param int $page
+     *
      * @return array
      */
     public function getList($dateStart = null, $period = null, $uid = null,
@@ -83,47 +26,77 @@ class ReportMissedCall extends Model
 
         // set dateStart
         $dateStart = $dateStart ?? '';
-        $dateStart = !empty($dateStart) ? date('Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
+        $dateStart = ! empty( $dateStart ) ? date( 'Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
 
         // set period
         $period = $period ?? '';
-        $period = !empty($period) ? strtolower((string)$period) : '';
+        $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
 
         // set uid
         $uid = $uid ?? '';
 
         // set searchWord
         $searchWord = $searchWord ?? '';
-        $searchWord = !empty($searchWord) ? strtolower((string)$searchWord) : '';
+        $searchWord = ! empty( $searchWord ) ? strtolower( (string) $searchWord ) : '';
 
         // set sortField
-        $sortField = $sortField ?? '';
+        $sortField = $sortField ?? 'id';
 
-//        $data = \DB::table('report_missed_calls')->where('time_start', '>=', $dateStart)->get()->sortBy($sortBy);
-//        $data = \DB::table('report_missed_calls')->where('time_start', '>=', $dateStart)->get()->sortBy('ASC');
-        #print_R(self::all());exit;
-        $calls_cnt = count($this->_fake_data_call_list);
-        $pages_count = floor($calls_cnt / self::PAGES_PER_PAGE) + ($calls_cnt%self::PAGES_PER_PAGE)===0?0:1;
-        $page = $page; // $page может не быть той же что передал чел.
-        $data = [
-            'data' => $this->_fake_data_call_list,
-//            'data' => $data,
+        $call_list = \DB::table( 'report_missed_calls' )
+                        ->where( 'time_start', '>=', $dateStart )
+                        ->orderBy( $sortField, $sortBy )
+                        ->get();
+
+        $calls_cnt   = count( $call_list );
+        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + ( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1;
+
+        return [
+            'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,
-            'page' => $page
+            'page'        => $page
         ];
-        // .... logic
-        return $data;
     }
 
     /**
+     * get Diagrama list
      * @param $dateStart
      * @param $period
      * @return array
      */
-    public function getDiagramaList($dateStart = null, $period = null): array
+    public function getDiagramList($dateStart = null, $period = null): array
     {
-        $data = $this->_fake_data_diagrama;
-        // .... logic
-        return $data;
+        return (new ReportMissedGraph())->getList($dateStart, $period);
+    }
+
+    /**
+     * Format Call List
+     * @param $data
+     *
+     * @return array
+     */
+    private function formatDataCallList($data): array
+    {
+        $result = [];
+        if ( ! empty( $data ) ) {
+            foreach ( $data as $item ) {
+                $result[] = [
+                    'uid'         => $item->user_id,
+                    'business'    => [
+                        'business_name' => $item->business_name,
+                        'business_link' => "https://zoho.url.com", // new field in DB ???
+                    ],
+                    'contact'     => [
+                        'contact_name' => $item->contact,
+                        'contact_link' => "https://ufo.url.com",
+                    ],
+                    'user_data'   => ( new User() )->getUserData( $item->user_id ),
+                    'priority'    => $item->priority,
+                    'phone'       => $item->phone,
+                    'time_create' => strtotime( $item->created_at ),
+                ];
+            }
+        }
+
+        return $result;
     }
 }

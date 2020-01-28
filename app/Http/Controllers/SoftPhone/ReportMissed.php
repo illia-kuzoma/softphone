@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReportMissedCall;
+use App\Models\ReportMissedGraph;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -18,14 +19,11 @@ class ReportMissed extends Controller
     public function getAll($dateStart=null, $period=null): string
     {
 
-//        $missedCalls = MissedCall::all();
-//        return view('report.missed.index', compact('missedCalls'));
-//        return view('report.missed.index');
         $missedCalls = new ReportMissedCall();
         $user = new User();
 
         $out = [
-            'diagrama' => $missedCalls->getDiagramaList(),
+            'diagrama' => $missedCalls->getDiagramList(),
             'calls' => $missedCalls->getList(),
             'user' => $user->getData(),
         ];
@@ -47,7 +45,6 @@ class ReportMissed extends Controller
     public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $missedCalls = new ReportMissedCall();
-
         #echo $dateStart . " " . $period;exit;
 
         $out = [
