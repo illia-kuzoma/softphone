@@ -21,8 +21,9 @@ class AuthByPassword extends Auth
   {
     if(!$username)
     {
-      $username = self::userEmail;
-      $password = "\;'>?}9?=s=93Na";
+        #$username = self::userEmail;
+        #$password = "\;'>?}9?=s=93Na";
+        $username = 'error';
     }
   }
 
