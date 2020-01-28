@@ -47,9 +47,9 @@ class ReportMissedCall extends Model
         $sortField = $sortField ?? 'id';
 
         $call_list = \DB::table( 'report_missed_calls' )
-                        ->when($dateStart, function ($query, $dateStart) {
+                        /* TODO временно! что бы всегда были данные клиенту!->when($dateStart, function ($query, $dateStart) {
                             return $query->whereDate('time_start', $dateStart);
-                        })
+                        })*/
                         ->orderBy( $sortField, $sortBy )
                         ->get();
 
