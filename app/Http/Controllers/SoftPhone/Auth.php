@@ -17,7 +17,8 @@ class Auth extends Controller
     public function getAuth(Request $request)
     {
         $out = [
-            'error' =>['message'=>"Please enter correct login and password."]
+            'error' => true,
+            'message'=>"Please enter correct login and password."
         ];
         return json_encode($out);
     }

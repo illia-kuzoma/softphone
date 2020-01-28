@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     private $_fake_user_data = [
-        'uid' => 1,
-        'photo_url' => 'https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg',
+        'uid' => '56651777',
+        'photo_url' => 'https://contacts.zoho.com/file?ID=56651777&fs=thumb',
         'first_name' => 'Ivan',
         'last_name' => 'Petrov',
         'role' => 'user'
