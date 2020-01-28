@@ -18,14 +18,12 @@ class ReportMissed extends Controller
      */
     public function getAll($dateStart=null, $period=null): string
     {
-
         $missedCalls = new ReportMissedCall();
         $user = new User();
-
         $out = [
             'diagrama' => $missedCalls->getDiagramList(),
             'calls' => $missedCalls->getList(),
-            'user' => $user->getData(),
+            'user' => $user->getData($email = 'support@wellnessliving.com'),
         ];
 
         return json_encode($out);

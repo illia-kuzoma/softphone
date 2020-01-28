@@ -8,28 +8,21 @@ class User extends Model
 {
 
     /**
-     * @param null $user_id
+     * @param null $email
      *
      * @return array
      */
-    public function getData($user_id = null): array
+    public function getData($email): array
     {
-        $users = \DB::table('users')->get()->sortBy('id');
-        $data = [];
-        foreach ( $users as $user ) {
-            $data[] = [
-                'uid' => $user->id,
-                'photo_url' => $user->photo,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'role' => $user->role
-            ];
-        }
-        if ( empty($data) ) {
-            $data = $this->_fake_user_data;
-        }
-
-        // .... logic
+        $getUserByEmail = \DB::table('users')->where('email', $email)->first();
+        $data = [
+            'uid' => $getUserByEmail->id,
+            'photo_url' => $getUserByEmail->photo,
+            'first_name' => $getUserByEmail->first_name,
+            'last_name' => $getUserByEmail->last_name,
+            'role' => $getUserByEmail->role,
+            'full_name' => $getUserByEmail->first_name . ' ' . $getUserByEmail->last_name
+        ];
         return ($data);
     }
 
