@@ -32,7 +32,6 @@ class Auth extends Controller
     public function postAuth(Request $request)
     {
         $zo = new AuthByPassword();
-        echo 'email='. $request->post('email');exit;
         $res = $zo->getToken($request->post('email'));
         if($res)
         {
