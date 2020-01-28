@@ -31,15 +31,9 @@ class Auth extends Controller
      */
     public function postAuth(Request $request)
     {
-        print_r($_POST);
-        print_r($_GET);
-        print_r($request->post());
-
-        exit;
-        $email = $request->input('email');
-echo $email."!!!";exit;
         $zo = new AuthByPassword();
-        $res = $zo->getToken();
+        echo 'email='. $request->post('email');exit;
+        $res = $zo->getToken($request->post('email'));
         if($res)
         {
             return \Redirect::to('/report/missed/');
