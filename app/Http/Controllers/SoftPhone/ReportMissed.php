@@ -40,14 +40,18 @@ class ReportMissed extends Controller
      * @param null $searchWord
      * @param null $sortField
      * @param null $sortBy
+     * @param int $page
+     *
      * @return string
      */
-    public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy=null): string
+    public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
-        #echo $dateStart . " " . $period;exit;
         $missedCalls = new ReportMissedCall();
+
+        #echo $dateStart . " " . $period;exit;
+
         $out = [
-            'calls' => $missedCalls->getList()
+            'calls' => $missedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
         ];
         return json_encode($out);
     }

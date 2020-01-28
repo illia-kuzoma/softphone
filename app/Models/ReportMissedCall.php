@@ -77,16 +77,37 @@ class ReportMissedCall extends Model
      * @return array
      */
     public function getList($dateStart = null, $period = null, $uid = null,
-                            $searchWord = null, $sortField = null, $sortBy = null,
+                            $searchWord = null, $sortField = null, $sortBy = 'DESC',
                             $page = 1): array
     {
 
+        // set dateStart
+        $dateStart = $dateStart ?? '';
+        $dateStart = !empty($dateStart) ? date('Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
+
+        // set period
+        $period = $period ?? '';
+        $period = !empty($period) ? strtolower((string)$period) : '';
+
+        // set uid
+        $uid = $uid ?? '';
+
+        // set searchWord
+        $searchWord = $searchWord ?? '';
+        $searchWord = !empty($searchWord) ? strtolower((string)$searchWord) : '';
+
+        // set sortField
+        $sortField = $sortField ?? '';
+
+//        $data = \DB::table('report_missed_calls')->where('time_start', '>=', $dateStart)->get()->sortBy($sortBy);
+//        $data = \DB::table('report_missed_calls')->where('time_start', '>=', $dateStart)->get()->sortBy('ASC');
         #print_R(self::all());exit;
         $calls_cnt = count($this->_fake_data_call_list);
         $pages_count = floor($calls_cnt / self::PAGES_PER_PAGE) + ($calls_cnt%self::PAGES_PER_PAGE)===0?0:1;
         $page = $page; // $page может не быть той же что передал чел.
         $data = [
             'data' => $this->_fake_data_call_list,
+//            'data' => $data,
             'pages_count' => $pages_count,
             'page' => $page
         ];
