@@ -31,8 +31,8 @@ Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
     Route::apiResource('/auth','PostController');
 });*/
 // getCalls
-Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', 'SoftPhone\ReportMissed@getCalls');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}', static function () {
+Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportMissed@getCalls');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}/{page?}', static function () {
     return redirect(404);
 });
 

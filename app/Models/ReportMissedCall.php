@@ -25,7 +25,7 @@ class ReportMissedCall extends Model
     {
 
         // set dateStart
-        $dateStart = $dateStart ?? '';
+        $dateStart = $dateStart ?? date('Y-m-d H:i:s');
         $dateStart = ! empty( $dateStart ) ? strtotime( date( 'Y-m-d', strtotime( $dateStart ) ) ) : '';
 
         $dateFrom = $dateTo = date('Y-m-d', time());
@@ -72,8 +72,7 @@ class ReportMissedCall extends Model
                         ->get();
 
         $calls_cnt   = count( $call_list );
-        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + ( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1;
-
+        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
         return [
             'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,

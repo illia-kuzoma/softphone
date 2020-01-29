@@ -21,7 +21,7 @@ class ReportMissedGraph extends Model
         $period = $period ?? '';
         $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
 
-        $graph_list = \DB::table( 'report_missed_graphs' )->where( 'day', '>=', $dateStart )->get();
+        $graph_list = \DB::table( 'report_missed_graphs' )/*->where( 'day', '>=', $dateStart )*/->orderBy('first_name')->get();
 
         return $this->formatDataGraphList( $graph_list );
     }
@@ -42,6 +42,7 @@ class ReportMissedGraph extends Model
                     'first_name' => $item->first_name,
                     'last_name' => $item->last_name,
                     'calls_count' => $item->count,
+                    'full_name' => $item->first_name . ' ' . $item->last_name,
                 ];
             }
         }
