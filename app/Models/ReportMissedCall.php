@@ -24,6 +24,13 @@ class ReportMissedCall extends Model
                             $page = 1): array
     {
 
+        if($page<1)
+        {
+            $page = 1;
+        }
+       /* echo '$dateStart=' . $dateStart.'$period=' . $period.'$uid=' . $uid
+            .'$searchWord=' . $searchWord.'$sortField=' . $sortField.'$sortBy=' . $sortBy
+            .'$page=' . $page;exit;*/
         // set dateStart
         $dateStart = $dateStart ?? date('Y-m-d H:i:s');
         $dateStart = ! empty( $dateStart ) ? strtotime( date( 'Y-m-d', strtotime( $dateStart ) ) ) : '';
@@ -68,11 +75,12 @@ class ReportMissedCall extends Model
                         /* TODO временно! что бы всегда были данные клиенту!->when($dateStart, function ($query, $dateStart) {
                             return $query->whereDate('time_start', $dateStart);
                         })*/
-                        ->orderBy( $sortField, $sortBy )
+                        ->orderBy( $sortField, $sortBy )->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE)
                         ->get();
 
-        $calls_cnt   = count( $call_list );
+        $calls_cnt   = \DB::table( 'report_missed_calls' )->count();
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
+
         return [
             'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,
@@ -94,6 +102,7 @@ class ReportMissedCall extends Model
     /**
      * Format Call List
      * @param $data
+     * @param $page
      *
      * @return array
      */
