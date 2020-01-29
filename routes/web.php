@@ -30,14 +30,14 @@ Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
     //Add you routes here, for example:
     Route::apiResource('/auth','PostController');
 });*/
-// getCalls
-Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportMissed@getCalls');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWorld?}/{sortField?}/{sortBy?}/{page?}', static function () {
-    return redirect(404);
-});
-
 // getAll
 Route::get('/report/missed/{startDate?}/{period?}', 'SoftPhone\ReportMissed@getAll');
+
+// getCalls
+Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportMissed@getCalls');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
+    return redirect(404);
+});
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{period?}', static function () {
     return redirect(404);
 });

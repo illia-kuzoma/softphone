@@ -23,9 +23,11 @@ class ReportMissedCall extends Model
                             $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                             $page = 1): array
     {
-        if($dateStart == '-' || !$dateStart){
-            $dateStart = date('Y-m-d H:i:s');
+        if($dateStart == '-' || !$dateStart ||
+            (date('Y-m-d', strtotime($dateStart)) != $dateStart)){
+            $dateStart = date('Y-m-d');
         }
+
         if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
             $period = 'day';
         }
@@ -50,37 +52,32 @@ class ReportMissedCall extends Model
             .'$searchWord=' . $searchWord.'$sortField=' . $sortField.'$sortBy=' . $sortBy
             .'$page=' . $page;exit;*/
         // set dateStart
-        $dateStart = $dateStart ?$dateStart : date('Y-m-d H:i:s');
-        $dateStart = ! empty( $dateStart ) ? strtotime( date( 'Y-m-d', strtotime( $dateStart ) ) ) : '';
+        $dateStart = strtotime( $dateStart );
 
-        $dateFrom = $dateTo = date('Y-m-d', time());
+        $dateFrom = $dateTo = date( 'Y-m-d', $dateStart) ;
         // set period
         $currentDayOfWeek = date('w', $dateStart);
         switch (strtolower($period) ?? '') {
-            case 'day':
-                $dateFrom = $dateStart;
-                $dateTo   = $dateStart;
-                break;
             case 'week':
-                $dateFrom = date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) );
-                $dateTo   = date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) );
+                $dateFrom = (date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) ));
+                $dateTo   = (date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) ));
                 break;
             case 'month':
-                $dateFrom = date('Y-m-d', strtotime('first day of this month', $dateStart) );
-                $dateTo = date('Y-m-d', strtotime('last day of this month', $dateStart) );
+                $dateFrom = (date('Y-m-d', strtotime('first day of this month', $dateStart) ));
+                $dateTo = (date('Y-m-d', strtotime('last day of this month', $dateStart) ));
                 break;
             case 'year':
-                $dateFrom = date('Y-m-d', strtotime('first day of January', $dateStart) );
-                $dateTo = date('Y-m-d', strtotime('last day of December', $dateStart) );
+                $dateFrom = (date('Y-m-d', strtotime('first day of January', $dateStart) ));
+                $dateTo = (date('Y-m-d', strtotime('last day of December', $dateStart) ));
                 break;
+            case 'day':
             default:
-                $dateFrom = $dateStart;
-                $dateTo   = $dateStart;
-                /*$dateFrom = date('Y-m-d', strtotime('first day of January', time() ) );
-                $dateTo = date('Y-m-d', strtotime('last day of December', time() ) );
-                */break;
+               /* $dateFrom = $dateStart;
+                $dateTo   = $dateStart;*/
+                break;
         }
-
+        $dateFrom .= ' 00:00:00';
+        $dateTo .= ' 23:59:59';
         // set uid
         $uid = $uid ?? '';
 
@@ -88,15 +85,22 @@ class ReportMissedCall extends Model
         $searchWord = $searchWord ?? '';
         $searchWord = ! empty( $searchWord ) ? strtolower( (string) $searchWord ) : '';
 
-        // set sortField
-        $sortField = $sortField ?? 'id';
+       /* $pages = \DB::table( 'report_missed_calls' )->where(function($query) use($word){
 
+        foreach($searchWords as $word){
+            $query->orWhere('content', 'LIKE', '%'.$word.'%');
+        }
+
+    })->get();*/
         $call_list = \DB::table( 'report_missed_calls' )
-                        /* TODO временно! что бы всегда были данные клиенту!->when($dateStart, function ($query, $dateStart) {
-                            return $query->whereDate('time_start', $dateStart);
-                        })*/
-                        ->orderBy( $sortField, $sortBy )->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE)
-                        ->get();
+            ->where('time_start', '>=', $dateFrom)
+            ->where('time_start', '<=', $dateTo)->orderBy( $sortField, $sortBy )->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE)
+            ->get();
+        /*if($searchWord){
+            foreach(['contact', 'first_name', 'business_name', 'last_name', 'phone'] as $field){
+                $call_list->orWhere($field, 'LIKE', '%'.$searchWord.'%');
+            }
+        }*/
 
         $calls_cnt   = \DB::table( 'report_missed_calls' )->count();
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
