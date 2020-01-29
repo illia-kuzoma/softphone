@@ -21,7 +21,7 @@ class ReportMissed extends Controller
         $missedCalls = new ReportMissedCall();
         $user = new User();
         $out = [
-            'diagrama' => $missedCalls->getDiagramList(),
+            'diagrama' => $missedCalls->getDiagramList($dateStart, $period),
             'calls' => $missedCalls->getList(),
             'user' => $user->getData($email = 'support@wellnessliving.com'),
         ];

@@ -14,11 +14,16 @@ class ReportMissedGraph extends Model
     public function getList($dateStart, $period): array
     {
         // set dateStart
-        $dateStart = $dateStart ?? '';
+        if($dateStart == '-' || !$dateStart){
+            $dateStart = date('Y-m-d H:i:s');
+        }
+        $dateStart = $dateStart ?$dateStart : date('Y-m-d H:i:s');
         $dateStart = ! empty( $dateStart ) ? date( 'Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
 
         // set period
-        $period = $period ?? '';
+        if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
+            $period = 'day';
+        }
         $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
 
         $graph_list = \DB::table( 'report_missed_graphs' )/*->where( 'day', '>=', $dateStart )*/->orderBy('first_name')->get();

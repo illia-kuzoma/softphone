@@ -23,16 +23,16 @@ class ReportMissedCall extends Model
                             $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                             $page = 1): array
     {
-        if($dateStart == '-'){
+        if($dateStart == '-' || !$dateStart){
             $dateStart = date('Y-m-d H:i:s');
         }
-        if($period == '-'){
+        if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
             $period = 'day';
         }
-        if($uid == '-'){
+        if($uid == '-' || !$uid){
             $uid = '';
         }
-        if($searchWord == '-'){
+        if($searchWord == '-' || !$searchWord){
             $searchWord = '';
         }
         if(!in_array(strtolower($sortField),['time_start','contact', 'first_name', 'business_name'])){
@@ -50,7 +50,7 @@ class ReportMissedCall extends Model
             .'$searchWord=' . $searchWord.'$sortField=' . $sortField.'$sortBy=' . $sortBy
             .'$page=' . $page;exit;*/
         // set dateStart
-        $dateStart = $dateStart ?? date('Y-m-d H:i:s');
+        $dateStart = $dateStart ?$dateStart : date('Y-m-d H:i:s');
         $dateStart = ! empty( $dateStart ) ? strtotime( date( 'Y-m-d', strtotime( $dateStart ) ) ) : '';
 
         $dateFrom = $dateTo = date('Y-m-d', time());
