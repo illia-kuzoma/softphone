@@ -29,7 +29,7 @@
                   contain
                   transition="scale-transition"
                   width="163"
-                  src="../assets/logo-wellness.svg"
+                  src="../assets/images/logo-login.png"
                 />
 
               </v-toolbar>
@@ -72,13 +72,7 @@
                   @click="validate"
                   >Log In
                 </v-btn>
-                  <!-- :disabled='!isValid' -->
-                  <!-- v-bind:class="{buttonDisabled: !isValid}" -->
-                  <!-- [disabled]='!isValid' -->
-                  <!-- v-bind:class="{disabled: !isValid}" -->
-                <!-- <v-btn class="login-button" @click="validate" [disabled]='isValid'>Log In</v-btn> -->
               </v-card-actions>
-
             </v-card>
           </v-flex>
         </v-layout>
@@ -91,20 +85,16 @@
 <script>
   import router from '../router'
   import HttpService from '@/services/HttpService'
-  // import store from '../store'
 
   export default {
     name: 'Login',
-
     data: () => ({
       email:'',
       password:'',
       isValid:false,
-
     }),
     methods: {
       validate(){
-
         if(this.email =='' || this.password =='' ){
           this.isValid = true
         }
@@ -116,32 +106,28 @@
       login(){
         var self = this
         HttpService.methods.post('http://callcentr.wellnessliving.com/auth',{
-          'email':this.email,
-          'password':this.password,
-        })
+            email:this.email,
+            password:this.password,
+          })
           .then(function (response) {
-            // console.log(response.status)
-            // console.log(result)
-            if(response.status === 200){
-              // console.log('do something with user data',response.data.user)
+            if(response.data.user){
               self.$store.state.user = response.data.user
-              // this.store.state.user = response.data.user;
-              // console.log('login get store',self.$store.state.user)
               router.push('/dashboard')
+            }
+            if(response.data.error===true){
+              self.isValid = true
+              alert(response.data.message)
             }
           })
           .catch(function (error) {
             console.log(error)
-            // this.isValid = false
           })
       },
-
       forgotFunc(){
         console.log('forgot password')
       }
     },
     created: function(){
-      // console.log(store)
     },
   };
 </script>

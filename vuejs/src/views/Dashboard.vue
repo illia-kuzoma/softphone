@@ -59,7 +59,7 @@
               <button
                 id="search-button"
                 class="button color-violet"
-                v-on:click="search(searchText)"
+                v-on:click="search(searchText) ; getDataByOptions()"
                 >Search
               </button>
           </div>
@@ -71,26 +71,59 @@
             id="chartId"
             v-if='chartData'
             :chartObject='chartData'
+            :is-resizable="true"
+            :use-css-transforms="true"
             @clicked="getElemenFromChart"
             class="chart">
           </line-chart>
         </div>
-
+        
+       <!--  <div>
+          <p>selectedAgent id : <span>{{selectedAgent}}</span></p>
+          <p>table options : <span>{{options}}</span></p>
+          <p>searchText : <span>{{searchText}}</span></p>
+        </div> -->
+        
         <div class="table-container" v-if='tableCallsData'>
           <v-data-table
             :headers="tableCallsHeaders"
             :items="tableCallsData"
             :items-per-page="20"
             :page.sync="tablePage"
+            :options.sync='options'
             :hide-default-footer="true"
-            class="v-data-table"
-            @click:row="getDataFromTableRow"
+            class="v-data-table elevation-1"
             fixed-header
+            @update:options="getDataFromTableRow"
             >
               <template v-slot:item.user_data="{ item }">
                 <div class='user'>
                   <img :src="item.user_data.photo_url" alt="">
                   <p>{{ item.user_data.full_name }}</p>
+                </div>
+              </template>
+              
+              <template v-slot:item.business="{ item }">
+                <div class='business'>
+                  <a
+                    target="_blank"
+                    v-on:click='goOutTo(item.business.business_link)'
+                    class='url'
+                    :href="item.business.business_link"
+                    >{{ item.business.business_name }}
+                  </a>
+                </div>
+              </template>
+
+              <template v-slot:item.contact="{ item }">
+                <div class='user'>
+                  <a
+                    target="_blank"
+                    v-on:click='goOutTo(item.contact.contact_link)'
+                    class='url'
+                    :href="item.contact.contact_link"
+                    >{{ item.contact.contact_name }}
+                  </a>
                 </div>
               </template>
 
@@ -104,6 +137,7 @@
             v-model="tablePage"
             :length="tablePageCount"
             class="table-pagination"
+            @input="changePage"
           ></v-pagination>
         </div>
       </div>
@@ -126,33 +160,28 @@
       LineChart,
     },
     data: () => ({
+      firstLoad:true,
       selectedDate:null,
       dateType:'date',
       chartData:null,
       tableCallsData:null,
       serverChartData:null,
-      // uid: (...)
-      // photo_url: (...)
-      // first_name: (...)
-      // last_name: (...)
-      // business_name: (...)
-      // contact: (...)
-      // priority: (...)
-      // phone: (...)
-      // time_create: 
+      options: {},
       tableCallsHeaders: [
-          // { text: 'Type', value: 'type' },
-          { text: 'Agent', value: 'user_data' },
-          { text: 'Business Name', value: 'business_name' },
-          { text: 'Contact', value: 'contact' },
-          { text: 'Priority', value: 'priority', sortable: false},
-          { text: 'Phone', value: 'phone', sortable: false },
-          { text: 'Created Time', value: 'time_create', sortable: false },
+        { text: 'Agent', value: 'user_data' },
+        { text: 'Business Name', value: 'business' },
+        { text: 'Contact', value: 'contact' ,width: 200},
+        { text: 'Priority', value: 'priority', sortable: false},
+        { text: 'Phone', value: 'phone', sortable: false ,width: 150},
+        { text: 'Created Time', value: 'time_create', sortable: false,width: 120 },
       ],
       tablePage:null,
+      tableSort:null,
       tablePageCount:null,
       tableItemsPerPage:null,
       searchText:null,
+      selectedAgent:null,
+      selectedAgentUid:null,
     }),
     methods: {
       getChartData(){
@@ -160,7 +189,7 @@
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
           .then(function (response) {
             self.setChartData(response.data.diagrama)
-            console.log('1getChartData',response)
+            // console.log('1getChartData',response)
           })
           .catch(function (error) {
             console.log(error)
@@ -171,11 +200,13 @@
         this.serverChartData = data
 
         for (var i = 0; i < data.length; i++) {
-          var name = data[i].first_name + ' ' + data[i].first_name
-          var count = data[i].calls_count
-          obj[name]=count
+          var name = data[i].first_name + ' ' + data[i].first_name;
+          var count = data[i].calls_count;
+          obj[name] = count;
         }
+
         this.chartData = obj
+        // console.log('this.chartData',this.chartData)
       },
       getTableData(){
         var self = this;
@@ -183,7 +214,7 @@
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            console.log('2getChartData',response)
+            // console.log('2getChartData',response)
           })
           .catch(function (error) {
             console.log(error)
@@ -193,50 +224,6 @@
         this.tableCallsData=data.data;
         this.tablePage = data.page;
         this.tablePageCount = data.pages_count;
-  this.tableCallsData=[
-    {
-      'uid': "1",
-      'business_name': "Bavaria Motors LLC",
-      'contact': "UFO",
-      'priority': "low",
-      'phone': "+380508008080",
-      'time_create': "1579996800",
-      'user_data':{
-          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-          'first_name': "Ivan",
-          'last_name': "Petrov",
-          'full_name': "Ivan Petrov"
-        }
-    },
-    {
-      'uid': "12",
-      'business_name': "Bavaria Motors LLC",
-      'contact': "UFO",
-      'priority': "low",
-      'phone': "+380508008080",
-      'time_create': "1579996800",
-      'user_data':{
-          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-          'first_name': "Ivan",
-          'last_name': "Petrov",
-          'full_name': "Ivan Petrov"
-        },
-    },
-    {
-      'uid': "13",
-      'business_name': " Motors LLC",
-      'contact': "U2O",
-      'priority': "low",
-      'phone': "+380508008222",
-      'time_create': "1571296800",
-      'user_data':{
-          'photo_url': "https://www.bmw-motorsport.com/content/dam/bmw/marketBMWSPORTS/bmw-motorsport_com/assets/bmw-m-motorsport/race-cars/bmw-m2-cs-racing/bmw-m2-cs-racing-ascari-hotspot.jpg",
-          'first_name': "Ivan1111",
-          'last_name': "Petrov1111",
-          'full_name': "Ivan Petrov1111"
-        },
-    },
-  ]
       },
       getDate(timeStamp){
         var utc = new Date(timeStamp * 1000)
@@ -264,22 +251,27 @@
             today = YYYY+ '-' + MM+ '-' + DD 
             this.selectedDate = today;
             this.getDataByDate(this.selectedDate,'day')
+            this.period='day';
           break;
 
           case 'day':
             this.getDataByDate(this.selectedDate,'day')
+            this.period='day';
           break;
 
           case 'week':  
             this.getDataByDate(this.selectedDate,'week')
+            this.period='week';
           break;
 
           case 'month':  
             this.getDataByDate(this.selectedDate,'month')
+            this.period='month';
           break;
 
           case 'year': 
             this.getDataByDate(this.selectedDate,'year')
+            this.period='year';
           break;
         }  
       },
@@ -287,35 +279,108 @@
         document.querySelector('.color-dark').classList.remove('color-dark');
         ev.target.classList.add('color-dark');
       },
-      getDataByDate(date,period){
+      getDataByDate(startDate,period){
         var self = this
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ date+ '/'+ period)
+
+        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period)
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            console.log('3getDataByDate',response)
+            // console.log('3getDataByDate',response)
           })
           .catch(function (error) {
             console.log(error)
           })
       },
       search(searchText){
-        console.log(searchText)
+        console.log(searchText);
+        // this.getDataByOptions();
       },
-      getDataFromTableRow(element){
-        console.log('table elem',element)
+      getDataFromTableRow(){
+        // console.log('table elem',element)
+        // console.log('options',this.options)
+        // console.log('searchText',this.searchText)
+        this.getDataByOptions()
+      },
+      getDataFromTableHead(head){
+        console.log('table head',head)
       },
       getElemenFromChart(element){
-        console.log('1Chart elem',element)
-        console.log('2serverChartData',this.serverChartData)
-
-        console.log('3chartData',this.chartData)
-        console.log('!!!serverChartData',this.serverChartData[element['index']])
+        if(this.selectedAgent === null){
+          this.selectedAgent = this.serverChartData[element['index']]
+          this.selectedAgentUid = this.serverChartData[element['index']]['uid']
+        } else {
+          this.selectedAgent = null;
+          this.selectedAgentUid = null;
+        }
+        this.getDataByOptions()
       },
+      getDataByOptions(){
+        let self = this; 
+
+        if(this.firstLoad){
+          this.firstLoad = false
+          return
+        }  
+
+        let startDate = this.selectedDate || '-' ;
+        let period = this.period || '-' ;
+        let uid = this.selectedAgentUid || '-';
+        let searchWord = this.searchText || '-';
+        let page = this.options.page || '-';
+
+        var sortField = this.options.sortBy[0] || '-';
+        if(this.options.sortBy[0] === 'user_data'){
+          sortField = 'first_name'
+        }
+        if(this.options.sortBy[0] === 'business'){
+          sortField = 'business_name'
+        }
+        if(this.options.sortBy[0] === 'contact'){
+          sortField = 'contact'
+        }
+
+        let sortBy = this.options.sortDesc[0] || '-';
+        if(this.options.sortDesc[0] === false){
+          sortBy = 'ask'
+        }
+        if(this.options.sortDesc[0] === true){
+          sortBy = 'desс'
+        }
+
+
+    console.log('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + uid + '/' + searchWord + '/' + sortField + '/' + sortBy + '/' + page)
+    
+        HttpService.methods.get(
+          'http://callcentr.wellnessliving.com/report/missed/call/'+
+           startDate + '/' + 
+           period + '/' + 
+           uid + '/' + 
+           searchWord + '/' + 
+           sortField + '/' + 
+           sortBy + '/' + 
+           page
+          )
+          .then(function (response) {
+            let tableData = response.data.calls
+            self.setTableData(tableData);
+            console.log('handle getDataByOptions',response)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      },
+      changePage(page){
+        this.options.page = page
+        this.getDataByOptions()
+      },
+      goOutTo(string){
+        console.log('authrize and goto',string)
+      }
     },
     created: function(){
       this.getChartData();
-      this.getTableData();
+      // this.getTableData();
       this.setDate('today');
     },
     mounted () {
@@ -450,19 +515,43 @@
     .table-container{
       margin-bottom: 25px;
       /deep/ .v-data-table {
+        th[aria-sort="ascending"]::after,
+        th[aria-sort="ascending"]::after {
+          opacity: 1;
+          margin-left:5px;
+          content: "\2191"; // up arrow
+        }
+
+        th[aria-sort="descending"]::after,
+        th[aria-sort="descending"]::after {
+          opacity: 1;
+          margin-left:5px;
+          content: "\2193"; // down arrow
+        }
+
+        thead tr th span{
+          font-family: NunitoSans;
+          font-size: 14px;
+          font-weight: bold;
+          line-height: 1.5;
+          letter-spacing: normal;
+          color: #6c757d;
+        }
         .v-data-table__wrapper{
           max-height: 420px !important;
-        //  overflow-y: auto;
         }
       } 
       /deep/ .table-pagination{
-         //.v-application .primary {
-         .v-pagination__item {
+        .v-pagination__item {
             background-color: #6C757D !important;
             border-color: #6C757D !important;
         }
-
-
+      }
+      .asc{
+        content:'a'
+      }
+      .desc{
+        content:'d'
       }
     }
   }
