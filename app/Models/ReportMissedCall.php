@@ -30,33 +30,28 @@ class ReportMissedCall extends Model
 
         $dateFrom = $dateTo = date('Y-m-d', time());
         // set period
-        $period = $period ?? '';
-        $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
-        if ( !empty($period) ) {
-
-            $currentDayOfWeek = date('w', $dateStart);
-            switch ($period) {
-                case 'day':
-                    $dateFrom = $dateStart;
-                    $dateTo   = $dateStart;
-                    break;
-                case 'week':
-                    $dateFrom = date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) );
-                    $dateTo   = date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) );
-                    break;
-                case 'month':
-                    $dateFrom = date('Y-m-d', strtotime('first day of this month', $dateStart) );
-                    $dateTo = date('Y-m-d', strtotime('last day of this month', $dateStart) );
-                    break;
-                case 'year':
-                    $dateFrom = date('Y-m-d', strtotime('first day of January', $dateStart) );
-                    $dateTo = date('Y-m-d', strtotime('last day of December', $dateStart) );
-                    break;
-                default:
-                    $dateFrom = date('Y-m-d', strtotime('first day of January', time() ) );
-                    $dateTo = date('Y-m-d', strtotime('last day of December', time() ) );
-                    break;
-            }
+        $currentDayOfWeek = date('w', $dateStart);
+        switch ($period ?? '') {
+            case 'day':
+                $dateFrom = $dateStart;
+                $dateTo   = $dateStart;
+                break;
+            case 'week':
+                $dateFrom = date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) );
+                $dateTo   = date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) );
+                break;
+            case 'month':
+                $dateFrom = date('Y-m-d', strtotime('first day of this month', $dateStart) );
+                $dateTo = date('Y-m-d', strtotime('last day of this month', $dateStart) );
+                break;
+            case 'year':
+                $dateFrom = date('Y-m-d', strtotime('first day of January', $dateStart) );
+                $dateTo = date('Y-m-d', strtotime('last day of December', $dateStart) );
+                break;
+            default:
+                $dateFrom = date('Y-m-d', strtotime('first day of January', time() ) );
+                $dateTo = date('Y-m-d', strtotime('last day of December', time() ) );
+                break;
         }
 
         // set uid
