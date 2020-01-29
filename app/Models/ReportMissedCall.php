@@ -19,12 +19,30 @@ class ReportMissedCall extends Model
      *
      * @return array
      */
-    public function getList($dateStart = null, $period = null, $uid = null,
-                            $searchWord = null, $sortField = null, $sortBy = 'DESC',
+    public function getList($dateStart = '', $period = '', $uid = '',
+                            $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                             $page = 1): array
     {
-
-        if($page<1)
+        if($dateStart == '-'){
+            $dateStart = date('Y-m-d H:i:s');
+        }
+        if($period == '-'){
+            $period = 'day';
+        }
+        if($uid == '-'){
+            $uid = '';
+        }
+        if($searchWord == '-'){
+            $searchWord = '';
+        }
+        if(!in_array(strtolower($sortField),['time_start','contact', 'first_name', 'business_name'])){
+            $sortField = 'time_start';
+        }
+        if(!in_array(strtolower($sortBy),['asc','desc'])){
+            $sortBy = 'desc';
+        }
+        $page = (int)$page;
+        if((int)$page<1)
         {
             $page = 1;
         }
@@ -38,7 +56,7 @@ class ReportMissedCall extends Model
         $dateFrom = $dateTo = date('Y-m-d', time());
         // set period
         $currentDayOfWeek = date('w', $dateStart);
-        switch ($period ?? '') {
+        switch (strtolower($period) ?? '') {
             case 'day':
                 $dateFrom = $dateStart;
                 $dateTo   = $dateStart;
@@ -56,9 +74,11 @@ class ReportMissedCall extends Model
                 $dateTo = date('Y-m-d', strtotime('last day of December', $dateStart) );
                 break;
             default:
-                $dateFrom = date('Y-m-d', strtotime('first day of January', time() ) );
+                $dateFrom = $dateStart;
+                $dateTo   = $dateStart;
+                /*$dateFrom = date('Y-m-d', strtotime('first day of January', time() ) );
                 $dateTo = date('Y-m-d', strtotime('last day of December', time() ) );
-                break;
+                */break;
         }
 
         // set uid
