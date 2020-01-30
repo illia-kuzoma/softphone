@@ -59,7 +59,7 @@
               <button
                 id="search-button"
                 class="button color-violet"
-                v-on:click="search(searchText) ; getDataByOptions()"
+                v-on:click="search(searchText) ; "
                 >Search
               </button>
           </div>
@@ -73,17 +73,24 @@
             :chartObject='chartData'
             :is-resizable="true"
             :use-css-transforms="true"
-            @clicked="getElemenFromChart"
+            @clicked="getAgentFromChart"
             class="chart">
           </line-chart>
         </div>
         
-       <!--  <div>
-          <p>selectedAgent id : <span>{{selectedAgent}}</span></p>
-          <p>table options : <span>{{options}}</span></p>
-          <p>searchText : <span>{{searchText}}</span></p>
-        </div> -->
-        
+<!--  <div style='border:solid 1px black'>
+  <p v-if='selectedAgent'>selectedAgent id : <span>{{selectedAgent}}</span></p>
+  <p v-if='options'>table options : <span>{{options}}</span></p>
+  <p v-if='searchText'>searchText : <span>{{searchText}}</span></p>
+</div> -->
+
+
+<!-- <div>
+  <transition name="fade">
+    <p v-if="selectedAgent">Selected Agent : <span>{{selectedAgent.full_name}}</span></p>
+  </transition>
+</div> -->
+
         <div class="table-container" v-if='tableCallsData'>
           <v-data-table
             :headers="tableCallsHeaders"
@@ -189,7 +196,12 @@
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
           .then(function (response) {
             self.setChartData(response.data.diagrama)
+            self.setTableData(response.data.calls);
+            self.datePickerSetToday()
             // console.log('1getChartData',response)
+            // self.setDate('today');
+            // self.selectedDate = response.data.calls
+            // self.getDataByDate(this.selectedDate,'day')
           })
           .catch(function (error) {
             console.log(error)
@@ -200,13 +212,12 @@
         this.serverChartData = data
 
         for (var i = 0; i < data.length; i++) {
-          var name = data[i].first_name + ' ' + data[i].first_name;
+          var name = data[i].full_name;
           var count = data[i].calls_count;
           obj[name] = count;
         }
 
         this.chartData = obj
-        // console.log('this.chartData',this.chartData)
       },
       getTableData(){
         var self = this;
@@ -214,7 +225,6 @@
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            // console.log('2getChartData',response)
           })
           .catch(function (error) {
             console.log(error)
@@ -275,6 +285,25 @@
           break;
         }  
       },
+      datePickerSetToday(){
+        var today = new Date();
+        var DD = today.getDate();
+        var MM = today.getMonth() + 1; 
+        var YYYY = today.getFullYear();
+
+        if (DD < 10) {
+          DD = '0' + DD;
+        } 
+
+        if (MM < 10) {
+          MM = '0' + MM;
+        } 
+
+        today = YYYY+ '-' + MM+ '-' + DD 
+        this.selectedDate = today;
+        // this.getDataByDate(this.selectedDate,'day')
+        this.period='day';
+      },
       setActive(ev){
         document.querySelector('.color-dark').classList.remove('color-dark');
         ev.target.classList.add('color-dark');
@@ -294,7 +323,7 @@
       },
       search(searchText){
         console.log(searchText);
-        // this.getDataByOptions();
+        this.getDataByOptions();
       },
       getDataFromTableRow(){
         // console.log('table elem',element)
@@ -305,18 +334,28 @@
       getDataFromTableHead(head){
         console.log('table head',head)
       },
-      getElemenFromChart(element){
-        if(this.selectedAgent === null){
-          this.selectedAgent = this.serverChartData[element['index']]
-          this.selectedAgentUid = this.serverChartData[element['index']]['uid']
-        } else {
+      getAgentFromChart(element){
+        // console.warn(1, this.selectedAgentUid)
+
+        if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
           this.selectedAgent = null;
           this.selectedAgentUid = null;
+          // console.warn(2,'clean', this.selectedAgentUid)
+          this.getDataByOptions();
+          return
         }
-        this.getDataByOptions()
+
+        if( element ){
+          this.selectedAgent = this.serverChartData[element['index']];
+          this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
+          // console.warn(3,'new', this.selectedAgentUid)
+          this.getDataByOptions();
+          return
+        } 
       },
       getDataByOptions(){
         let self = this; 
+        // console.warn(0,'request 0  this.selectedAgentUid', this.selectedAgentUid)
 
         if(this.firstLoad){
           this.firstLoad = false
@@ -340,16 +379,20 @@
           sortField = 'contact'
         }
 
-        let sortBy = this.options.sortDesc[0] || '-';
+        var sortBy = this.options.sortDesc[0] || '-';
         if(this.options.sortDesc[0] === false){
+          // sortBy = 'desс'
           sortBy = 'ask'
         }
         if(this.options.sortDesc[0] === true){
+          // sortBy = 'ask'
           sortBy = 'desс'
         }
 
+        // console.warn(0,'request 1 this.selectedAgentUid', this.selectedAgentUid)
+        // console.warn(0,'request 1 uid', uid)
 
-    console.log('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + uid + '/' + searchWord + '/' + sortField + '/' + sortBy + '/' + page)
+        // console.log('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + uid + '/' + searchWord + '/' + sortField + '/' + sortBy + '/' + page)
     
         HttpService.methods.get(
           'http://callcentr.wellnessliving.com/report/missed/call/'+
@@ -364,11 +407,17 @@
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            console.log('handle getDataByOptions',response)
+            // console.log('handle getDataByOptions',response)
+            if (response.data.diagrama) {
+                self.setChartData(response.data.diagrama)
+            }
+            // console.log('agent id after response self',self.selectedAgentUid)
           })
           .catch(function (error) {
             console.log(error)
           })
+            // console.log('agent id after response this',this.selectedAgentUid)
+
       },
       changePage(page){
         this.options.page = page
@@ -381,7 +430,7 @@
     created: function(){
       this.getChartData();
       // this.getTableData();
-      this.setDate('today');
+      // this.setDate('today');
     },
     mounted () {
     },
@@ -526,7 +575,7 @@
         th[aria-sort="descending"]::after {
           opacity: 1;
           margin-left:5px;
-          content: "\2193"; // down arrow
+          content: "\2191"; // up arrow
         }
 
         thead tr th span{
@@ -547,12 +596,23 @@
             border-color: #6C757D !important;
         }
       }
-      .asc{
-        content:'a'
-      }
-      .desc{
-        content:'d'
-      }
+      //.asc{
+      //  content:'a'
+      //}
+      //.desc{
+      //  content:'d'
+      //}
     }
+    .fade-enter-active {
+      transition: opacity 1s
+    }
+
+    .fade-enter,
+    .fade-leave-active {
+      opacity: 0
+    }
+
+
+
   }
 </style>
