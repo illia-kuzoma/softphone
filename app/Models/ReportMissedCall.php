@@ -3,6 +3,8 @@
 namespace App\Models;
 
 
+use Validator;
+
 class ReportMissedCall extends ReportMissed
 {
     const PAGES_PER_PAGE = 20;
@@ -109,5 +111,104 @@ class ReportMissedCall extends ReportMissed
     public function getDiagramList($dateStart = null, $period = null): array
     {
         return (new ReportMissedGraph())->getList($dateStart, $period);
+    }
+
+    /**
+     * Check array Single or Multiple
+     * @param $data
+     *
+     * @return bool
+     */
+    public function isMultipleArray( $data ): bool
+    {
+        return count( array_keys( $data ) ) > 1;
+    }
+
+    /**
+     * Insert new Call
+     * @param $callData
+     */
+    public function insert($callData): void
+    {
+        if ( $this->isMultipleArray($callData) ) {
+            $this->insertMultipleCallData($callData);
+        } else {
+            $this->insertSingleCallData($callData);
+        }
+    }
+
+    /**
+     * Validate Before Insert
+     * @param $callData
+     *
+     * @return bool
+     */
+    public function validateBeforeInsert( $callData ): bool
+    {
+        $validator = Validator::make(
+            array(
+                'id'            => $callData['id'],
+                'type'          => $callData['type'],
+                'first_name'    => $callData['first_name'],
+                'last_name'     => $callData['last_name'],
+                'business_name' => $callData['business_name'],
+                'contact'       => $callData['contact'],
+                'priority'      => $callData['priority'],
+                'phone'         => $callData['phone'],
+                'time_start'    => strtotime( $callData['time_start'] ),
+                'user_id'       => $callData['user_id']
+            ),
+            array(
+                'id'            => 'required|unique|max:128',
+                'type'          => 'min:3',
+                'first_name'    => 'max:20',
+                'last_name'     => 'max:20',
+                'business_name' => 'max:200',
+                'contact'       => 'max:200',
+                'priority'      => 'min:3',
+                'phone'         => 'max:13',
+                'time_start'    => 'date',
+                'user_id'       => 'required|integer'
+            )
+        );
+
+        return ! $validator->fails();
+    }
+
+    /**
+     * Insert Single Call Data to DB
+     * @param $singleCallData
+     */
+    public function insertSingleCallData($singleCallData): void
+    {
+        if ( $this->validateBeforeInsert($singleCallData) ) {
+            DB::table( 'report_missed_calls' )->insert(
+                [
+                    'id'            => $singleCallData['id'],
+                    'type'          => $singleCallData['type'],
+                    'first_name'    => $singleCallData['first_name'],
+                    'last_name'     => $singleCallData['last_name'],
+                    'business_name' => $singleCallData['business_name'],
+                    'contact'       => $singleCallData['contact'],
+                    'priority'      => $singleCallData['priority'],
+                    'phone'         => $singleCallData['phone'],
+                    'time_start'    => $singleCallData['time_start'],
+                    'user_id'       => $singleCallData['user_id'],
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ]
+            );
+        }
+    }
+
+    /**
+     * Insert Multiple Call Data to DB
+     * @param $multipleCallData
+     */
+    public function insertMultipleCallData($multipleCallData): void
+    {
+        foreach ($multipleCallData as $singleCallData) {
+            $this->insertSingleCallData($singleCallData);
+        }
     }
 }

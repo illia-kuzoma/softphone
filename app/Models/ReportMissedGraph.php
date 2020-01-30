@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Validator;
+
 class ReportMissedGraph extends ReportMissed
 {
     /**
@@ -51,5 +53,92 @@ class ReportMissedGraph extends ReportMissed
         }
 
         return array_values($result);
+    }
+
+    /**
+     * Check array Single or Multiple
+     * @param $data
+     *
+     * @return bool
+     */
+    public function isMultipleArray( $data ): bool
+    {
+        return count( array_keys( $data ) ) > 1;
+    }
+
+    /**
+     * Insert new CallGraph
+     * @param $callDataGraph
+     */
+    public function insert($callDataGraph): void
+    {
+        if ( $this->isMultipleArray($callDataGraph) ) {
+            $this->insertMultipleCallDataGraph($callDataGraph);
+        } else {
+            $this->insertSingleCallDataGraph($callDataGraph);
+        }
+    }
+
+    /**
+     * Validate Before Insert
+     * @param $callDataGraph
+     *
+     * @return bool
+     */
+    public function validateBeforeInsert( $callDataGraph ): bool
+    {
+        $validator = Validator::make(
+            array(
+                'first_name' => $callDataGraph['first_name'],
+                'last_name'  => $callDataGraph['last_name'],
+                'count'      => $callDataGraph['count'],
+                'order'      => $callDataGraph['order'],
+                'user_id'    => $callDataGraph['user_id'],
+                'day'        => strtotime( $callDataGraph['day'] )
+            ),
+            array(
+                'first_name' => 'max:20',
+                'last_name'  => 'max:20',
+                'count'      => 'integer',
+                'order'      => 'integer',
+                'user_id'    => 'required|integer',
+                'day'        => 'date'
+            )
+        );
+
+        return ! $validator->fails();
+    }
+
+    /**
+     * Insert Single CallDataGraph to DB
+     * @param $singleCallDataGraph
+     */
+    public function insertSingleCallDataGraph($singleCallDataGraph): void
+    {
+        if ( $this->validateBeforeInsert($singleCallDataGraph) ) {
+            DB::table( 'report_missed_graphs' )->insert(
+                [
+                    'first_name' => $singleCallDataGraph['first_name'],
+                    'last_name'  => $singleCallDataGraph['last_name'],
+                    'count'      => $singleCallDataGraph['count'],
+                    'order'      => $singleCallDataGraph['order'],
+                    'user_id'    => $singleCallDataGraph['user_id'],
+                    'day'        => $singleCallDataGraph['day'],
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ]
+            );
+        }
+    }
+
+    /**
+     * Insert Multiple CallDataGraph to DB
+     * @param $multipleCallDataGraph
+     */
+    public function insertMultipleCallDataGraph($multipleCallDataGraph): void
+    {
+        foreach ($multipleCallDataGraph as $singleCallDataGraph) {
+            $this->insertSingleCallDataGraph($singleCallDataGraph);
+        }
     }
 }

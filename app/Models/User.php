@@ -14,18 +14,6 @@ class User extends Model
     private $user;
 
     /**
-     * @var array
-     */
-    private $notValidData = [];
-
-    /**
-     * @return array
-     */
-    public function getNotValidData(): array {
-        return $this->notValidData;
-    }
-
-    /**
      * Возвращает результат проверки токена.
      *
      * @return bool
@@ -149,10 +137,8 @@ class User extends Model
     /**
      * Insert Single User Data to DB
      * @param $singleUserData
-     *
-     * @return bool
      */
-    public function insertSingleUserData($singleUserData): bool
+    public function insertSingleUserData($singleUserData): void
     {
         if ( $this->validateBeforeInsert($singleUserData) ) {
             DB::table( 'users' )->insert(
@@ -169,60 +155,18 @@ class User extends Model
                     'updated_at' => time(),
                 ]
             );
-
-            return true;
         }
-
-        return false;
-
-
-//        DB::insert('insert into users (email, first_name, last_name, password, role, token, photo, date_login, created_at, updated_at)
-//                values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-//            [
-//                $singleUserData['email'],
-//                $singleUserData['first_name'],
-//                $singleUserData['last_name'],
-//                password_hash($singleUserData['password'], PASSWORD_DEFAULT),
-//                $singleUserData['role'],
-//                $singleUserData['token'],
-//                $singleUserData['photo'],
-//                $singleUserData['date_login'],
-//                time(),
-//                time()
-//            ]
-//        );
     }
 
     /**
      * Insert Multiple User Data to DB
      * @param $multipleUserData
-     *
-     * @return bool
      */
-    public function insertMultipleUserData($multipleUserData): bool
+    public function insertMultipleUserData($multipleUserData): void
     {
         foreach ($multipleUserData as $singleUserData) {
-            if ( $this->validateBeforeInsert($singleUserData) ) {
-                DB::table( 'users' )->insert(
-                    [
-                        'email'      => $singleUserData['email'],
-                        'first_name' => $singleUserData['first_name'],
-                        'last_name'  => $singleUserData['last_name'],
-                        'password'   => password_hash( $singleUserData['password'], PASSWORD_DEFAULT ),
-                        'role'       => $singleUserData['role'],
-                        'token'      => $singleUserData['token'],
-                        'photo'      => $singleUserData['photo'],
-                        'date_login' => $singleUserData['date_login'],
-                        'created_at' => time(),
-                        'updated_at' => time(),
-                    ]
-                );
-            } else {
-                $this->notValidData[] = $singleUserData;
-            }
+            $this->insertSingleUserData($singleUserData);
         }
-
-        return empty($this->notValidData);
     }
 
 
