@@ -2,54 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class ReportMissedGraph extends Model
+class ReportMissedGraph extends ReportMissed
 {
     /**
+     * Выбирает данные под диаграмму по указанному временному периоду.
+     *
      * @param $dateStart
      * @param $period
      * @return array
      */
     public function getList($dateStart, $period): array
     {
-        // set dateStart
-        if($dateStart == '-' || !$dateStart ||
-            (date('Y-m-d', strtotime($dateStart)) != $dateStart)){
-            $dateStart = date('Y-m-d');
-        }
-        else{
-            $dateStart = date( 'Y-m-d', strtotime( $dateStart ) );
-        }
-        // set period
-        if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
-            $period = 'day';
-        }
-        $dateStart = strtotime( $dateStart );
-
-        $dateFrom = $dateTo = date( 'Y-m-d', $dateStart) ;
-        // set period
-        $currentDayOfWeek = date('w', $dateStart);
-        switch (strtolower($period) ?? '') {
-            case 'week':
-                $dateFrom = (date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) ));
-                $dateTo   = (date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) ));
-                break;
-            case 'month':
-                $dateFrom = (date('Y-m-d', strtotime('first day of this month', $dateStart) ));
-                $dateTo = (date('Y-m-d', strtotime('last day of this month', $dateStart) ));
-                break;
-            case 'year':
-                $dateFrom = (date('Y-m-d', strtotime('first day of January', $dateStart) ));
-                $dateTo = (date('Y-m-d', strtotime('last day of December', $dateStart) ));
-                break;
-            case 'day':
-            default:
-                /* $dateFrom = $dateStart;
-                 $dateTo   = $dateStart;*/
-                break;
-        }
-
+        [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
         $graph_list = \DB::table( 'report_missed_graphs' )
             ->where('day', '>=', $dateFrom)
             ->where('day', '<=', $dateTo)

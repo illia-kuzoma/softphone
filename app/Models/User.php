@@ -6,23 +6,44 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
+    private $user;
 
     /**
-     * @param null $email
+     * Возвращает результат проверки токена.
      *
+     * @return bool
+     */
+    public function checkToken()
+    {
+        // TODO проверка токена полученого от клиента на соответствие храниимому.
+        // TODO Проверка что время ханения токена не выйшло.
+        // Токен может передавтаься только в теле POST запроса.
+        return true;
+    }
+
+    /**
+     * @param $user
+     * @return Model|\Illuminate\Database\Query\Builder|object|null
+     */
+    public function getData($user)
+    {
+        $getUserByEmail = \DB::table('users')->where('email', $email = 'support@wellnessliving.com')->first();
+        $this->user = $getUserByEmail;
+    }
+
+    /**
      * @return array
      */
-    public function getData($email): array
+    public function toArray()
     {
-        $getUserByEmail = \DB::table('users')->where('email', $email)->first();
         $data = [
-            'uid' => $getUserByEmail->id,
-            'token' => $getUserByEmail->token,
-            'photo_url' => $getUserByEmail->photo,
-            'first_name' => $getUserByEmail->first_name,
-            'last_name' => $getUserByEmail->last_name,
-            'role' => $getUserByEmail->role,
-            'full_name' => $getUserByEmail->first_name . ' ' . $getUserByEmail->last_name
+            'uid' => $this->user->id,
+            'token' => $this->user->token,
+            'photo_url' => $this->user->photo,
+            'first_name' => $this->user->first_name,
+            'last_name' => $this->user->last_name,
+            'role' => $this->user->role,
+            'full_name' => $this->user->first_name . ' ' . $this->user->last_name
         ];
         return ($data);
     }

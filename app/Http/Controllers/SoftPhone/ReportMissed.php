@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 
 class ReportMissed extends Controller
 {
+    private const DIAGRAM_DATA = 'diagrama';
+    private const CALLS_DATA = 'calls';
+    private const USER_DATA = 'user';
 
     /**
      * @param null $dateStart
@@ -20,10 +23,17 @@ class ReportMissed extends Controller
     {
         $missedCalls = new ReportMissedCall();
         $user = new User();
+        $user->getData($email = 'support@wellnessliving.com');
+        if(!$user->checkToken()){
+            return redirect()->action(
+                'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
+            );
+        }
+
         $out = [
-            'diagrama' => $missedCalls->getDiagramList($dateStart, $period),
-            'calls' => $missedCalls->getList(),
-            'user' => $user->getData($email = 'support@wellnessliving.com'),
+            self::DIAGRAM_DATA => $missedCalls->getDiagramList($dateStart, $period),
+            self::CALLS_DATA => $missedCalls->getList(),
+            self::USER_DATA => $user->toArray(),
         ];
 
         return json_encode($out);
@@ -35,7 +45,7 @@ class ReportMissed extends Controller
      * @param null $uid
      * @param null $searchWord
      * @param null $sortField
-     * @param null $sortBy
+     * @param string $sortBy
      * @param int $page
      *
      * @return string
@@ -43,11 +53,9 @@ class ReportMissed extends Controller
     public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $missedCalls = new ReportMissedCall();
-        #echo $dateStart . " " . $period;exit;
-
         $out = [
-            'diagrama' => $missedCalls->getDiagramList($dateStart, $period),
-            'calls' => $missedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
+            self::DIAGRAM_DATA => $missedCalls->getDiagramList($dateStart, $period),
+            self::CALLS_DATA => $missedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
         ];
         return json_encode($out);
     }

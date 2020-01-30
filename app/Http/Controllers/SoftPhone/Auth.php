@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 class Auth extends Controller
 {
     /**
+     * Ответ клиенту.
+     * На случай не верного логина или пароля.
+     * На случай не верного токена или токена вышедшего по срокам.
+     *
      * @param  Request  $request
      * @return string
      */
@@ -18,13 +22,15 @@ class Auth extends Controller
     {
         $out = [
             'error' => true,
-            'message'=>"Please enter correct login and password."
-            // 'message'=>"Please enter to system."
+            'message'=>$request->get('message')
         ];
         return json_encode($out);
     }
 
     /**
+     * Авторизация в система. Если успешна - редирект на получение данных по отчету.
+     * Если не успешна - редирект на страницу ввода логина и пароля
+     *
      * @param  Request  $request
      * @return string
      */
@@ -36,6 +42,9 @@ class Auth extends Controller
         {
             return \Redirect::to('/report/missed/');
         }
-        return \Redirect::to('auth');
+        return redirect()->action(
+            'SoftPhone\Auth@getAuth', ['message' => "Please enter correct login and password."]
+        );
+        #return redirect()->route('auth', ['message' => "Please enter correct login and password!."]);
     }
 }

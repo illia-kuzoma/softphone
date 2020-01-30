@@ -2,97 +2,47 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ReportMissedCall extends Model
+class ReportMissedCall extends ReportMissed
 {
     const PAGES_PER_PAGE = 20;
 
     /**
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uid
-     * @param null $searchWord
-     * @param null $sortField
+     * Выборка пропущенных звонков списоком. С возможноснями сортировки, выборок и поиска.
+     *
+     * @param string $dateStart
+     * @param string $period
+     * @param string $uid
+     * @param string $searchWord
+     * @param string $sortField
      * @param string $sortBy
      * @param int $page
-     *
      * @return array
      */
     public function getList($dateStart = '', $period = '', $uid = '',
                             $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                             $page = 1): array
     {
-        if($dateStart == '-' || !$dateStart ||
-            (date('Y-m-d', strtotime($dateStart)) != $dateStart)){
-            $dateStart = date('Y-m-d');
-        }
+        $uid = $this->getUid($uid);
+        $searchWord = $this->getSearchWord($searchWord);
+        $sortField = $this->getSortField($sortField);
+        $sortBy = $this->getSortOrder($sortBy);
+        $page = $this->getPage($page);
 
-        if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
-            $period = 'day';
-        }
-        if($uid == '-' || !$uid){
-            $uid = null;
-        }
-        if($searchWord == '-' || !$searchWord){
-            $searchWord = '';
-        }
-        if(!in_array(strtolower($sortField),['time_start','contact', 'first_name', 'business_name'])){
-            $sortField = 'time_start';
-        }
-        if(!in_array(strtolower($sortBy),['asc','desc'])){
-            $sortBy = 'desc';
-        }
-        $page = (int)$page;
-        if((int)$page<1)
-        {
-            $page = 1;
-        }
-       /* echo '$dateStart=' . $dateStart.'$period=' . $period.'$uid=' . $uid
-            .'$searchWord=' . $searchWord.'$sortField=' . $sortField.'$sortBy=' . $sortBy
-            .'$page=' . $page;exit;*/
-        // set dateStart
-        $dateStart = strtotime( $dateStart );
-
-        $dateFrom = $dateTo = date( 'Y-m-d', $dateStart) ;
-        // set period
-        $currentDayOfWeek = date('w', $dateStart);
-        switch (strtolower($period) ?? '') {
-            case 'week':
-                $dateFrom = (date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) ));
-                $dateTo   = (date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) ));
-                break;
-            case 'month':
-                $dateFrom = (date('Y-m-d', strtotime('first day of this month', $dateStart) ));
-                $dateTo = (date('Y-m-d', strtotime('last day of this month', $dateStart) ));
-                break;
-            case 'year':
-                $dateFrom = (date('Y-m-d', strtotime('first day of January', $dateStart) ));
-                $dateTo = (date('Y-m-d', strtotime('last day of December', $dateStart) ));
-                break;
-            case 'day':
-            default:
-               /* $dateFrom = $dateStart;
-                $dateTo   = $dateStart;*/
-                break;
-        }
+        [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
         $dateFrom .= ' 00:00:00';
         $dateTo .= ' 23:59:59';
-        // set uid
-        $uid = $uid ?? '';
-
-        // set searchWord
-        $searchWord = htmlspecialchars($searchWord);
-        $searchWord = ! empty( $searchWord ) ? ( (string) $searchWord ) : '';
 
         $call_list_q = ReportMissedCall::query();
         $call_list_q->where('time_start', '>=', $dateFrom);
         $call_list_q->where('time_start', '<=', $dateTo);
         $call_list_q->orderBy( $sortField, $sortBy );
-
-        $call_list_q->when(request('user_id', $uid), function ($q, $uid) {
-            return $q->where('user_id', $uid);
-        });
+        if($uid)
+        {
+            $call_list_q->when(request('user_id', $uid), function ($q, $uid) {
+                return $q->where('user_id', $uid);
+            });
+        }
         if($searchWord)
         {
             $call_list_q->where(function ($q) use ($searchWord)
@@ -106,7 +56,6 @@ class ReportMissedCall extends Model
         }
         $calls_cnt = $call_list_q->count();
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
-
         $call_list = $call_list_q->get();
 
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
@@ -116,17 +65,6 @@ class ReportMissedCall extends Model
             'pages_count' => $pages_count,
             'page'        => $page
         ];
-    }
-
-    /**
-     * get Diagram list
-     * @param $dateStart
-     * @param $period
-     * @return array
-     */
-    public function getDiagramList($dateStart = null, $period = null): array
-    {
-        return (new ReportMissedGraph())->getList($dateStart, $period);
     }
 
     /**
@@ -160,5 +98,16 @@ class ReportMissedCall extends Model
         }
 
         return $result;
+    }
+
+    /**
+     * get Diagram list
+     * @param $dateStart
+     * @param $period
+     * @return array
+     */
+    public function getDiagramList($dateStart = null, $period = null): array
+    {
+        return (new ReportMissedGraph())->getList($dateStart, $period);
     }
 }
