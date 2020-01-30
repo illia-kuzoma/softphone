@@ -15,7 +15,7 @@ $factory->define(ReportMissedGraph::class, function (Faker $faker) {
         'count' => $faker->randomNumber(),
         'order' => $faker->randomNumber(),
         'user_id' => $user->id,
-        'day' => $faker->dateTime(),
+        'day' => $faker->date(),
         'created_at' => $faker->dateTimeBetween('-30 days', 'now'),
         'updated_at' => $faker->dateTimeBetween('-30 days', 'now'),
     ];

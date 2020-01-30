@@ -14,19 +14,46 @@ class ReportMissedGraph extends Model
     public function getList($dateStart, $period): array
     {
         // set dateStart
-        if($dateStart == '-' || !$dateStart){
-            $dateStart = date('Y-m-d H:i:s');
+        if($dateStart == '-' || !$dateStart ||
+            (date('Y-m-d', strtotime($dateStart)) != $dateStart)){
+            $dateStart = date('Y-m-d');
         }
-        $dateStart = $dateStart ?$dateStart : date('Y-m-d H:i:s');
-        $dateStart = ! empty( $dateStart ) ? date( 'Y-m-d H:i:s', strtotime( $dateStart ) ) : '';
-
+        else{
+            $dateStart = date( 'Y-m-d', strtotime( $dateStart ) );
+        }
         // set period
         if($period == '-' || !$period || !in_array($period,['day','week','month','year'])){
             $period = 'day';
         }
-        $period = ! empty( $period ) ? strtolower( (string) $period ) : '';
+        $dateStart = strtotime( $dateStart );
 
-        $graph_list = \DB::table( 'report_missed_graphs' )/*->where( 'day', '>=', $dateStart )*/->orderBy('first_name')->get();
+        $dateFrom = $dateTo = date( 'Y-m-d', $dateStart) ;
+        // set period
+        $currentDayOfWeek = date('w', $dateStart);
+        switch (strtolower($period) ?? '') {
+            case 'week':
+                $dateFrom = (date( 'Y-m-d', strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) ));
+                $dateTo   = (date( 'Y-m-d', strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) ));
+                break;
+            case 'month':
+                $dateFrom = (date('Y-m-d', strtotime('first day of this month', $dateStart) ));
+                $dateTo = (date('Y-m-d', strtotime('last day of this month', $dateStart) ));
+                break;
+            case 'year':
+                $dateFrom = (date('Y-m-d', strtotime('first day of January', $dateStart) ));
+                $dateTo = (date('Y-m-d', strtotime('last day of December', $dateStart) ));
+                break;
+            case 'day':
+            default:
+                /* $dateFrom = $dateStart;
+                 $dateTo   = $dateStart;*/
+                break;
+        }
+
+        $graph_list = \DB::table( 'report_missed_graphs' )
+            ->where('day', '>=', $dateFrom)
+            ->where('day', '<=', $dateTo)
+            ->orderBy('first_name')->get();
 
         return $this->formatDataGraphList( $graph_list );
     }
@@ -42,16 +69,23 @@ class ReportMissedGraph extends Model
         $result = [];
         if ( ! empty( $data ) ) {
             foreach ( $data as $item ) {
-                $result[] = [
-                    'uid' => $item->user_id,
-                    'first_name' => $item->first_name,
-                    'last_name' => $item->last_name,
-                    'calls_count' => $item->count,
-                    'full_name' => $item->first_name . ' ' . $item->last_name,
-                ];
+                if(isset($result[$item->user_id]['calls_count']))
+                {
+                    $result[$item->user_id]['calls_count'] = $result[$item->user_id]['calls_count'] + $item->count;
+                }
+                else
+                {
+                    $result[$item->user_id] = [
+                        'uid' => $item->user_id,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name,
+                        'calls_count'=> $item->count,
+                        'full_name' => $item->first_name . ' ' . $item->last_name,
+                    ];
+                }
             }
         }
 
-        return $result;
+        return array_values($result);
     }
 }

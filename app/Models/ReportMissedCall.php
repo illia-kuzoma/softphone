@@ -32,7 +32,7 @@ class ReportMissedCall extends Model
             $period = 'day';
         }
         if($uid == '-' || !$uid){
-            $uid = '';
+            $uid = null;
         }
         if($searchWord == '-' || !$searchWord){
             $searchWord = '';
@@ -82,27 +82,33 @@ class ReportMissedCall extends Model
         $uid = $uid ?? '';
 
         // set searchWord
-        $searchWord = $searchWord ?? '';
-        $searchWord = ! empty( $searchWord ) ? strtolower( (string) $searchWord ) : '';
+        $searchWord = htmlspecialchars($searchWord);
+        $searchWord = ! empty( $searchWord ) ? ( (string) $searchWord ) : '';
 
-       /* $pages = \DB::table( 'report_missed_calls' )->where(function($query) use($word){
+        $call_list_q = ReportMissedCall::query();
+        $call_list_q->where('time_start', '>=', $dateFrom);
+        $call_list_q->where('time_start', '<=', $dateTo);
+        $call_list_q->orderBy( $sortField, $sortBy );
 
-        foreach($searchWords as $word){
-            $query->orWhere('content', 'LIKE', '%'.$word.'%');
+        $call_list_q->when(request('user_id', $uid), function ($q, $uid) {
+            return $q->where('user_id', $uid);
+        });
+        if($searchWord)
+        {
+            $call_list_q->where(function ($q) use ($searchWord)
+            {
+                return $q->where('contact', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('business_name', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('first_name', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('last_name', 'LIKE', '%'.$searchWord.'%');
+            });
         }
+        $calls_cnt = $call_list_q->count();
+        $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
 
-    })->get();*/
-        $call_list = \DB::table( 'report_missed_calls' )
-            ->where('time_start', '>=', $dateFrom)
-            ->where('time_start', '<=', $dateTo)->orderBy( $sortField, $sortBy )->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE)
-            ->get();
-        /*if($searchWord){
-            foreach(['contact', 'first_name', 'business_name', 'last_name', 'phone'] as $field){
-                $call_list->orWhere($field, 'LIKE', '%'.$searchWord.'%');
-            }
-        }*/
+        $call_list = $call_list_q->get();
 
-        $calls_cnt   = \DB::table( 'report_missed_calls' )->count();
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
 
         return [
