@@ -19,6 +19,7 @@ class Auth extends Controller
         $out = [
             'error' => true,
             'message'=>"Please enter correct login and password."
+            // 'message'=>"Please enter to system."
         ];
         return json_encode($out);
     }

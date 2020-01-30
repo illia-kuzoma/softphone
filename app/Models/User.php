@@ -17,6 +17,7 @@ class User extends Model
         $getUserByEmail = \DB::table('users')->where('email', $email)->first();
         $data = [
             'uid' => $getUserByEmail->id,
+            'token' => $getUserByEmail->token,
             'photo_url' => $getUserByEmail->photo,
             'first_name' => $getUserByEmail->first_name,
             'last_name' => $getUserByEmail->last_name,
