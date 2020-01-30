@@ -46,6 +46,7 @@ class ReportMissed extends Controller
         #echo $dateStart . " " . $period;exit;
 
         $out = [
+            'diagrama' => $missedCalls->getDiagramList($dateStart, $period),
             'calls' => $missedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
         ];
         return json_encode($out);
