@@ -117,17 +117,17 @@ class User extends Model
                 'role'       => $userData['role'],
                 'token'      => $userData['token'],
                 'photo'      => $userData['photo'],
-                'date_login' => strtotime( $userData['date_login'] ),
+                'date_login' => $userData['date_login'],
             ),
             array(
-                'email'      => 'required|email|unique|max:32',
+                'email'      => 'email|max:32',
                 'first_name' => 'max:20',
                 'last_name'  => 'max:20',
-                'password'   => 'required|min:6|max:32',
+                'password'   => 'min:6|max:32',
                 'role'       => 'min:3',
                 'token'      => 'max:256',
-                'photo'      => 'mimes:jpeg,bmp,png',
-                'date_login' => 'date'
+                'photo'      => 'max:256',
+                'date_login' => 'date_format:Y-m-d H:i:s'
             )
         );
 
@@ -140,19 +140,19 @@ class User extends Model
      */
     public function insertSingleUserData($singleUserData): void
     {
-        if ( $this->validateBeforeInsert($singleUserData) ) {
+        if ( $this->validateBeforeInsert( $singleUserData ) ) {
             DB::table( 'users' )->insert(
                 [
                     'email'      => $singleUserData['email'],
                     'first_name' => $singleUserData['first_name'],
                     'last_name'  => $singleUserData['last_name'],
-                    'password'   => password_hash( $singleUserData['password'], PASSWORD_DEFAULT ),
+                    'password'   => $singleUserData['password'],
                     'role'       => $singleUserData['role'],
                     'token'      => $singleUserData['token'],
                     'photo'      => $singleUserData['photo'],
                     'date_login' => $singleUserData['date_login'],
-                    'created_at' => time(),
-                    'updated_at' => time(),
+                    'created_at' => date( 'Y-m-d H:i:s'),
+                    'updated_at' => date( 'Y-m-d H:i:s'),
                 ]
             );
         }

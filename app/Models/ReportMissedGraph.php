@@ -94,7 +94,7 @@ class ReportMissedGraph extends ReportMissed
                 'count'      => $callDataGraph['count'],
                 'order'      => $callDataGraph['order'],
                 'user_id'    => $callDataGraph['user_id'],
-                'day'        => strtotime( $callDataGraph['day'] )
+                'day'        => $callDataGraph['day']
             ),
             array(
                 'first_name' => 'max:20',
@@ -102,7 +102,7 @@ class ReportMissedGraph extends ReportMissed
                 'count'      => 'integer',
                 'order'      => 'integer',
                 'user_id'    => 'required|integer',
-                'day'        => 'date'
+                'day'        => 'date_format:Y-m-d H:i:s'
             )
         );
 
@@ -124,8 +124,8 @@ class ReportMissedGraph extends ReportMissed
                     'order'      => $singleCallDataGraph['order'],
                     'user_id'    => $singleCallDataGraph['user_id'],
                     'day'        => $singleCallDataGraph['day'],
-                    'created_at' => time(),
-                    'updated_at' => time(),
+                    'created_at' => date( 'Y-m-d H:i:s' ),
+                    'updated_at' => date( 'Y-m-d H:i:s' ),
                 ]
             );
         }

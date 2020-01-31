@@ -155,11 +155,11 @@ class ReportMissedCall extends ReportMissed
                 'contact'       => $callData['contact'],
                 'priority'      => $callData['priority'],
                 'phone'         => $callData['phone'],
-                'time_start'    => strtotime( $callData['time_start'] ),
+                'time_start'    => $callData['time_start'],
                 'user_id'       => $callData['user_id']
             ),
             array(
-                'id'            => 'required|unique|max:128',
+                'id'            => 'max:128',
                 'type'          => 'min:3',
                 'first_name'    => 'max:20',
                 'last_name'     => 'max:20',
@@ -167,7 +167,7 @@ class ReportMissedCall extends ReportMissed
                 'contact'       => 'max:200',
                 'priority'      => 'min:3',
                 'phone'         => 'max:13',
-                'time_start'    => 'date',
+                'time_start'    => 'date_format:Y-m-d H:i:s',
                 'user_id'       => 'required|integer'
             )
         );
@@ -194,8 +194,8 @@ class ReportMissedCall extends ReportMissed
                     'phone'         => $singleCallData['phone'],
                     'time_start'    => $singleCallData['time_start'],
                     'user_id'       => $singleCallData['user_id'],
-                    'created_at' => time(),
-                    'updated_at' => time(),
+                    'created_at'    => date( 'Y-m-d H:i:s' ),
+                    'updated_at'    => date( 'Y-m-d H:i:s' ),
                 ]
             );
         }
