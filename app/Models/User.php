@@ -28,12 +28,12 @@ class User extends Model
     }
 
     /**
-     * @param $user
+     * @param $email
      * @return Model|\Illuminate\Database\Query\Builder|object|null
      */
-    public function getData($user)
+    public function getData($email)
     {
-        $getUserByEmail = \DB::table( 'users' )->where( 'email', $email = 'support@wellnessliving.com' )->first();
+        $getUserByEmail = \DB::table( 'users' )->where( 'email', $email  )->first();
         $this->user     = $getUserByEmail;
     }
 
