@@ -153,25 +153,28 @@ class ReportMissedCall extends ReportMissed
                 'last_name'     => $callData['last_name'],
                 'business_name' => $callData['business_name'],
                 'contact'       => $callData['contact'],
-                'priority'      => $callData['priority'],
+                'priority'      => $callData['priority']?$callData['priority']:'low',
                 'phone'         => $callData['phone'],
                 'time_start'    => $callData['time_start'],
                 'user_id'       => $callData['user_id']
             ],
             [
-                'id'            => 'required|string|unique:report_missed_calls|max:128',
+                'id'            => 'max:128', // required|string|unique:report_missed_calls|
                 'type'          => 'required|min:3',
                 'first_name'    => 'required|max:20',
                 'last_name'     => 'required|max:20',
-                'business_name' => 'required|max:200',
+                'business_name' => 'max:200',
                 'contact'       => 'required|max:200',
                 'priority'      => 'required|min:3',
-                'phone'         => 'required|max:13',
+                'phone'         => 'max:20',
                 'time_start'    => 'date_format:Y-m-d H:i:s',
                 'user_id'       => 'required|integer'
             ]
         );
-
+        if($validator->fails()){
+            print_r($validator->errors());
+            echo $callData['phone'];
+        }
         return ! $validator->fails();
     }
 
@@ -181,21 +184,24 @@ class ReportMissedCall extends ReportMissed
      */
     public function insertSingleCallData($singleCallData): void
     {
+        $singleCallData['phone'] = $singleCallData['phone']?substr($singleCallData['phone'],0,19):'---';
+        $singleCallData['business_name'] = $singleCallData['business_name']??'-';
+        $singleCallData['time_start'] = date(self::DATE_TIME_FORMAT, strtotime($singleCallData['time_start']));
         if ( $this->validateBeforeInsert($singleCallData) ) {
-            DB::table( 'report_missed_calls' )->insert(
+            $res = \DB::table( 'report_missed_calls' )->updateOrInsert(['id'            => $singleCallData['id']],
                 [
                     'id'            => $singleCallData['id'],
-                    'type'          => $singleCallData['type'],
+                    'type'          => strtolower($singleCallData['type']),
                     'first_name'    => $singleCallData['first_name'],
                     'last_name'     => $singleCallData['last_name'],
                     'business_name' => $singleCallData['business_name'],
                     'contact'       => $singleCallData['contact'],
-                    'priority'      => $singleCallData['priority'],
+                    'priority'      => $singleCallData['priority']??self::PRIORITY_LOW,
                     'phone'         => $singleCallData['phone'],
                     'time_start'    => $singleCallData['time_start'],
                     'user_id'       => $singleCallData['user_id'],
-                    'created_at'    => date( 'Y-m-d H:i:s' ),
-                    'updated_at'    => date( 'Y-m-d H:i:s' ),
+                    'created_at'    => date( self::DATE_TIME_FORMAT ),
+                    'updated_at'    => date( self::DATE_TIME_FORMAT ),
                 ]
             );
         }
@@ -210,5 +216,15 @@ class ReportMissedCall extends ReportMissed
         foreach ($multipleCallData as $singleCallData) {
             $this->insertSingleCallData($singleCallData);
         }
+
+        $results = \DB::select(
+            'select report_missed_calls.first_name, report_missed_calls.last_name, report_missed_calls.user_id, count(report_missed_calls.id) as count,  DATE_FORMAT((report_missed_calls.time_start),"%Y-%m-%d") as day from report_missed_calls GROUP BY report_missed_calls.first_name, report_missed_calls.last_name,  DATE_FORMAT(report_missed_calls.time_start,"%Y %M %d")',
+            [],
+            true
+        );
+
+        $missedCalls = new ReportMissedGraph();
+        $missedCalls->insert($results);
+
     }
 }

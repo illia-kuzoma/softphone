@@ -15,13 +15,13 @@ class CreateReportMissedCallsTable extends Migration
     {
         Schema::create('report_missed_calls', function (Blueprint $table) {
             $table->string('id', 128)->unique();
-            $table->enum('type', ['call', 'team_lead_call', 'user_call']);
+            $table->string('type', 30);
             $table->string('first_name', 20);
             $table->string('last_name', 20);
             $table->string('business_name', 200);
             $table->string('contact', 200);
-            $table->enum('priority', ['low', 'medium', 'high']);
-            $table->string('phone', 13);
+            $table->string('priority', 15);
+            $table->string('phone', 20);
             $table->dateTime('time_start')->index();
             $table->BigInteger('user_id');
             $table->timestamps();
