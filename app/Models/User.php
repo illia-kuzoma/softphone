@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
@@ -109,7 +110,7 @@ class User extends Model
     public function validateBeforeInsert( $userData ): bool
     {
         $validator = Validator::make(
-            array(
+            [
                 'email'      => $userData['email'],
                 'first_name' => $userData['first_name'],
                 'last_name'  => $userData['last_name'],
@@ -118,17 +119,17 @@ class User extends Model
                 'token'      => $userData['token'],
                 'photo'      => $userData['photo'],
                 'date_login' => $userData['date_login'],
-            ),
-            array(
-                'email'      => 'email|max:32',
-                'first_name' => 'max:20',
-                'last_name'  => 'max:20',
-                'password'   => 'min:6|max:32',
-                'role'       => 'min:3',
-                'token'      => 'max:256',
+            ],
+            [
+                'email'      => 'required|email|unique:users',
+                'first_name' => 'required|max:20',
+                'last_name'  => 'required|max:20',
+                'password'   => 'required|min:6|max:32',
+                'role'       => 'required|min:3',
+                'token'      => 'required|max:256',
                 'photo'      => 'max:256',
                 'date_login' => 'date_format:Y-m-d H:i:s'
-            )
+            ]
         );
 
         return ! $validator->fails();
@@ -146,6 +147,7 @@ class User extends Model
                     'email'      => $singleUserData['email'],
                     'first_name' => $singleUserData['first_name'],
                     'last_name'  => $singleUserData['last_name'],
+//                    'password'   => Hash::make($singleUserData['password']),
                     'password'   => $singleUserData['password'],
                     'role'       => $singleUserData['role'],
                     'token'      => $singleUserData['token'],

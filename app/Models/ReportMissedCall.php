@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-
+use DB;
 use Validator;
 
 class ReportMissedCall extends ReportMissed
@@ -146,7 +146,7 @@ class ReportMissedCall extends ReportMissed
     public function validateBeforeInsert( $callData ): bool
     {
         $validator = Validator::make(
-            array(
+            [
                 'id'            => $callData['id'],
                 'type'          => $callData['type'],
                 'first_name'    => $callData['first_name'],
@@ -157,19 +157,19 @@ class ReportMissedCall extends ReportMissed
                 'phone'         => $callData['phone'],
                 'time_start'    => $callData['time_start'],
                 'user_id'       => $callData['user_id']
-            ),
-            array(
-                'id'            => 'max:128',
-                'type'          => 'min:3',
-                'first_name'    => 'max:20',
-                'last_name'     => 'max:20',
-                'business_name' => 'max:200',
-                'contact'       => 'max:200',
-                'priority'      => 'min:3',
-                'phone'         => 'max:13',
+            ],
+            [
+                'id'            => 'required|string|unique:report_missed_calls|max:128',
+                'type'          => 'required|min:3',
+                'first_name'    => 'required|max:20',
+                'last_name'     => 'required|max:20',
+                'business_name' => 'required|max:200',
+                'contact'       => 'required|max:200',
+                'priority'      => 'required|min:3',
+                'phone'         => 'required|max:13',
                 'time_start'    => 'date_format:Y-m-d H:i:s',
                 'user_id'       => 'required|integer'
-            )
+            ]
         );
 
         return ! $validator->fails();

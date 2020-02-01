@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\ReportMissedCall;
 use App\Models\ReportMissedGraph;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class ReportMissed extends Controller
 {

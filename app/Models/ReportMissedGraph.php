@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Validator;
 
 class ReportMissedGraph extends ReportMissed
@@ -88,22 +89,22 @@ class ReportMissedGraph extends ReportMissed
     public function validateBeforeInsert( $callDataGraph ): bool
     {
         $validator = Validator::make(
-            array(
+            [
                 'first_name' => $callDataGraph['first_name'],
                 'last_name'  => $callDataGraph['last_name'],
                 'count'      => $callDataGraph['count'],
                 'order'      => $callDataGraph['order'],
                 'user_id'    => $callDataGraph['user_id'],
                 'day'        => $callDataGraph['day']
-            ),
-            array(
-                'first_name' => 'max:20',
-                'last_name'  => 'max:20',
+            ],
+            [
+                'first_name' => 'required|max:20',
+                'last_name'  => 'required|max:20',
                 'count'      => 'integer',
                 'order'      => 'integer',
                 'user_id'    => 'required|integer',
                 'day'        => 'date_format:Y-m-d H:i:s'
-            )
+            ]
         );
 
         return ! $validator->fails();
