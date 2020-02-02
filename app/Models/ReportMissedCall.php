@@ -217,14 +217,41 @@ class ReportMissedCall extends ReportMissed
             $this->insertSingleCallData($singleCallData);
         }
 
-        $results = \DB::select(
-            'select report_missed_calls.first_name, report_missed_calls.last_name, report_missed_calls.user_id, count(report_missed_calls.id) as count,  DATE_FORMAT((report_missed_calls.time_start),"%Y-%m-%d") as day from report_missed_calls GROUP BY report_missed_calls.first_name, report_missed_calls.last_name,  DATE_FORMAT(report_missed_calls.time_start,"%Y %M %d")',
-            [],
-            true
-        );
 
-        $missedCalls = new ReportMissedGraph();
-        $missedCalls->insert($results);
+    }
 
+    public function maxTimeCreate()
+    {
+        return DB::table('report_missed_calls')->max('time_start');
+    }
+    public function maxRecordTimeCreate()
+    {
+        return DB::table('report_missed_calls')->max('created_at');
+    }
+
+    public function updateDB($a_records = [], $time_to_select = null)
+    {
+        if($a_records)
+        {
+            $this->insert($a_records);
+            $grouped_data_by_days = \DB::select(
+                'select report_missed_calls.first_name, report_missed_calls.last_name, 
+report_missed_calls.user_id, count(report_missed_calls.id) as count,  
+DATE_FORMAT((report_missed_calls.time_start),"%Y-%m-%d") as day from report_missed_calls 
+'.($time_to_select?' WHERE report_missed_calls.time_start >= "'.date(self::DATE_TIME_FORMAT,strtotime($time_to_select)).'" ':'').'
+GROUP BY report_missed_calls.first_name, report_missed_calls.last_name, 
+ DATE_FORMAT(report_missed_calls.time_start,"%Y %M %d")',
+                [],
+                true
+            );
+            if(!empty($grouped_data_by_days))
+            {
+                $missedCalls = new ReportMissedGraph();
+                $missedCalls->insert($grouped_data_by_days);
+
+                $missedCalls = new User();
+                $missedCalls->insert($grouped_data_by_days);
+            }
+        }
     }
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReportMissedCall;
-use App\Models\ReportMissedGraph;
 use App\Models\User;
 
 class ReportMissed extends Controller
@@ -29,9 +28,11 @@ class ReportMissed extends Controller
             );
         }
 
+        $missedCalls->loadFromRemoteServer();
+
         $out = [
-            self::DIAGRAM_DATA => $missedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $missedCalls->getList(),
+            self::DIAGRAM_DATA => $missedCalls->getDiagramList($dateStart, $period),
             self::USER_DATA => $user->toArray(),
         ];
 
@@ -52,6 +53,7 @@ class ReportMissed extends Controller
     public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $missedCalls = new ReportMissedCall();
+        $missedCalls->loadFromRemoteServer();
         $out = [
             self::DIAGRAM_DATA => $missedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $missedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use DB;
 use Validator;
 
 class ReportMissedGraph extends ReportMissed
@@ -119,27 +118,30 @@ class ReportMissedGraph extends ReportMissed
      */
     public function insertSingleCallDataGraph($singleCallDataGraph): void
     {
-        if(!is_array($singleCallDataGraph)){
+        if($singleCallDataGraph && !is_array($singleCallDataGraph)){
             $singleCallDataGraph = json_decode(json_encode($singleCallDataGraph), true);
         }
-        $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;
-        if ( $this->validateBeforeInsert($singleCallDataGraph) ) {
-            \DB::table( 'report_missed_graphs' )->updateOrInsert(
-                [
-                    'day'        => $singleCallDataGraph['day'],
-                    'user_id'    => $singleCallDataGraph['user_id']
-                ],
-                [
-                    'first_name' => $singleCallDataGraph['first_name'],
-                    'last_name'  => $singleCallDataGraph['last_name'],
-                    'count'      => $singleCallDataGraph['count'],
-                    'order'      => $singleCallDataGraph['order'],
-                    'user_id'    => $singleCallDataGraph['user_id'],
-                    'day'        => $singleCallDataGraph['day'],
-                    'created_at' => date( self::DATE_TIME_FORMAT ),
-                    'updated_at' => date( self::DATE_TIME_FORMAT ),
-                ]
-            );
+        if(is_array($singleCallDataGraph))
+        {
+            $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;
+            if ( $this->validateBeforeInsert($singleCallDataGraph) ) {
+                \DB::table( 'report_missed_graphs' )->updateOrInsert(
+                    [
+                        'day'        => $singleCallDataGraph['day'],
+                        'user_id'    => $singleCallDataGraph['user_id']
+                    ],
+                    [
+                        'first_name' => $singleCallDataGraph['first_name'],
+                        'last_name'  => $singleCallDataGraph['last_name'],
+                        'count'      => $singleCallDataGraph['count'],
+                        'order'      => $singleCallDataGraph['order'],
+                        'user_id'    => $singleCallDataGraph['user_id'],
+                        'day'        => $singleCallDataGraph['day'],
+                        'created_at' => date( self::DATE_TIME_FORMAT ),
+                        'updated_at' => date( self::DATE_TIME_FORMAT ),
+                    ]
+                );
+            }
         }
     }
 

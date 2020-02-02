@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Zoho\Calls;
 use Illuminate\Database\Eloquent\Model;
 
 class ReportMissed extends Model
@@ -143,5 +144,21 @@ class ReportMissed extends Model
     {
         return $date == '-' || !$date ||
             (date(self::DATE_DAY_FORMAT, strtotime($date)) != $date);
+    }
+
+    public function loadFromRemoteServer()
+    {
+        // Делаю запросы к Зохо только если разница текущего врмеени и
+        // последней созданной в БД записи больше 1го часа.
+        // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
+        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600 || 1)
+        {
+            $max_time_start_call = $this->maxTimeCreate();
+            // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
+            $time_start_call = date("c", strtotime($max_time_start_call." -1 day"));
+            $zoho_calls = new Calls();
+            $activities_list = $zoho_calls->getActivities($time_start_call, false);
+            $this->updateDB($activities_list, $time_start_call);
+        }
     }
 }
