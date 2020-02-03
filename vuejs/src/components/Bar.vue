@@ -6,22 +6,26 @@ export default {
   props: ["chartObject"],
   data: () => ({
     gradient: null,
+    clickedGradient: null,
     type: "horizontalBar",
     chartdata: {
       labels: [],
       datasets: [
         {
           label: "MISSED CALLS",
-          data: []
+          data: [],
+          backgroundColor: [],
         }
       ],
-      chartObject: null
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
         display: false
+      },
+      animation: {
+        duration: 0
       },
       scales: {
         yAxes: [
@@ -33,8 +37,8 @@ export default {
             ticks: {
               beginAtZero: true,
               min: 0,
-              precision: 0,
-            },
+              precision: 0
+            }
           }
         ],
         xAxes: [
@@ -45,58 +49,66 @@ export default {
           }
         ]
       }
-      // events: ['click'],
-      // maintainAspectRatio: true,
-      // onClick: function(evt) {
-      //     console.log(evt);
-      // }
-      // onClick: function(event){
-      //   console.log(event)
-      // }
     }
   }),
   methods: {
     setGistData(event) {
       let self = this;
-      this.chartdata.labels = [];
-      this.chartdata.datasets[0].data = [];
-
-      this.gradient = this.$refs.canvas
+      let gistData = event;
+      let colorMain = this.$refs.canvas
         .getContext("2d")
         .createLinearGradient(0, 0, 0, 450);
-      this.gradient.addColorStop(0, "#727cf5");
-      this.gradient.addColorStop(1, "#9075da");
+      colorMain.addColorStop(0, "#727cf5");
+      colorMain.addColorStop(1, "#9075da");
 
-      var gistData = event;
+      let colorSelected = this.$refs.canvas
+        .getContext("2d")
+        .createLinearGradient(0, 0, 0, 450);
+      colorSelected.addColorStop(0, "#6421A7");
+      colorSelected.addColorStop(1, "#6421A7");
+      
+      this.backgroundColor = [];
+      this.chartdata.labels = [];
+      this.chartdata.datasets[0].data = [];
 
       for (var key in gistData) {
         this.chartdata.labels.push(key);
         this.chartdata.datasets[0].data.push(gistData[key]);
+        this.chartdata.datasets[0]["backgroundColor"].push(colorMain);
       }
 
-      this.chartdata.datasets[0]["backgroundColor"] = this.gradient;
-
-      this.options["onClick"] = function(evt, item) {
-
-        if (item[0] && item[0]["_index"]) {
-          let index = item[0]["_index"];
-          let name = item[0]["_chart"].data.labels[index];
-          let value = item[0]["_chart"].data.datasets[0].data[index];
+      this.options["onClick"] = function(evt, elems) {
+        if (elems[0]) {
+          let index = elems[0]["_index"];
+          let name = elems[0]["_chart"].data.labels[index];
+          let value = elems[0]["_chart"].data.datasets[0].data[index];
 
           let clicked = {
             index: index,
             name: name,
             value: value
           };
+
           self.cellClickEvent(clicked);
+          var backgroundColors = self.chartdata.datasets[0]["backgroundColor"];
+
+          if (backgroundColors[index] === colorSelected) {
+            backgroundColors[index] = colorMain;
+          } else {
+            for (var i = 0; i < backgroundColors.length; i++) {
+              backgroundColors[i] = colorMain;
+            }
+            backgroundColors[index] = colorSelected;
+          }
+          // self.renderChart(self.chartdata, self.options);
         }
+        self.renderChart(self.chartdata, self.options);
       };
       this.renderChart(this.chartdata, this.options);
     },
     cellClickEvent(element) {
       this.$emit("clicked", element);
-    },
-
+    }
   },
   watch: {
     chartObject(newValue) {

@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="chart-container" v-if="chartData">
+        <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
           <h2>MISSED CALLS</h2>
           <line-chart
             id="chartId"
@@ -77,21 +77,12 @@
             class="chart">
           </line-chart>
         </div>
-        
-<!--  <div style='border:solid 1px black'>
-  <p v-if='selectedAgent'>selectedAgent id : <span>{{selectedAgent}}</span></p>
-  <p v-if='options'>table options : <span>{{options}}</span></p>
-  <p v-if='searchText'>searchText : <span>{{searchText}}</span></p>
-</div> -->
 
+        <div class="table-container" v-if='Object.keys(chartData).length === 0'>
+          <h1>No Chart Data For This Period</h1>
+        </div>
 
-<!-- <div>
-  <transition name="fade">
-    <p v-if="selectedAgent">Selected Agent : <span>{{selectedAgent.full_name}}</span></p>
-  </transition>
-</div> -->
-
-        <div class="table-container" v-if='tableCallsData'>
+        <div class="table-container" v-if='tableCallsData.length>0'>
           <v-data-table
             :headers="tableCallsHeaders"
             :items="tableCallsData"
@@ -147,6 +138,11 @@
             @input="changePage"
           ></v-pagination>
         </div>
+
+        <div class="table-container" v-if='tableCallsData.length==0'>
+          <h1>No Table Data For This Period</h1>
+        </div>
+
       </div>
     </div>
 </template>
@@ -170,8 +166,8 @@
       firstLoad:true,
       selectedDate:null,
       dateType:'date',
-      chartData:null,
-      tableCallsData:null,
+      chartData:[],
+      tableCallsData:[],
       serverChartData:null,
       options: {},
       tableCallsHeaders: [
@@ -198,10 +194,6 @@
             self.setChartData(response.data.diagrama)
             self.setTableData(response.data.calls);
             self.datePickerSetToday()
-            // console.log('1getChartData',response)
-            // self.setDate('today');
-            // self.selectedDate = response.data.calls
-            // self.getDataByDate(this.selectedDate,'day')
           })
           .catch(function (error) {
             console.log(error)
@@ -232,7 +224,7 @@
       },
       setTableData(data){
         this.tableCallsData=data.data;
-        this.tablePage = data.page;
+        this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
       },
       getDate(timeStamp){
@@ -258,7 +250,7 @@
               MM = '0' + MM;
             } 
 
-            today = YYYY+ '-' + MM+ '-' + DD 
+            today = YYYY + '-' + MM + '-' + DD;
             this.selectedDate = today;
             this.getDataByDate(this.selectedDate,'day')
             this.period='day';
@@ -301,7 +293,6 @@
 
         today = YYYY+ '-' + MM+ '-' + DD 
         this.selectedDate = today;
-        // this.getDataByDate(this.selectedDate,'day')
         this.period='day';
       },
       setActive(ev){
@@ -315,7 +306,7 @@
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            // console.log('3getDataByDate',response)
+            self.setChartData(response.data.diagrama)
           })
           .catch(function (error) {
             console.log(error)
@@ -326,21 +317,15 @@
         this.getDataByOptions();
       },
       getDataFromTableRow(){
-        // console.log('table elem',element)
-        // console.log('options',this.options)
-        // console.log('searchText',this.searchText)
         this.getDataByOptions()
       },
       getDataFromTableHead(head){
         console.log('table head',head)
       },
       getAgentFromChart(element){
-        // console.warn(1, this.selectedAgentUid)
-
         if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
           this.selectedAgent = null;
           this.selectedAgentUid = null;
-          // console.warn(2,'clean', this.selectedAgentUid)
           this.getDataByOptions();
           return
         }
@@ -348,14 +333,12 @@
         if( element ){
           this.selectedAgent = this.serverChartData[element['index']];
           this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
-          // console.warn(3,'new', this.selectedAgentUid)
           this.getDataByOptions();
           return
         } 
       },
       getDataByOptions(){
         let self = this; 
-        // console.warn(0,'request 0  this.selectedAgentUid', this.selectedAgentUid)
 
         if(this.firstLoad){
           this.firstLoad = false
@@ -367,8 +350,8 @@
         let uid = this.selectedAgentUid || '-';
         let searchWord = this.searchText || '-';
         let page = this.options.page || '-';
-
         var sortField = this.options.sortBy[0] || '-';
+        
         if(this.options.sortBy[0] === 'user_data'){
           sortField = 'first_name'
         }
@@ -381,19 +364,12 @@
 
         var sortBy = this.options.sortDesc[0] || '-';
         if(this.options.sortDesc[0] === false){
-          // sortBy = 'desс'
           sortBy = 'ask'
         }
         if(this.options.sortDesc[0] === true){
-          // sortBy = 'ask'
           sortBy = 'desс'
         }
 
-        // console.warn(0,'request 1 this.selectedAgentUid', this.selectedAgentUid)
-        // console.warn(0,'request 1 uid', uid)
-
-        // console.log('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + uid + '/' + searchWord + '/' + sortField + '/' + sortBy + '/' + page)
-    
         HttpService.methods.get(
           'http://callcentr.wellnessliving.com/report/missed/call/'+
            startDate + '/' + 
@@ -407,17 +383,10 @@
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
-            // console.log('handle getDataByOptions',response)
-            if (response.data.diagrama) {
-                self.setChartData(response.data.diagrama)
-            }
-            // console.log('agent id after response self',self.selectedAgentUid)
           })
           .catch(function (error) {
             console.log(error)
           })
-            // console.log('agent id after response this',this.selectedAgentUid)
-
       },
       changePage(page){
         this.options.page = page
@@ -429,8 +398,8 @@
     },
     created: function(){
       this.getChartData();
-      // this.getTableData();
-      // this.setDate('today');
+      this.getTableData();
+      this.setDate('today');
     },
     mounted () {
     },
@@ -596,12 +565,6 @@
             border-color: #6C757D !important;
         }
       }
-      //.asc{
-      //  content:'a'
-      //}
-      //.desc{
-      //  content:'d'
-      //}
     }
     .fade-enter-active {
       transition: opacity 1s
@@ -611,8 +574,5 @@
     .fade-leave-active {
       opacity: 0
     }
-
-
-
   }
 </style>
