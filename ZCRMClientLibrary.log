@@ -1,2 +1,28 @@
 2020-02-02 10:52:18 INFO: Access Token has expired. Hence refreshing.
 2020-02-02 12:19:53 INFO: Access Token has expired. Hence refreshing.
+2020-02-03 05:56:26 INFO: Access Token has expired. Hence refreshing.
+2020-02-03 06:00:54 ERROR: zcrmsdk\crm\exception\ZCRMException Caused by:'INVALID_DATA-The given id seems to be invalid.' in D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\response\APIResponse.php(88)
+Trace::#0 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\response\CommonAPIResponse.php(76): zcrmsdk\crm\api\response\APIResponse->handleForFaultyResponses()
+#1 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\response\CommonAPIResponse.php(67): zcrmsdk\crm\api\response\CommonAPIResponse->processResponse()
+#2 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\response\APIResponse.php(34): zcrmsdk\crm\api\response\CommonAPIResponse->__construct('HTTP/1.1 204 \r\n...', 204, NULL)
+#3 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\APIRequest.php(122): zcrmsdk\crm\api\response\APIResponse->__construct('HTTP/1.1 204 \r\n...', 204)
+#4 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\api\handler\EntityAPIHandler.php(38): zcrmsdk\crm\api\APIRequest->getAPIResponse()
+#5 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm\crud\ZCRMModule.php(1070): zcrmsdk\crm\api\handler\EntityAPIHandler->getRecord()
+#6 D:\OpenServer\OSPanel\domains\softphone\app\Console\Commands\ZohoRequest.php(97): zcrmsdk\crm\crud\ZCRMModule->getRecord('160213300011599...')
+#7 D:\OpenServer\OSPanel\domains\softphone\app\Console\Commands\ZohoRequest.php(50): App\Console\Commands\ZohoRequest->getRecord()
+#8 [internal function]: App\Console\Commands\ZohoRequest->handle()
+#9 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php(32): call_user_func_array(Array, Array)
+#10 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Container\Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#11 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#12 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#13 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Container\Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#14 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Console\Command.php(201): Illuminate\Container\Container->call(Array)
+#15 D:\OpenServer\OSPanel\domains\softphone\vendor\symfony\console\Command\Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Console\Command.php(188): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#17 D:\OpenServer\OSPanel\domains\softphone\vendor\symfony\console\Application.php(1011): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 D:\OpenServer\OSPanel\domains\softphone\vendor\symfony\console\Application.php(272): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoRequest), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 D:\OpenServer\OSPanel\domains\softphone\vendor\symfony\console\Application.php(148): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Console\Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 D:\OpenServer\OSPanel\domains\softphone\artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#23 {main}
