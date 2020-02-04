@@ -41,15 +41,17 @@ class Calls
                 $response = $moduleIns->getRecords($param_map,$header_map); // to get the records($param_map - parameter map,$header_map - header map
             }
             catch(\Exception $e){
-                #echo $e->getMessage()."  call break";
+                #echo $e->getMessage()."  call break";exit;
                 break;
             }
             $param_map['page']++;
             $records = $response->getData(); // To get response data
+
             if(!$records)
             {
                 break;
             }
+
             try {
                 foreach ($records as $record)
                 {

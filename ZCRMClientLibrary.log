@@ -26,3 +26,4 @@ Trace::#0 D:\OpenServer\OSPanel\domains\softphone\vendor\zohocrm\php-sdk\src\crm
 #21 D:\OpenServer\OSPanel\domains\softphone\vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #22 D:\OpenServer\OSPanel\domains\softphone\artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #23 {main}
+2020-02-04 08:31:02 INFO: Access Token has expired. Hence refreshing.

@@ -6,20 +6,34 @@ use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 class Config
 {
   public const zoho_data_relative_path = '/storage/zoho/';
-  public const token_persistence_path = "token_storage";
+    public const token_persistence_path = "token_storage";
+    public const logs_persistence_path = "logs";
   public $token_file_name = '';
 
-  protected function getTokenPath()
-  {
-    $dir = base_path() . self::zoho_data_relative_path . self::token_persistence_path . '/';
-    if(!is_dir($dir))
+
+    protected function getPathToFileLogs($sub_path = '')
     {
-      Log::put(sprintf("Mkdir %s", $dir));
-      mkdir($dir,0777, true);
-      chmod($dir,0777);
+        $dir = base_path() . self::zoho_data_relative_path . $sub_path . '/' ;
+        if(!is_dir($dir))
+        {
+            Log::put(sprintf("Mkdir %s", $dir));
+            mkdir($dir,0777, true);
+            chmod($dir,0777);
+        }
+        return $dir;
     }
-    return $dir;
-  }
+
+    protected function getTokenPath()
+    {
+        $dir = $this->getPathToFileLogs(self::token_persistence_path);
+        return $dir;
+    }
+
+    protected function getZohoLogPath()
+    {
+        $dir = $this->getPathToFileLogs(self::logs_persistence_path);
+        return $dir;
+    }
 
   public function getPathToToken($name)
   {
@@ -35,9 +49,9 @@ class Config
       #"currentUserEmail"=>self::userEmail,
       "sandbox" => false, ///<<<<<<<<<< TODO false
       #'apiBaseUrl'=>'www.zohoapis.eu',
-      "token_persistence_path" => $this->getTokenPath()
+      "token_persistence_path" => $this->getTokenPath(),
+      'application_log_file_path' => $this->getZohoLogPath() . "ZCRMClientLibrary.log", #optional, absolute path of log file
     ], $configuration);
-
     ZCRMRestClient::initialize($configuration);
   }
 }
