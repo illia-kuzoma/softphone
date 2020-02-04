@@ -27,6 +27,9 @@ class Auth extends Controller
 
     public function getTest(Request $request)
     {
+        echo $_SERVER['HTTP_HOST'];
+        // callcentr.wellnessliving.com prod
+        //
         print_r($_SERVER);exit();
     }
     /**

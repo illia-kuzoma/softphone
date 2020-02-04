@@ -25,7 +25,7 @@ class Config
 
     protected function getTokenPath()
     {
-        $dir = $this->getPathToFileLogs(self::token_persistence_path);
+        $dir = $this->getPathToFileLogs(self::token_persistence_path /*. $_SERVER['HTTP_HOST']*/);
         return $dir;
     }
 

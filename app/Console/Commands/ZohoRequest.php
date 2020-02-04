@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Zoho\Auth;
 use App\Zoho\Config;
 use Illuminate\Console\Command;
+use zcrmsdk\crm\crud\ZCRMModule;
 use zcrmsdk\crm\crud\ZCRMRecord;
 use zcrmsdk\crm\exception\ZCRMException;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
@@ -39,18 +40,6 @@ class ZohoRequest extends Command
         ]);
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        #$this->getAllModules();
-        #$this->getRecord();
-        #$this->getAllAdminUsers();
-        $this->getAllProfiles();
-    }
     public function getAllModules(){
         $rest=ZCRMRestClient::getInstance();//to get the rest client
         $modules=$rest->getAllModules()->getData();//to get the the modules in form of ZCRMModule instances array
@@ -318,6 +307,27 @@ class ZohoRequest extends Command
                     }
                 }
             }
+            echo "___________\n"."\n";
         }
+    }
+    public function asd(){
+        $zcrmModuleIns = ZCRMModule::getInstance("Contacts");
+        $bulkAPIResponse=$zcrmModuleIns->getRecords();
+        $recordsArray = $bulkAPIResponse->getData(); // $r
+        print_r($recordsArray); echo "\n\n";
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        #$this->getAllModules();
+        #$this->getRecord();
+        #$this->getAllAdminUsers();
+        #$this->getAllProfiles();
+        $this->asd();
     }
 }

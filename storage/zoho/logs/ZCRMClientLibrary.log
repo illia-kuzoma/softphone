@@ -118,3 +118,4 @@ Stack trace:
 #54 /var/www/softphone/public/index.php(55): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #55 {main}
 2020-02-04 09:51:27 INFO: Access Token has expired. Hence refreshing.
+2020-02-04 15:23:41 INFO: Access Token has expired. Hence refreshing.
