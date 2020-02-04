@@ -18,6 +18,8 @@ Route::get('/', function () {
 // Auth
 //Route::get('/auth', 'SoftPhone\Auth@auth');
 Route::get('/auth', 'SoftPhone\Auth@getAuth');
+Route::get('/test', 'SoftPhone\Auth@getTest');
+
 Route::post('/auth', 'SoftPhone\Auth@postAuth');
 Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
     return redirect(404);

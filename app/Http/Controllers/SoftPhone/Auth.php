@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
-use App\Models\ReportMissedCall;
-use App\Models\User;
 use App\Zoho\AuthByPassword;
 use Illuminate\Http\Request;
 
@@ -27,6 +25,10 @@ class Auth extends Controller
         return json_encode($out);
     }
 
+    public function getTest(Request $request)
+    {
+        print_r($_SERVER);exit();
+    }
     /**
      * Авторизация в система. Если успешна - редирект на получение данных по отчету.
      * Если не успешна - редирект на страницу ввода логина и пароля

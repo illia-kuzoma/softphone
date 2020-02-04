@@ -50,7 +50,7 @@ class Config
       "sandbox" => false, ///<<<<<<<<<< TODO false
       #'apiBaseUrl'=>'www.zohoapis.eu',
       "token_persistence_path" => $this->getTokenPath(),
-      'application_log_file_path' => $this->getZohoLogPath() . "ZCRMClientLibrary.log", #optional, absolute path of log file
+      'applicationLogFilePath' => $this->getZohoLogPath()/* . "ZCRMClientLibrary.log"*/, #optional, absolute path of log file
     ], $configuration);
     ZCRMRestClient::initialize($configuration);
   }

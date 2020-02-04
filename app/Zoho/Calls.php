@@ -41,7 +41,8 @@ class Calls
                 $response = $moduleIns->getRecords($param_map,$header_map); // to get the records($param_map - parameter map,$header_map - header map
             }
             catch(\Exception $e){
-                #echo $e->getMessage()."  call break";exit;
+               #echo $e->getMessage()."  call break";exit;
+                Log::put(sprintf("Error Message %s, Line %d.", $e->getMessage(), $e->getLine()));
                 break;
             }
             $param_map['page']++;
