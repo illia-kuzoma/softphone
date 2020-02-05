@@ -92,7 +92,8 @@
             :hide-default-footer="true"
             class="v-data-table elevation-1"
             fixed-header
-            @update:options="getDataFromTableRow"
+            @update:page="updatePage"
+            @update:sort-desc="updateSortDesc"
             >
               <template v-slot:item.user_data="{ item }">
                 <div class='user'>
@@ -187,46 +188,6 @@
       selectedAgentUid:null,
     }),
     methods: {
-      getChartData(){
-        let self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
-          .then(function (response) {
-            self.setChartData(response.data.diagrama)
-            self.setTableData(response.data.calls);
-            self.datePickerSetToday()
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      },
-      setChartData(data){
-        var obj = {};
-        this.serverChartData = data
-
-        for (var i = 0; i < data.length; i++) {
-          var name = data[i].full_name;
-          var count = data[i].calls_count;
-          obj[name] = count;
-        }
-
-        this.chartData = obj
-      },
-      getTableData(){
-        var self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
-          .then(function (response) {
-            let tableData = response.data.calls
-            self.setTableData(tableData);
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      },
-      setTableData(data){
-        this.tableCallsData=data.data;
-        this.tablePage = parseInt(data.page);
-        this.tablePageCount = data.pages_count;
-      },
       getDate(timeStamp){
         var utc = new Date(timeStamp * 1000)
         var date = moment(utc).format('ll'); 
@@ -234,6 +195,7 @@
         return time+" "+date
       },
       setDate(range){
+        this.searchText = '';
         switch(range) {
           case 'today':  
 
@@ -299,28 +261,9 @@
         document.querySelector('.color-dark').classList.remove('color-dark');
         ev.target.classList.add('color-dark');
       },
-      getDataByDate(startDate,period){
-        var self = this
-
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period)
-          .then(function (response) {
-            let tableData = response.data.calls
-            self.setTableData(tableData);
-            self.setChartData(response.data.diagrama)
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      },
-      search(searchText){
-        console.log(searchText);
+      search(){
+        console.log();
         this.getDataByOptions();
-      },
-      getDataFromTableRow(){
-        this.getDataByOptions()
-      },
-      getDataFromTableHead(head){
-        console.log('table head',head)
       },
       getAgentFromChart(element){
         if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
@@ -337,6 +280,31 @@
           return
         } 
       },
+      changePage(page){
+        this.options.page = page
+        this.getDataByOptions()
+      },
+      goOutTo(string){
+        console.log('authrize and goto',string)
+      },
+      updatePage(){
+        this.getDataByOptions()
+      },
+      updateSortDesc(){
+        this.getDataByOptions()
+      },
+      getChartData(){
+        let self = this;
+        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
+          .then(function (response) {
+            self.setChartData(response.data.diagrama)
+            self.setTableData(response.data.calls);
+            self.datePickerSetToday()
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      },
       getDataByOptions(){
         let self = this; 
 
@@ -351,7 +319,7 @@
         let searchWord = this.searchText || '-';
         let page = this.options.page || '-';
         var sortField = this.options.sortBy[0] || '-';
-        
+
         if(this.options.sortBy[0] === 'user_data'){
           sortField = 'first_name'
         }
@@ -364,10 +332,11 @@
 
         var sortBy = this.options.sortDesc[0] || '-';
         if(this.options.sortDesc[0] === false){
-          sortBy = 'ask'
+          sortBy = 'asc'
         }
+        
         if(this.options.sortDesc[0] === true){
-          sortBy = 'desс'
+          sortBy = 'desc'
         }
 
         HttpService.methods.get(
@@ -388,18 +357,49 @@
             console.log(error)
           })
       },
-      changePage(page){
-        this.options.page = page
-        this.getDataByOptions()
+      getDataByDate(startDate,period){
+        var self = this
+        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period)
+          .then(function (response) {
+            let tableData = response.data.calls
+            self.setTableData(tableData);
+            self.setChartData(response.data.diagrama)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
       },
-      goOutTo(string){
-        console.log('authrize and goto',string)
-      }
+      getTableData(){
+        var self = this;
+        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
+          .then(function (response) {
+            let tableData = response.data.calls
+            self.setTableData(tableData);
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      },
+      setChartData(data){
+        var obj = {};
+        this.serverChartData = data
+
+        for (var i = 0; i < data.length; i++) {
+          var name = data[i].full_name;
+          var count = data[i].calls_count;
+          obj[name] = count;
+        }
+
+        this.chartData = obj
+      },
+      setTableData(data){
+        this.tableCallsData=data.data;
+        this.tablePage = parseInt(data.page);
+        this.tablePageCount = data.pages_count;
+      },
     },
     created: function(){
       this.getChartData();
-      this.getTableData();
-      this.setDate('today');
     },
     mounted () {
     },
@@ -537,14 +537,14 @@
         th[aria-sort="ascending"]::after {
           opacity: 1;
           margin-left:5px;
-          content: "\2191"; // up arrow
+          content: "\2191";
         }
 
         th[aria-sort="descending"]::after,
         th[aria-sort="descending"]::after {
           opacity: 1;
           margin-left:5px;
-          content: "\2191"; // up arrow
+          content: "\2193";
         }
 
         thead tr th span{

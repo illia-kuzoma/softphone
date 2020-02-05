@@ -21,6 +21,7 @@ export default {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      // hover: {mode: null},
       legend: {
         display: false
       },
@@ -56,17 +57,17 @@ export default {
       let self = this;
       let gistData = event;
       let colorMain = this.$refs.canvas
-        .getContext("2d")
-        .createLinearGradient(0, 0, 0, 450);
+       .getContext("2d")
+       .createLinearGradient(0, 0, 0, 450);
       colorMain.addColorStop(0, "#727cf5");
-      colorMain.addColorStop(1, "#9075da");
+     colorMain.addColorStop(1, "#9075da");
 
-      let colorSelected = this.$refs.canvas
-        .getContext("2d")
-        .createLinearGradient(0, 0, 0, 450);
+     let colorSelected = this.$refs.canvas
+       .getContext("2d")
+       .createLinearGradient(0, 0, 0, 450);
       colorSelected.addColorStop(0, "#6421A7");
-      colorSelected.addColorStop(1, "#6421A7");
-      
+     colorSelected.addColorStop(1, "#6421A7");
+
       this.backgroundColor = [];
       this.chartdata.labels = [];
       this.chartdata.datasets[0].data = [];
