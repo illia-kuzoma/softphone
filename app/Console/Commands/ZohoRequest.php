@@ -328,6 +328,16 @@ class ZohoRequest extends Command
         #$this->getRecord();
         #$this->getAllAdminUsers();
         #$this->getAllProfiles();
-        $this->asd();
+        #$this->asd();
+        $this->getDepartments();
+    }
+
+
+    public function getDepartments()
+    {
+        $zcrmModuleIns = ZCRMModule::getInstance("departments");
+        $bulkAPIResponse=$zcrmModuleIns->getRecords();
+        $recordsArray = $bulkAPIResponse->getData(); // $r
+        print_r($recordsArray); echo "\n\n";
     }
 }
