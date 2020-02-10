@@ -41,8 +41,8 @@ class ReportMissedCall extends ReportMissed
         $call_list_q->orderBy( $sortField, $sortBy );
         if($uid)
         {
-            $call_list_q->when(request('user_id', $uid), function ($q, $uid) {
-                return $q->where('user_id', $uid);
+            $call_list_q->when(request($this->_getIdKey(), $uid), function ($q, $uid) {
+                return $q->where($this->_getIdKey(), $uid);
             });
         }
         if($searchWord)
@@ -69,6 +69,13 @@ class ReportMissedCall extends ReportMissed
         ];
     }
 
+    private function _getIdKey(){
+        return 'user_id';
+    }
+    private function _getIdVal($item){
+        return $item->first_name . $item->last_name;
+    }
+
     /**
      * Format Call List
      * @param $data
@@ -82,7 +89,7 @@ class ReportMissedCall extends ReportMissed
         if ( ! empty( $data ) ) {
             foreach ( $data as $item ) {
                 $result[] = [
-                    'uid'         => $item->user_id,
+                    'uid'         => $this->_getIdVal($item),//$item->user_id,
                     'business'    => [
                         'business_name' => $item->business_name,
                         'business_link' => "https://zoho.url.com", // new field in DB ???
