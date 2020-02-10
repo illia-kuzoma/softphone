@@ -312,7 +312,7 @@
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
-        // }  
+        // }
 
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
