@@ -94,7 +94,7 @@ class ReportMissedCall extends ReportMissed
                     'user_data'   => ( new User() )->getUserData( $item->user_id ),
                     'priority'    => $item->priority,
                     'phone'       => $item->phone,
-                    'time_create' => strtotime( $item->created_at ),
+                    'time_create' => strtotime( $item->time_start ),
                 ];
             }
         }
