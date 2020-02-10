@@ -69,13 +69,6 @@ class ReportMissedCall extends ReportMissed
         ];
     }
 
-    private function _getIdKey(){
-        return 'user_id';
-    }
-    private function _getIdVal($item){
-        return $item->first_name . $item->last_name;
-    }
-
     /**
      * Format Call List
      * @param $data
