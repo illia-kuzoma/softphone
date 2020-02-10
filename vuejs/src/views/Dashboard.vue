@@ -164,7 +164,7 @@
       LineChart,
     },
     data: () => ({
-      firstLoad:true,
+      // firstLoad:true,
       selectedDate:null,
       dateType:'date',
       chartData:[],
@@ -306,12 +306,13 @@
           })
       },
       getDataByOptions(){
+        
         let self = this; 
 
-        if(this.firstLoad){
-          this.firstLoad = false
-          return
-        }  
+        // if(this.firstLoad){
+        //   this.firstLoad = false
+        //   return
+        // }  
 
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
