@@ -21,10 +21,10 @@ class ReportMissed extends Model
     const PRIORITY_HIGH = 'high';
 
     protected function _getIdKey(){
-        return 'user_id';
+        return 'last_name'; // 'user_id'
     }
     protected function _getIdVal($item){
-        return $item->first_name . $item->last_name;
+        return $item->last_name; //
     }
 
     public function getPeriod($period)
