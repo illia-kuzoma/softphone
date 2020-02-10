@@ -20,6 +20,13 @@ class ReportMissed extends Model
     const PRIORITY_MEDIUM = 'medium';
     const PRIORITY_HIGH = 'high';
 
+    protected function _getIdKey(){
+        return 'last_name'; // 'user_id'
+    }
+    protected function _getIdVal($item){
+        return $item->last_name; //
+    }
+
     public function getPeriod($period)
     {
         if($this->checkPeriod($period))

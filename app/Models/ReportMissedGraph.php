@@ -42,7 +42,7 @@ class ReportMissedGraph extends ReportMissed
                 else
                 {
                     $result[$item->user_id] = [
-                        'uid' => $item->user_id,
+                        'uid' => $this->_getIdVal($item),
                         'first_name' => $item->first_name,
                         'last_name' => $item->last_name,
                         'calls_count'=> $item->count,
