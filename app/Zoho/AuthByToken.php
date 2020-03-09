@@ -6,8 +6,8 @@ use zcrmsdk\oauth\ZohoOAuth;
 
 class AuthByToken extends Auth
 {
-  private static $scopes = 'ZohoCRM.modules.ALL,ZohoCRM.users.ALL,ZohoCRM.org.ALL,ZohoCRM.settings.ALL';
-  private static $grantToken = '1000.b1d32d8167e5ce6e822eba87559ddba2.7c6265c5dbb57b91e067df8f3b04b140';
+  private static $scopes = 'ZohoCRM.modules.ALL,ZohoCRM.users.ALL,ZohoCRM.org.ALL,ZohoCRM.settings.ALL,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ';
+  private static $grantToken = '1000.3a4b523d7d4c150d4516f193d72e2cc1.25d6b295a69ab887944b9dbfb1985545';
   private static $refreshToken = '';
   public $token_file_name = '';
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Zoho;
 
+use zcrmsdk\crm\utility\ZCRMConfigUtil;
+
 class AuthByPassword extends Auth
 {
     public $token_file_name = "_token_by_pass.txt";
@@ -22,12 +24,12 @@ class AuthByPassword extends Auth
     {
         if(!$username){
             $username = self::userEmail;
-            $password = "\;'>?}9?=s=93Na";
-            $username = 'error';
+            $password = "$4O|j 2)(0i.T/S"; //"\;'>?}9?=s=93Na";
+            #$username = 'error';
         }
     }
 
-    public function getToken($username = null, $password = null, $new = false): ?string
+    public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoCRM/crmapi'): ?string
     {
         $this->recheckUserName($username, $password);
 
@@ -43,13 +45,17 @@ class AuthByPassword extends Auth
             chmod($token_path, 0777);
         }
 
-        $param = "SCOPE=ZohoCRM/crmapi&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
+
+
+        $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
+        echo $param."\n";
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
-
-        if(($result = curl_exec($ch)) === false){
+        $result = curl_exec($ch);
+        var_dump($result);
+        if(($result) === false){
 
             echo 'Ошибка curl: ' . curl_error($ch);
             throw new \Exception('Ошибка curl: ' . curl_error($ch), curl_errno());
@@ -76,6 +82,7 @@ class AuthByPassword extends Auth
     {
         $this->recheckUserName($username);
         $param = 'authtoken=' . $this->getToken() . '&scope=crmapi&Email=' . $username . '&fromIndex=1&toIndex=2';
+        echo $param;
         $ch = curl_init("https://crm.zoho.com/crm/private/xml/Leads/getMyRecords");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -90,21 +97,40 @@ class AuthByPassword extends Auth
 
     public function sequentialUnattendedCallsCount($username = null)
     {
-        $token = '1000.3d0a155402dbb59f776fd63adb1e67c0.a41ea557a6a8d7e402690098b2056f60s';
+         $token =  ZCRMConfigUtil::getAccessToken();
+        $scope = 'Desk.calls.READ';
+        #$token =  $this->getToken(null,null,false, $scope);
+        echo $token." !\n\n";
         $this->recheckUserName($username);
-        #$param = 'authtoken=' . $this->getToken() . '&scope=crmapi&Email=' . $username . '&fromIndex=1&toIndex=2';
-        #$param = ;
-        $ch = curl_init("https://desk.zoho.com/api/v1/sequentialUnattendedCalls/Count" . '?fromTime=2019-01-01T07:47:43.206Z&endTime=2020-01-23T07:47:43.206Z&from=1&limit=99');
+        $ch = curl_init("https://desk.zoho.com/api/v1/sequentialUnattendedCalls/Count" . '?fromTime=2019-01-01T07:47:43.206Z&endTime=2020-02-23T07:47:43.206Z&from=1&limit=99');
         curl_setopt($ch, CURLOPT_HTTPHEADER,[
-           // 'orgId:2389290',
+            'orgId:57033616',
             'Authorization:Zoho-oauthtoken ' . $token
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
-        echo $result;
+        echo $result ." !!\n\n";
         Log::put(sprintf("curl_exec %s", $result));
         curl_close($ch);
         return null;
     }
 
+    public function organizations($username = null)
+    {
+        $token =  ZCRMConfigUtil::getAccessToken();
+        $scope = 'Desk.calls.READ';
+        #$token =  $this->getToken(null,null,false, $scope);
+        echo $token." !\n\n";
+        $this->recheckUserName($username);
+        $ch = curl_init("https://desk.zoho.com/api/v1/organizations");
+        curl_setopt($ch, CURLOPT_HTTPHEADER,[
+            'Authorization:Zoho-oauthtoken ' . $token
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        echo $result ." !!\n\n";
+        Log::put(sprintf("curl_exec %s", $result));
+        curl_close($ch);
+        return null;
+    }
 }
