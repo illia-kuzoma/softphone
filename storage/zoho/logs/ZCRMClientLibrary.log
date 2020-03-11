@@ -226,3 +226,5 @@ Stack trace:
 #21 D:\OpenServer\OSPanel\domains\softphone\artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #22 {main}
 2020-03-09 21:13:25 INFO: Access Token has expired. Hence refreshing.
+2020-03-10 21:22:07 INFO: Access Token has expired. Hence refreshing.
+2020-03-11 06:22:52 INFO: Access Token has expired. Hence refreshing.

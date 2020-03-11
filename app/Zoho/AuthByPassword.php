@@ -115,13 +115,9 @@ class AuthByPassword extends Auth
         return null;
     }
 
-    public function organizations($username = null)
+    public function organizations()
     {
         $token =  ZCRMConfigUtil::getAccessToken();
-        $scope = 'Desk.calls.READ';
-        #$token =  $this->getToken(null,null,false, $scope);
-        echo $token." !\n\n";
-        $this->recheckUserName($username);
         $ch = curl_init("https://desk.zoho.com/api/v1/organizations");
         curl_setopt($ch, CURLOPT_HTTPHEADER,[
             'Authorization:Zoho-oauthtoken ' . $token
