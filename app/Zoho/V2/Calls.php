@@ -1,7 +1,11 @@
 <?php
-namespace App\Zoho;
+namespace App\Zoho\V2;
 
+use App\Zoho\Auth;
+use App\Zoho\Config;
+use App\Zoho\Log;
 use zcrmsdk\crm\crud\ZCRMRecord;
+use zcrmsdk\crm\exception\ZCRMException;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 
 class Calls

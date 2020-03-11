@@ -2,19 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ReportMissedCall;
-use App\Zoho\Auth;
-use App\Zoho\AuthByPassword;
-use App\Zoho\AuthByToken;
-use App\Zoho\Config;
-use App\Zoho\Organization;
-use App\Zoho\UnattendedCalls;
+use App\Zoho\V1\Organization;
+use App\Zoho\V1\UnattendedCalls;
 use Illuminate\Console\Command;
-use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
-use zcrmsdk\crm\utility\ZCRMConfigUtil;
-use zcrmsdk\oauth\ZohoOAuth;
-use zcrmsdk\oauth\ZohoOAuthClient;
 
+/**
+ * Class ZohoV1Requests for testing 1st version SDK.
+ * @package App\Console\Commands
+ */
 class ZohoV1Requests extends Command
 {
     /**
@@ -41,72 +36,39 @@ class ZohoV1Requests extends Command
         parent::__construct();
     }
 
+    private function getRandomAgentId($a_grouped_by_agents)
+    {
+        if(!empty($a_grouped_by_agents['data']))
+        {
+            $data = $a_grouped_by_agents['data'];
+            return $data[mt_rand(0, count($data)-1)]['agent']['id'];
+        }
+        throw new \Exception(sprintf("Not correct structure of data grouped by agents."));
+    }
+
+    private function getUnattendedCalls($org_id)
+    {
+        $a_grouped_by_agents = $this->getUnattendedCallsCount($org_id);
+        $agent_id = $this->getRandomAgentId($a_grouped_by_agents);
+        $zo = new UnattendedCalls();
+        return $zo->getAll($org_id, $agent_id);
+    }
+
+    private function getUnattendedCallsCount($org_id):array
+    {
+        $zo = new UnattendedCalls();
+        return $zo->getAllCount($org_id);
+    }
+
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
-        $zo = new UnattendedCalls();
-        $res = $zo->getAll();
-        print_r($res);
-        exit;
-        /*$zo = new Organization();
-        $res = $zo->getIdWellnessliving();
-        print_r($res);
-        exit;*/
-         /*$zo = new AuthByToken();
-         $zo->generateAccessToken();
-         exit;*/
-        /*$zo = new AuthByPassword();
-        $res = $zo->organizations();
-        var_dump($res);
-        exit;*/
-        $zo = new AuthByPassword();
-        $res = $zo->sequentialUnattendedCallsCount();
-        var_dump($res);
-        exit;
-echo ZCRMConfigUtil::getAccessToken();exit;
-       # curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json','Authorization: Bearer '.ZCRMConfigUtil::getAccessToken()));
-
-
-
-        $config = new Config([
-            "redirect_uri"=>Auth::redirect_uri,
-            "currentUserEmail"=>Auth::userEmail
-        ]);
-        $path = $config->getPathToToken('zcrm_oauthtokens.txt');
-        if(file_exists($path))
-        {
-            $oAuthTokens = unserialize(file_get_contents($path));
-            print_r($oAuthTokens);
-            $oAuthToken = $oAuthTokens[count($oAuthTokens)-1];
-            try {
-                $oAuthToken->getAccessToken();
-            }
-            catch (\Exception $e){
-
-            }
-        }
-exit;
-
-        $inst = ZCRMRestClient::initialize(new Config([
-            "redirect_uri"=>Auth::redirect_uri,
-            "currentUserEmail"=>Auth::userEmail
-        ]));
-
-        echo $inst->getAccessToken();
-        exit;
-        $persistence =  ZohoOAuthClient::getInstance(new Config([
-            "redirect_uri"=>Auth::redirect_uri,
-            "currentUserEmail"=>Auth::userEmail
-        ]));
-        var_dump($persistence);exit;
-        $missedCalls = new ReportMissedCall();
-        $res = $missedCalls->loadFromRemoteServer();
-        /*$zo = new AuthByPassword();
-        $res = $zo->sequentialUnattendedCallsCount();*/
-        var_dump($res);
+        $org_id = (new Organization())->getIdWellnessliving();
+        $result = $this->getUnattendedCalls($org_id);
+        print_r($result);
     }
 }

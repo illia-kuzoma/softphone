@@ -66,6 +66,7 @@ class AuthByToken extends Auth
     {
         self::generateAccessTokenFromGrantToken();
         self::generateAccessTokenFromRefreshToken();
+        echo "\nok\n";
     }
 }
 

@@ -1,8 +1,6 @@
 <?php
 namespace App\Zoho;
 
-#require_once __DIR__ . '/../../vendor/autoload.php';
-
 abstract class Auth
 {
     public const redirect_uri = "https://www.wellnessliving.com";

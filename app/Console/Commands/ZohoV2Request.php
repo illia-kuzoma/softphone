@@ -10,14 +10,18 @@ use zcrmsdk\crm\crud\ZCRMRecord;
 use zcrmsdk\crm\exception\ZCRMException;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 
-class ZohoRequest extends Command
+/**
+ * Class ZohoRequest for testing 2nd version SDK.
+ * @package App\Console\Commands
+ */
+class ZohoV2Request extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zoho:get';
+    protected $signature = 'zoho:v2';
 
     /**
      * The console command description.

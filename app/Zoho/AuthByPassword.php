@@ -2,8 +2,6 @@
 
 namespace App\Zoho;
 
-use zcrmsdk\crm\utility\ZCRMConfigUtil;
-
 class AuthByPassword extends Auth
 {
     public $token_file_name = "_token_by_pass.txt";
@@ -44,8 +42,6 @@ class AuthByPassword extends Auth
             file_put_contents($token_path, '');
             chmod($token_path, 0777);
         }
-
-
 
         $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
@@ -89,38 +85,6 @@ class AuthByPassword extends Auth
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         $result = curl_exec($ch);
         echo $result;
-        Log::put(sprintf("curl_exec %s", $result));
-        curl_close($ch);
-        return null;
-    }
-
-
-    public function sequentialUnattendedCallsCount($username = null)
-    {
-        $token =  ZCRMConfigUtil::getAccessToken();
-        $ch = curl_init("https://desk.zoho.com/api/v1/sequentialUnattendedCalls/Count" . '?fromTime=2019-01-01T07:47:43.206Z&endTime=2020-02-23T07:47:43.206Z&from=1&limit=99');
-        curl_setopt($ch, CURLOPT_HTTPHEADER,[
-            'orgId:57033616',
-            'Authorization:Zoho-oauthtoken ' . $token
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        echo $result ." !!\n\n";
-        Log::put(sprintf("curl_exec %s", $result));
-        curl_close($ch);
-        return null;
-    }
-
-    public function organizations()
-    {
-        $token =  ZCRMConfigUtil::getAccessToken();
-        $ch = curl_init("https://desk.zoho.com/api/v1/organizations");
-        curl_setopt($ch, CURLOPT_HTTPHEADER,[
-            'Authorization:Zoho-oauthtoken ' . $token
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        echo $result ." !!\n\n";
         Log::put(sprintf("curl_exec %s", $result));
         curl_close($ch);
         return null;

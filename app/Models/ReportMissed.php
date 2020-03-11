@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Zoho\Calls;
+use App\Zoho\V2\Calls;
 use Illuminate\Database\Eloquent\Model;
 
 class ReportMissed extends Model
