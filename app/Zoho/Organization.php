@@ -7,6 +7,7 @@ use zcrmsdk\crm\utility\ZCRMConfigUtil;
 
 class Organization
 {
+    const WELNESSLIVING = 'wellnessliving';
   public function __construct()
   {
     new Config([
@@ -37,13 +38,13 @@ class Organization
         return $a_result;
     }
 
-    public function getOrgId()
+    private function getOrgId($s_org_name)
     {
         $a_org = $this->getAll()['data'];
         $i_wellnessliving_key = -1;
         foreach ($a_org as $key => $org) {
             foreach ($org as $data) {
-                if(mb_strtolower($data) === 'wellnessliving'){
+                if(mb_strtolower($data) === $s_org_name){
                     $i_wellnessliving_key = $key;
                     break 2;
                 }
@@ -54,5 +55,10 @@ class Organization
             return $a_org[$i_wellnessliving_key]['id'];
         }
         return null;
+    }
+
+    public function getIdWellnessliving()
+    {
+        return $this->getOrgId(self::WELNESSLIVING);
     }
 }

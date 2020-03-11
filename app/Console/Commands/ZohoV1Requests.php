@@ -8,6 +8,7 @@ use App\Zoho\AuthByPassword;
 use App\Zoho\AuthByToken;
 use App\Zoho\Config;
 use App\Zoho\Organization;
+use App\Zoho\UnattendedCalls;
 use Illuminate\Console\Command;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 use zcrmsdk\crm\utility\ZCRMConfigUtil;
@@ -47,10 +48,14 @@ class ZohoV1Requests extends Command
      */
     public function handle()
     {
-        $zo = new Organization();
-        $res = $zo->getOrgId();
+        $zo = new UnattendedCalls();
+        $res = $zo->getAll();
         print_r($res);
         exit;
+        /*$zo = new Organization();
+        $res = $zo->getIdWellnessliving();
+        print_r($res);
+        exit;*/
          /*$zo = new AuthByToken();
          $zo->generateAccessToken();
          exit;*/

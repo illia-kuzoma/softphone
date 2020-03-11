@@ -97,11 +97,7 @@ class AuthByPassword extends Auth
 
     public function sequentialUnattendedCallsCount($username = null)
     {
-         $token =  ZCRMConfigUtil::getAccessToken();
-        $scope = 'Desk.calls.READ';
-        #$token =  $this->getToken(null,null,false, $scope);
-        echo $token." !\n\n";
-        $this->recheckUserName($username);
+        $token =  ZCRMConfigUtil::getAccessToken();
         $ch = curl_init("https://desk.zoho.com/api/v1/sequentialUnattendedCalls/Count" . '?fromTime=2019-01-01T07:47:43.206Z&endTime=2020-02-23T07:47:43.206Z&from=1&limit=99');
         curl_setopt($ch, CURLOPT_HTTPHEADER,[
             'orgId:57033616',
