@@ -46,10 +46,8 @@ class ZohoV1Requests extends Command
         throw new \Exception(sprintf("Not correct structure of data grouped by agents."));
     }
 
-    private function getUnattendedCalls($org_id)
+    private function getUnattendedCalls($org_id, $agent_id)
     {
-        $a_grouped_by_agents = $this->getUnattendedCallsCount($org_id);
-        $agent_id = $this->getRandomAgentId($a_grouped_by_agents);
         $zo = new UnattendedCalls();
         return $zo->getAll($org_id, $agent_id);
     }
@@ -68,7 +66,46 @@ class ZohoV1Requests extends Command
     public function handle()
     {
         $org_id = (new Organization())->getIdWellnessliving();
-        $result = $this->getUnattendedCalls($org_id);
+        $zo = new UnattendedCalls();
+        $a_grouped_by_agents = $zo->getAllCount($org_id,'2010-02-14T00:00:00.187Z','2020-03-13T09:31:32.187Z',1,99);
+        print_r($a_grouped_by_agents);
+        exit;
+
+        $users_agents = [];
+        $agents_grouped_unattended = [];
+        foreach($a_grouped_by_agents['data'] as $datum){
+            $users_agents[] = [
+                'id' => $datum['agent']['id'],
+                'photoURL' => $datum['agent']['photoURL'],
+                'firstName' => $datum['agent']['firstName'],
+                'lastName' => $datum['agent']['lastName'],
+                'unattended_count' => $datum['count'],
+            ];
+            /*for($i=0; $i < $datum['count'];++$i){
+                $agents_grouped_unattended[$i] = [
+                    'id' => $datum['agent']['id'],
+                    'photoURL' => $datum['agent']['photoURL'],
+                    'firstName' => $datum['agent']['firstName'],
+                    'lastName' => $datum['agent']['lastName'],
+                ];
+            }*/
+        }
+        //print_r($agents_grouped_unattended);
+        print_r($users_agents); // TODO  покаждому юзеру делать запрос на пропущенные.
+
+
+        #print_r($a_grouped_by_agents);
+        $agent_id = $this->getRandomAgentId($a_grouped_by_agents);
+        $result = $this->getUnattendedCalls($org_id, $agent_id);
         print_r($result);
+
+
+        $zo = new UnattendedCalls();
+        foreach($users_agents as $user)
+        {
+            $agent_id = $user['id'];
+            $res = $zo->getAll($org_id, $agent_id,'2019-03-14T00:00:00.187Z','2020-03-13T09:31:32.187Z',1,99);
+            var_dump($res);
+        }
     }
 }
