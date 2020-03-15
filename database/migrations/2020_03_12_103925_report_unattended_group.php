@@ -14,12 +14,12 @@ class ReportUnattendedGroup extends Migration
     public function up()
     {
         Schema::create('report_unattended_group', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->unsignedBigInteger('agent_id');
+            $table->dateTime('day');
             $table->integer('count')->default(0);
             $table->integer('order')->default(0);
-            $table->BigInteger('user_id');
-            $table->dateTime('day');
             $table->timestamps();
+            $table->unique(['day', 'agent_id']);
         });
     }
 

@@ -8,6 +8,7 @@ use Validator;
 
 class User extends Model
 {
+    use Common;
     /**
      * @var
      */
@@ -41,6 +42,9 @@ class User extends Model
      */
     public function toArray()
     {
+        if(!$this->user){
+            return [];
+        }
         $data = [
             'uid'        => $this->user->id,
             'token'      => $this->user->token,
@@ -77,17 +81,6 @@ class User extends Model
     }
 
     /**
-     * Check array Single or Multiple
-     * @param $data
-     *
-     * @return bool
-     */
-    public function isMultipleArray( $data ): bool
-    {
-        return count( array_keys( $data ) ) > 1;
-    }
-
-    /**
      * Insert new User
      * @param $userData
      */
@@ -114,10 +107,10 @@ class User extends Model
                 'email'      => $userData['email'],
                 'first_name' => $userData['first_name'],
                 'last_name'  => $userData['last_name'],
-                /*'password'   => $userData['password'],
+                /*'password'   => $userData['password'],*/
                 'role'       => $userData['role'],
-                'token'      => $userData['token'],
-                'photo'      => $userData['photo'],*/
+                /*'token'      => $userData['token'],*/
+                'photo'      => $userData['photo'],
                 'date_login' => $userData['date_login'],
             ],
             [
@@ -125,10 +118,10 @@ class User extends Model
                 'email'      => '',//required|email|unique:users
                 'first_name' => 'required|max:20',
                 'last_name'  => 'required|max:20',
-                /*'password'   => 'max:32',
+                /*'password'   => 'max:32',*/
                 'role'       => 'max:32',
-                'token'      => 'max:32',
-                'photo'      => 'max:256',*/
+                /*'token'      => 'max:32',*/
+                'photo'      => 'max:256',
                 'date_login' => 'date_format:Y-m-d H:i:s'
             ]
         );
@@ -148,12 +141,13 @@ class User extends Model
         if(is_array($singleUserData))
         {
             $singleUserData['email'] = $singleUserData['first_name'].
-                mt_rand(1,33333333333).'@'.mt_rand(1,1111111111).
+                mt_rand(1,33333333).'@'.mt_rand(1,1111111).
                 $singleUserData['last_name'];
             $singleUserData['date_login'] = $singleUserData['date_login']??date( 'Y-m-d H:i:s');
             if ( $this->validateBeforeInsert( $singleUserData ) ) {
                 DB::table( 'users' )->updateOrInsert(['id'      => $singleUserData['user_id']],
-                    ['id'      => $singleUserData['user_id'],
+                    [
+                        'id'      => $singleUserData['user_id'],
                         'email'      => $singleUserData['email'],
                         'first_name' => $singleUserData['first_name'],
                         'last_name'  => $singleUserData['last_name'],

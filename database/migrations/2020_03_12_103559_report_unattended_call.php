@@ -14,15 +14,16 @@ class ReportUnattendedCall extends Migration
     public function up()
     {
         Schema::create('report_unattended_call', function (Blueprint $table) {
-            $table->string('id', 128)->unique();
-            $table->string('type', 30);
+            $table->unsignedBigInteger('id')->index();
+            $table->unsignedBigInteger('agent_id')->index();
+            $table->unsignedBigInteger('user_id');
             $table->string('business_name', 200);
             $table->string('contact', 200);
             $table->string('priority', 15);
             $table->string('phone', 20);
             $table->dateTime('time_start')->index();
-            $table->BigInteger('user_id');
             $table->timestamps();
+            $table->unique(['agent_id', 'id', 'user_id']); // User key + Call key. Call key can be one for two agents (users).
         });
     }
 
@@ -33,7 +34,7 @@ class ReportUnattendedCall extends Migration
      */
     public function down()
     {
-        Schema::table('report_missed_calls', function (Blueprint $table) {
+        Schema::table('report_unattended_call', function (Blueprint $table) {
             //
         });
     }
