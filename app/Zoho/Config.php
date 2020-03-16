@@ -11,6 +11,18 @@ class Config
   public $token_file_name = '';
 
 
+  private function changeFilesMod($dir, $mode = 0777)
+  {
+      foreach(scandir($dir) as $file)
+      {
+          if(!in_array($file, ['.','..']))
+          {
+              $full_name = $dir . $file;
+              chmod($full_name, $mode);
+          }
+      }
+  }
+
     protected function getPathToFileLogs($sub_path = '')
     {
         $dir = base_path() . self::zoho_data_relative_path . $sub_path . '/' ;
@@ -20,6 +32,7 @@ class Config
             mkdir($dir,0777, true);
             chmod($dir,0777);
         }
+        #$this->changeFilesMod($dir, 0777);
         return $dir;
     }
 

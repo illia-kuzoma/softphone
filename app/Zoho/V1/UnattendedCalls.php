@@ -68,14 +68,6 @@ class UnattendedCalls extends ZohoV1
         return $this->getOrgId();
     }
 
-    private function checkResponse($data): void
-    {
-        if (!isset($data['data']))
-        {
-            throw new \Exception(sprintf("Response in %s has error!\n %s", __METHOD__, json_encode($data)));
-        }
-    }
-
     public function getAllCount($org_id, $from_time = '2019-01-01T07:47:43.206Z', $end_time = '2020-02-23T07:47:43.206Z', $from = 1, $limit = 99)
     {
         $res = $this->request(
@@ -159,7 +151,7 @@ class UnattendedCalls extends ZohoV1
                 'user_id' => $datum['contact']['id'],
             ];
         }
-echo 'unatt= '.count($this->a_unattended) . ' cli=' .  count($this->a_users_client) . "\n";
+#echo 'unatt= '.count($this->a_unattended) . ' cli=' .  count($this->a_users_client) . "\n";
         if(count($unattended_agent) >= self::LIMIT)
         {
             $this->requestUnattendedByAgent($agent_id, $from + self::LIMIT);

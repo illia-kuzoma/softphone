@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Zoho\V1\UnattendedCalls;
-use App\Zoho\V2\Calls;
 use Illuminate\Database\Eloquent\Model;
 
 class ReportUnattended extends Model
@@ -159,8 +158,7 @@ class ReportUnattended extends Model
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-
-        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600)
+        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600 )
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
@@ -178,6 +176,7 @@ class ReportUnattended extends Model
 
             $this->insert($o_uc->getAUnattended());
             $o_users->insert($o_uc->getAUsersClient());
+            (new ReportUnattendedGraph())->updateDB();
         }
     }
 }

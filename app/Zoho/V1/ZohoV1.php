@@ -1,10 +1,28 @@
 <?php
 namespace App\Zoho\V1;
 
+use App\Zoho\Auth;
+use App\Zoho\Config;
 use zcrmsdk\crm\utility\ZCRMConfigUtil;
 
 class ZohoV1
 {
+    public function __construct()
+    {
+        new Config([
+            "redirect_uri"=>Auth::redirect_uri,
+            "currentUserEmail"=>Auth::userEmail
+        ]);
+    }
+
+    protected function checkResponse($data): void
+    {
+        if (!isset($data['data']))
+        {
+            throw new \Exception(sprintf("Response in %s has error!\n %s", __METHOD__, json_encode($data)));
+        }
+    }
+
     protected function request($s_url, $s_param = '', $a_headers = [])
     {
         $a_result = [];

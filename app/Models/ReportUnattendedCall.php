@@ -230,7 +230,6 @@ class ReportUnattendedCall extends ReportUnattended
 
     public function updateDB()
     {
-        $o_ug = new ReportUnattendedGraph();
-        $o_ug->updateDB();
+
     }
 }

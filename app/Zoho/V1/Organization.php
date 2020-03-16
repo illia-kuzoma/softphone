@@ -14,6 +14,7 @@ class Organization extends ZohoV1
         {
             throw new \Exception(sprintf("Organizations list is empty!"));
         }
+        $this->checkResponse($organizations);
         return $organizations;
     }
 
