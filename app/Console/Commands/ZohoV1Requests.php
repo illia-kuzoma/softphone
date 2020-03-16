@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\ReportUnattendedCall;
 use App\Models\ReportUnattendedGraph;
 use App\Models\User;
-use App\Zoho\Log;
 use App\Zoho\V1\Organization;
 use App\Zoho\V1\UnattendedCalls;
 use Illuminate\Console\Command;
