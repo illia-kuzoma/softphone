@@ -71,6 +71,9 @@ class ReportUnattendedGraph extends ReportUnattended
      */
     public function insert($callDataGraph): void
     {
+        if(empty($callDataGraph)){
+            return;
+        }
         if ( $this->isMultipleArray($callDataGraph) ) {
             $this->insertMultipleCallDataGraph($callDataGraph);
         } else {
@@ -113,9 +116,6 @@ class ReportUnattendedGraph extends ReportUnattended
      */
     public function insertSingleCallDataGraph($singleCallDataGraph): void
     {
-        if($singleCallDataGraph && !is_array($singleCallDataGraph)){
-            $singleCallDataGraph = json_decode(json_encode($singleCallDataGraph), true);
-        }
         if(is_array($singleCallDataGraph))
         {
             $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;

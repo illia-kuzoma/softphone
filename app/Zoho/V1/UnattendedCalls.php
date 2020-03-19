@@ -1,11 +1,29 @@
 <?php
 namespace App\Zoho\V1;
 
+use App\Zoho\Log;
+
 class UnattendedCalls extends ZohoV1
 {
 
     private $time_to;
     private $time_from;
+
+    /**
+     * @return string|null
+     */
+    public function getTimeTo(): ?string
+    {
+        return $this->time_to;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTimeFrom(): ?string
+    {
+        return $this->time_from;
+    }
 
 
     private function getTimeFormate($time)
@@ -13,10 +31,11 @@ class UnattendedCalls extends ZohoV1
         return date("Y-m-d", $time) . 'T' . date('H:i:s', $time) . '.0Z';
     }
 
-    public function __construct($time_from = null, $time_to = null)
+    public function __construct($i_time_from = null, $i_time_to = null)
     {
-        $time_to = $time_to ?? $this->getTimeFormate(time());
-        $time_from = $time_from ?? $this->getTimeFormate(strtotime($time_to) - 86400 * 365);
+
+        $time_to = $i_time_to? $this->getTimeFormate($i_time_to): $this->getTimeFormate(time());
+        $time_from = $i_time_from? $this->getTimeFormate($i_time_from): $this->getTimeFormate($time_to - 86400 * 365);
         $this->time_from = $time_from;
         $this->time_to = $time_to;
     }
@@ -120,6 +139,8 @@ class UnattendedCalls extends ZohoV1
     private function requestUnattendedByAgent($agent_id, $from = self::FROM)
     {
         $unattended_agent = $this->getAll($this->getOrgId(), $agent_id, $this->time_from, $this->time_to, $from,self::LIMIT);
+        Log::put("getAll: " . json_encode($unattended_agent));
+        echo json_encode($unattended_agent)."\n";
         $this->parseUnattendedByAgent($unattended_agent, $agent_id, $from);
     }
 

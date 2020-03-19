@@ -86,6 +86,9 @@ class User extends Model
      */
     public function insert($userData): void
     {
+        if(empty($userData)){
+            return;
+        }
         if ( $this->isMultipleArray($userData) ) {
             $this->insertMultipleUserData($userData);
         } else {

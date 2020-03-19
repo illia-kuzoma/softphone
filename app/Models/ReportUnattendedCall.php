@@ -137,6 +137,9 @@ class ReportUnattendedCall extends ReportUnattended
      */
     public function insert($callData): void
     {
+        if(empty($callData)){
+            return;
+        }
         if ( $this->isMultipleArray($callData) ) {
             $this->insertMultipleCallData($callData);
         } else {

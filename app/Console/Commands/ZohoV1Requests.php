@@ -103,6 +103,10 @@ class ZohoV1Requests extends Command
      */
     public function handle()
     {
+
+        $unattendedCalls = new ReportUnattendedCall();
+        $unattendedCalls->loadFromRemoteServer();
+        exit;
         /*$unattendedCalls = new ReportUnattendedCall();
         $unattendedCalls->loadFromRemoteServer();
         exit;*/
