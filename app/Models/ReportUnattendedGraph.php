@@ -25,13 +25,12 @@ class ReportUnattendedGraph extends ReportUnattended
      */
     public function getList($dateStart, $period): array
     {
-        echo $dateStart . " " . $period;
+        //echo $dateStart . " " . $period;
         [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
         //echo "<br>".$dateFrom. " " . $dateTo .  "<br>";exit;
         $graph_list = \DB::table( $this->table)->join('users', $this->table.'.agent_id', '=', 'users.id')
             ->whereBetween('day', [$dateFrom, $dateTo])
             ->orderBy('users.first_name')->get();
-print_R($graph_list);exit;
         return $this->formatDataGraphList( $graph_list );
     }
 
@@ -54,12 +53,15 @@ print_R($graph_list);exit;
                 {
                     $result[$item->agent_id] = [
                         'uid' => $this->_getIdVal($item),
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name,
                         'calls_count'=> $item->count,
+                        'full_name' => $item->first_name . ' ' . $item->last_name
                     ];
-                    $result[$item->agent_id] = array_merge(
+                    /*$result[$item->agent_id] = array_merge(
                         $result[$item->agent_id],
                         ( new User() )->getUserData( $item->agent_id ) // TODO need to optimization in One request with all agent_ids.
-                    );
+                    );*/
                 }
             }
         }
@@ -117,13 +119,10 @@ print_R($graph_list);exit;
      */
     public function insertSingleCallDataGraph($singleCallDataGraph): void
     {
-
-        print_r($singleCallDataGraph);
         if(is_array($singleCallDataGraph))
         {
             $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;
             if ( $this->validateBeforeInsert($singleCallDataGraph) ) {
-                echo $singleCallDataGraph['agent_id']."<br>";
                 \DB::table( $this->table )->updateOrInsert(
                     [
                         'day'        => $singleCallDataGraph['day'],
@@ -138,8 +137,6 @@ print_R($graph_list);exit;
                         'updated_at' => date( self::DATE_TIME_FORMAT ),
                     ]
                 );
-            }
-            else{
             }
         }
     }
