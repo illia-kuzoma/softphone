@@ -106,7 +106,7 @@ class ReportUnattendedCall extends ReportUnattended
                     ],
                     'contact'     => [
                         'contact_name' => $this->getContactName($item->contact),
-                        'contact_link' => "https://ufo.url.com",
+                        'contact_link' => "https://desk.zoho.com/support/wellnessliving/ShowHomePage.do#Calls/dv/". $item->id,
                     ],
                     'user_data'   => ( new User() )->getUserData( $item->agent_id ), // TODO need to optimization in One request with all agent_ids.
                     'priority'    => $item->priority,

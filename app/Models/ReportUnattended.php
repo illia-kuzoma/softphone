@@ -159,7 +159,7 @@ class ReportUnattended extends Model
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600 && 0)
+        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600)
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
