@@ -25,9 +25,9 @@ class ReportUnattendedGraph extends ReportUnattended
      */
     public function getList($dateStart, $period): array
     {
-        echo $dateStart . " " . $period;exit;
+        echo $dateStart . " " . $period;
         [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
-        echo "<br>".$dateFrom. " " . $dateTo .  "<br>";
+        echo "<br>".$dateFrom. " " . $dateTo .  "<br>";exit;
         $graph_list = \DB::table( $this->table)->join('users', $this->table.'.agent_id', '=', 'users.id')
             ->where('day', '>=', $dateFrom)
             ->where('day', '<=', $dateTo)
