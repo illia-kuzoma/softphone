@@ -116,6 +116,7 @@ print_R($graph_list);exit;
      */
     public function insertSingleCallDataGraph($singleCallDataGraph): void
     {
+        print_r($singleCallDataGraph);exit;
         if(is_array($singleCallDataGraph))
         {
             $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;
@@ -156,7 +157,6 @@ print_R($graph_list);exit;
             $sql,
             []
         );
-        print_r($grouped_data_by_days);exit;
         if(!empty($grouped_data_by_days))
         {
             $this->insert($grouped_data_by_days);
