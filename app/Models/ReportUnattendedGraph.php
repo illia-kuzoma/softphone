@@ -30,7 +30,7 @@ class ReportUnattendedGraph extends ReportUnattended
             ->where('day', '>=', $dateFrom)
             ->where('day', '<=', $dateTo)
             ->orderBy('users.first_name')->get();
-
+print_r($graph_list);exit;
         return $this->formatDataGraphList( $graph_list );
     }
 

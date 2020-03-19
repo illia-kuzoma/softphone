@@ -5,7 +5,6 @@ namespace App\Http\Controllers\SoftPhone;
 use App\Http\Controllers\Controller;
 use App\Models\ReportUnattendedCall;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class ReportUnattended extends Controller
 {
