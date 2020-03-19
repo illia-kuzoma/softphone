@@ -119,6 +119,9 @@ class ReportUnattendedGraph extends ReportUnattended
      */
     public function insertSingleCallDataGraph($singleCallDataGraph): void
     {
+        if($singleCallDataGraph && !is_array($singleCallDataGraph)){
+            $singleCallDataGraph = json_decode(json_encode($singleCallDataGraph), true);
+        }
         if(is_array($singleCallDataGraph))
         {
             $singleCallDataGraph['order']= $singleCallDataGraph['order']??0;
@@ -159,7 +162,6 @@ class ReportUnattendedGraph extends ReportUnattended
             $sql,
             []
         );
-        print_r($grouped_data_by_days);exit;
         if(!empty($grouped_data_by_days))
         {
             $this->insert($grouped_data_by_days);

@@ -190,7 +190,6 @@ class ReportUnattendedCall extends ReportUnattended
      */
     public function insertSingleCallData($singleCallData): void
     {
-        #print_r($singleCallData);exit;
         $singleCallData['business_name'] = $singleCallData['business_name']??'-';
         $singleCallData['time_start'] = date(self::DATE_TIME_FORMAT, strtotime($singleCallData['time_start']));
         if ( $this->validateBeforeInsert($singleCallData) ) {
