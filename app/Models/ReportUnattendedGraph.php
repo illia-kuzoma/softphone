@@ -156,6 +156,7 @@ print_R($graph_list);exit;
             $sql,
             []
         );
+        print_r($grouped_data_by_days);exit;
         if(!empty($grouped_data_by_days))
         {
             $this->insert($grouped_data_by_days);
