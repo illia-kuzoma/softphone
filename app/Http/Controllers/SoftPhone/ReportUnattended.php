@@ -54,6 +54,7 @@ class ReportUnattended extends Controller
     {
         $unattendedCalls = new ReportUnattendedCall();
         $unattendedCalls->loadFromRemoteServer();
+
         $out = [
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $unattendedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
