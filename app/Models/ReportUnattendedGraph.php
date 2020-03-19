@@ -150,13 +150,13 @@ print_R($graph_list);exit;
     }
     public function updateDB()
     {
-        $sql = 'select report_unattended_call.agent_id, count(report_unattended_call.id) as count, DATE_FORMAT((report_unattended_call.time_start),"%Y-%m-%d") as day from report_unattended_call GROUP BY report_unattended_call.agent_id, DATE_FORMAT(report_unattended_call.time_start,"%Y %M %d")';
+        $sql = "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+".'select report_unattended_call.agent_id, count(report_unattended_call.id) as count, DATE_FORMAT((report_unattended_call.time_start),"%Y-%m-%d") as day from report_unattended_call GROUP BY report_unattended_call.agent_id, DATE_FORMAT(report_unattended_call.time_start,"%Y %M %d");';
         $grouped_data_by_days = \DB::select(
             $sql,
             []
         );
-        /*echo $sql;exit;
-        print_r($grouped_data_by_days);exit;*/
+        print_r($grouped_data_by_days);exit;
         if(!empty($grouped_data_by_days))
         {
             $this->insert($grouped_data_by_days);

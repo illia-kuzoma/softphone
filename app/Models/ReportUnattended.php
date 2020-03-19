@@ -155,6 +155,7 @@ class ReportUnattended extends Model
 
     public function loadFromRemoteServer()
     {
+        (new ReportUnattendedGraph())->updateDB();
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
@@ -177,7 +178,6 @@ class ReportUnattended extends Model
 
             $this->insert($o_uc->getAUnattended());
             $o_users->insert($o_uc->getAUsersClient());
-            (new ReportUnattendedGraph())->updateDB();
         }
     }
 }
