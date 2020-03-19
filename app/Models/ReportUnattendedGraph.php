@@ -53,15 +53,15 @@ class ReportUnattendedGraph extends ReportUnattended
                 {
                     $result[$item->agent_id] = [
                         'uid' => $this->_getIdVal($item),
-                        'first_name' => $item->first_name,
-                        'last_name' => $item->last_name,
                         'calls_count'=> $item->count,
-                        'full_name' => $item->first_name . ' ' . $item->last_name,
                     ];
+                    $result[$item->agent_id] = array_merge(
+                        $result[$item->agent_id],
+                        ( new User() )->getUserData( $item->agent_id ) // TODO need to optimization in One request with all agent_ids.
+                    );
                 }
             }
         }
-
         return array_values($result);
     }
 
@@ -150,10 +150,13 @@ class ReportUnattendedGraph extends ReportUnattended
     }
     public function updateDB()
     {
+        $sql = 'select report_unattended_call.agent_id, count(report_unattended_call.id) as count, DATE_FORMAT((report_unattended_call.time_start),"%Y-%m-%d") as day from report_unattended_call GROUP BY report_unattended_call.agent_id, DATE_FORMAT(report_unattended_call.time_start,"%Y %M %d")';
         $grouped_data_by_days = \DB::select(
-            'select report_unattended_call.agent_id, count(report_unattended_call.id) as count, DATE_FORMAT((report_unattended_call.time_start),"%Y-%m-%d") as day from report_unattended_call GROUP BY report_unattended_call.agent_id, DATE_FORMAT(report_unattended_call.time_start,"%Y %M %d")',
+            $sql,
             []
         );
+        /*echo $sql;exit;
+        print_r($grouped_data_by_days);exit;*/
         if(!empty($grouped_data_by_days))
         {
             $this->insert($grouped_data_by_days);

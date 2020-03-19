@@ -108,7 +108,7 @@ class ReportUnattendedCall extends ReportUnattended
                         'contact_name' => $this->getContactName($item->contact),
                         'contact_link' => "https://ufo.url.com",
                     ],
-                    'user_data'   => ( new User() )->getUserData( $item->agent_id ),
+                    'user_data'   => ( new User() )->getUserData( $item->agent_id ), // TODO need to optimization in One request with all agent_ids.
                     'priority'    => $item->priority,
                     'phone'       => $item->phone,
                     'time_create' => strtotime( $item->time_start ),

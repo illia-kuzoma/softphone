@@ -71,7 +71,7 @@ class User extends Model
 
         if (!empty($users)) {
             foreach ( $users as $user ) {
-                $data['full_name']  = $user->last_name . ' ' . $user->first_name;
+                $data['full_name']  = $user->first_name . ' ' . $user->last_name ;
                 $data['photo_url']  = $user->photo;
                 $data['first_name'] = $user->first_name;
                 $data['last_name']  = $user->last_name;
