@@ -164,7 +164,7 @@ class ReportUnattended extends Model
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
             #echo $max_time_start_call . ' ' . $time_start_call."\n\n";
-            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -5 day"));
+            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -1 day"));
             #print_r($o_uc->getTimeTo() . " " . $o_uc->getTimeFrom());exit;
             $users_agent = $o_uc->getAgentsList();
 
