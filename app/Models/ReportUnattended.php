@@ -158,11 +158,11 @@ class ReportUnattended extends Model
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-        if($this->diffNowAndLastCreation() > 3600)
+        if($this->diffNowAndLastCreation() > 3600 || 1)
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
-            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -100 day"));
+            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -50 day"));
             $a_agent_id = [];
             $o_users = new User();
             if($this->diffNowAndLastCreation() > 100000)
