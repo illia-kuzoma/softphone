@@ -62,10 +62,6 @@ class ReportUnattendedGraph extends ReportUnattended
                         'calls_count'=> $item->count,
                         'full_name' => $item->first_name . ' ' . $item->last_name
                     ];
-                    /*$result[$item->agent_id] = array_merge(
-                        $result[$item->agent_id],
-                        ( new User() )->getUserData( $item->agent_id ) // TODO need to optimization in One request with all agent_ids.
-                    );*/
                 }
             }
         }

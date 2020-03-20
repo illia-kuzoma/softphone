@@ -162,7 +162,7 @@ class ReportUnattended extends Model
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
-            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -30 day"));
+            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -1 day"));
             $a_agent_id = [];
             $o_users = new User();
             if($this->diffNowAndLastCreation() > 100000)
@@ -179,6 +179,7 @@ class ReportUnattended extends Model
             foreach($a_agent_id as $i_agent_id)
             {
                 $o_uc->setDataByAgent($i_agent_id);
+                // In optimization purposes.
                 $o_users->insert($o_uc->getAUsersClient());
                 $o_uc->setAUsersClient([]);
                 $this->insert($o_uc->getAUnattended());
