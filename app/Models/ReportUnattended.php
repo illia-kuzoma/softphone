@@ -24,7 +24,7 @@ class ReportUnattended extends Model
         return 'agent_id'; // 'user_id'
     }
     protected function _getIdVal($item){
-        return $item->{$this->_getIdKey()}; //
+        return (string)$item->{$this->_getIdKey()}; //
     }
 
     public function getPeriod($period)
