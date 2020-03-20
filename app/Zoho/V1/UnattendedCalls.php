@@ -2,7 +2,6 @@
 namespace App\Zoho\V1;
 
 use App\Models\User;
-use App\Zoho\Log;
 
 class UnattendedCalls extends ZohoV1
 {
@@ -53,11 +52,27 @@ class UnattendedCalls extends ZohoV1
     private $a_users_client = [];
 
     /**
+     * @param array $a_users_client
+     */
+    public function setAUsersClient(array $a_users_client): void
+    {
+        $this->a_users_client = $a_users_client;
+    }
+
+    /**
      * @return array
      */
     public function getAUnattended(): array
     {
         return $this->a_unattended;
+    }
+
+    /**
+     * @param array $a_unattended
+     */
+    public function setAUnattended(array $a_unattended): void
+    {
+        $this->a_unattended = $a_unattended;
     }
 
     /**
@@ -139,7 +154,7 @@ class UnattendedCalls extends ZohoV1
     private function requestUnattendedByAgent($agent_id, $from = self::FROM)
     {
         $unattended_agent = $this->getAll($this->getOrgId(), $agent_id, $this->time_from, $this->time_to, $from,self::LIMIT);
-        Log::put("getAll: " . json_encode($unattended_agent));
+        //Log::put("getAll: " . json_encode($unattended_agent));
         $this->parseUnattendedByAgent($unattended_agent, $agent_id, $from);
     }
 
