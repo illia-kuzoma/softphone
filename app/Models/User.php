@@ -8,10 +8,11 @@ use Validator;
 
 class User extends Model
 {
+    use Common;
     const ROLE_AGENT = 'agent';
     const ROLE_USER = 'user';
 
-    use Common;
+    public $table = "users";
     /**
      * @var
      */
@@ -36,7 +37,7 @@ class User extends Model
      */
     public function getData($email)
     {
-        $getUserByEmail = \DB::table( 'users' )->where( 'email', $email  )->first();
+        $getUserByEmail = \DB::table( $this->table)->where( 'email', $email  )->first();
         $this->user     = $getUserByEmail;
     }
 
@@ -69,7 +70,7 @@ class User extends Model
      */
     public function getUserData($user_id): array
     {
-        $users = \DB::table('users')->where('id', '=', $user_id)->get()->sortBy('id');
+        $users = \DB::table($this->table)->where('id', '=', $user_id)->get()->sortBy('id');
         $data = [];
 
         if (!empty($users)) {
@@ -152,7 +153,7 @@ class User extends Model
             $singleUserData['date_login'] = $singleUserData['date_login']??date( 'Y-m-d H:i:s');
 
             if ( $this->validateBeforeInsert( $singleUserData ) ) {
-                DB::table( 'users' )->updateOrInsert(['id'      => $singleUserData['user_id']],
+                DB::table( $this->table )->updateOrInsert(['id'      => $singleUserData['user_id']],
                     [
                         'id'      => $singleUserData['user_id'],
                         'email'      => $singleUserData['email'],
