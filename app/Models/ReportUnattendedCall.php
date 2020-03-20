@@ -43,7 +43,18 @@ class ReportUnattendedCall extends ReportUnattended
         $dateFrom .= ' 00:00:00';
         $dateTo .= ' 23:59:59';
 
-        $call_list_q = ReportUnattendedCall::query()->join('users', $this->table.'.agent_id', '=', 'users.id');
+        $call_list_q = ReportUnattendedCall::query()->select([
+            //'users.id as user_id',
+            'report_unattended_call.id',
+            'report_unattended_call.business_name',
+            'report_unattended_call.contact',
+            'report_unattended_call.agent_id',
+            'report_unattended_call.priority',
+            'report_unattended_call.phone',
+            'report_unattended_call.time_start',
+            'users.first_name',
+            'users.last_name'
+        ])->join('users', $this->table.'.agent_id', '=', 'users.id');
         $call_list_q->where('time_start', '>=', $dateFrom);
         $call_list_q->where('time_start', '<=', $dateTo);
         $call_list_q->orderBy( $sortField, $sortBy );
@@ -67,7 +78,6 @@ class ReportUnattendedCall extends ReportUnattended
         $calls_cnt = $call_list_q->count();
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
-
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
 
         return [
