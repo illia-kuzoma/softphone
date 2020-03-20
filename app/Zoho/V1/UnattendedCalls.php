@@ -1,6 +1,7 @@
 <?php
 namespace App\Zoho\V1;
 
+use App\Models\User;
 use App\Zoho\Log;
 
 class UnattendedCalls extends ZohoV1
@@ -33,7 +34,6 @@ class UnattendedCalls extends ZohoV1
 
     public function __construct($i_time_from = null, $i_time_to = null)
     {
-
         $time_to = $i_time_to? $this->getTimeFormate($i_time_to): $this->getTimeFormate(time());
         $time_from = $i_time_from? $this->getTimeFormate($i_time_from): $this->getTimeFormate($time_to - 86400 * 365);
         $this->time_from = $time_from;
@@ -140,12 +140,13 @@ class UnattendedCalls extends ZohoV1
     {
         $unattended_agent = $this->getAll($this->getOrgId(), $agent_id, $this->time_from, $this->time_to, $from,self::LIMIT);
         Log::put("getAll: " . json_encode($unattended_agent));
-        echo json_encode($unattended_agent)."\n";
         $this->parseUnattendedByAgent($unattended_agent, $agent_id, $from);
     }
 
     private function parseUnattendedByAgent($unattended_agent, $agent_id, $from)
     {
+        if(empty($unattended_agent))
+            return;
         foreach ($unattended_agent as $datum)
         {
             $this->a_unattended[] = [
@@ -164,15 +165,15 @@ class UnattendedCalls extends ZohoV1
             ];
 
             $this->a_users_client[] = [
-                // 'email' - TODO get email from Accounts/{user_id}
+                'email' => $datum['contact']['email'],
                 'first_name' => $datum['contact']['firstName'],
                 'last_name' =>  $datum['contact']['lastName'],
                 'photo' => '',
-                'role' => 'user',
+                'role' => User::ROLE_USER,
                 'user_id' => $datum['contact']['id'],
             ];
         }
-#echo 'unatt= '.count($this->a_unattended) . ' cli=' .  count($this->a_users_client) . "\n";
+
         if(count($unattended_agent) >= self::LIMIT)
         {
             $this->requestUnattendedByAgent($agent_id, $from + self::LIMIT);

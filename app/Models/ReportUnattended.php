@@ -155,29 +155,36 @@ class ReportUnattended extends Model
 
     public function loadFromRemoteServer()
     {
-        (new ReportUnattendedGraph())->updateDB();
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-        if((time() - strtotime($this->maxRecordTimeCreate())) > 3600)
+        if($this->diffNowAndLastCreation() > 3600)
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
-            #echo $max_time_start_call . ' ' . $time_start_call."\n\n";
-            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -1 day"));
-            #print_r($o_uc->getTimeTo() . " " . $o_uc->getTimeFrom());exit;
-            $users_agent = $o_uc->getAgentsList();
-
+            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -100 day"));
+            $a_agent_id = [];
             $o_users = new User();
-            $o_users->insert($users_agent);
-
-            foreach($users_agent as $user)
+            if($this->diffNowAndLastCreation() > 100000)
+                // С головы придуманное число. Идея в том что навряд ли агенты будут создаваться часто.
             {
-                $o_uc->setDataByAgent($user['user_id']);
+                $users_agent = $o_uc->getAgentsList();
+                $a_agent_id = array_column($users_agent, 'user_id');
+                $o_users->insert($users_agent);
             }
+            else
+            {
+                $a_agent_id = User::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
+            }
+            foreach($a_agent_id as $i_agent_id)
+            {
+                $o_uc->setDataByAgent($i_agent_id);
+            }
+            $o_users->insert($o_uc->getAUsersClient());
 
             $this->insert($o_uc->getAUnattended());
-            $o_users->insert($o_uc->getAUsersClient());
+
+            (new ReportUnattendedGraph())->updateDB();
         }
     }
 }

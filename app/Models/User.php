@@ -8,6 +8,9 @@ use Validator;
 
 class User extends Model
 {
+    const ROLE_AGENT = 'agent';
+    const ROLE_USER = 'user';
+
     use Common;
     /**
      * @var
@@ -118,7 +121,7 @@ class User extends Model
             ],
             [
                 'id'      => '',
-                'email'      => '',//required|email|unique:users
+                'email'      => 'email|unique:users',//required|email|unique:users
                 'first_name' => 'required|max:20',
                 'last_name'  => 'required|max:20',
                 /*'password'   => 'max:32',*/
@@ -143,10 +146,11 @@ class User extends Model
         }
         if(is_array($singleUserData))
         {
-            $singleUserData['email'] = $singleUserData['first_name'].
-                mt_rand(1,33333333).'@'.mt_rand(1,1111111).
-                $singleUserData['last_name'];
+            $singleUserData['email'] = ($singleUserData['role'] == User::ROLE_AGENT && empty($singleUserData['email']))?
+                'rand'.(mt_rand(111,99999999)).User::ROLE_AGENT.'@ra'.mt_rand(55555,9999999999).'.nd':
+                $singleUserData['email'];
             $singleUserData['date_login'] = $singleUserData['date_login']??date( 'Y-m-d H:i:s');
+
             if ( $this->validateBeforeInsert( $singleUserData ) ) {
                 DB::table( 'users' )->updateOrInsert(['id'      => $singleUserData['user_id']],
                     [

@@ -221,15 +221,23 @@ class ReportUnattendedCall extends ReportUnattended
         }
     }
 
-    public function maxTimeCreate()
+    public function maxTimeCreate(): ?string
     {
         return DB::table($this->table)->max('time_start');
     }
-    public function maxRecordTimeCreate()
+    public function maxRecordTimeCreate(): ?string
     {
         return DB::table($this->table)->max('created_at');
     }
-
+    public function diffNowAndLastCreation(): int
+    {
+        $date = $this->maxRecordTimeCreate();
+        if(empty($date))
+        {
+            return 999999999;
+        }
+        return time() - strtotime($date);
+    }
     public function updateDB()
     {
 

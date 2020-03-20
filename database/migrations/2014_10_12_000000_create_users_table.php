@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('first_name', 20);
             $table->string('last_name', 20);
             $table->string('password', 32);
-            $table->enum('role', ['agent', 'team_lead', 'user']);
+            $table->string('role', 20);
             $table->string('token', 256);
             $table->string('photo', 256)->nullable();
             $table->dateTime('date_login');
