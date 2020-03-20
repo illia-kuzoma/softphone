@@ -46,12 +46,12 @@ class ReportUnattendedCall extends ReportUnattended
         $call_list_q = ReportUnattendedCall::query()->select([
             //'users.id as user_id',
             $this->table.'.id',
-            $this->table.'.report_unattended_call.business_name',
-            $this->table.'.report_unattended_call.contact',
-            $this->table.'.report_unattended_call.agent_id',
-            $this->table.'.report_unattended_call.priority',
-            $this->table.'.report_unattended_call.phone',
-            $this->table.'.report_unattended_call.time_start',
+            $this->table.'.business_name',
+            $this->table.'.contact',
+            $this->table.'.agent_id',
+            $this->table.'.priority',
+            $this->table.'.phone',
+            $this->table.'.time_start',
             'users.first_name',
             'users.last_name'
         ])->join('users', $this->table.'.agent_id', '=', 'users.id');
