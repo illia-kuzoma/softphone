@@ -68,7 +68,7 @@
           <div class="controls-container">
               <div>
                   <label class="typo__label">Select agents you need:</label>
-                  <multiselect v-model="multiple_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="name" :preselect-first="true">
+                  <multiselect v-model="multiple_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
                       <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span></template>
                   </multiselect>
               </div>
@@ -199,12 +199,12 @@
       selectedAgentUid:null,
       multiple_value: null,
       multiple_options:[
-        { name: 'Vue.js', language: 'JavaScript' },
-        { name: 'Adonis', language: 'JavaScript' },
-        { name: 'Rails', language: 'Ruby' },
-        { name: 'Sinatra', language: 'Ruby' },
-        { name: 'Laravel', language: 'PHP' },
-        { name: 'Phoenix', language: 'Elixir' }
+        { name: 'Vue.js', value: 'JavaScript' },
+        { name: 'Adonis', value: 'JavaScript' },
+        { name: 'Rails', value: 'Ruby' },
+        { name: 'Sinatra', value: 'Ruby' },
+        { name: 'Laravel', value: 'PHP' },
+        { name: 'Phoenix', value: 'Elixir' }
       ]
     }),
     methods: {

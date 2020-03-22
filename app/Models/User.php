@@ -193,7 +193,7 @@ class User extends Model
         $data = self::query()->where('role', '=', User::ROLE_AGENT)->select(['id', 'first_name', 'last_name'])->get();
         foreach($data as $datum){
             $res[] = [
-                "text" => $datum->first_name ." ". $datum->last_name,
+                "name" => $datum->first_name ." ". $datum->last_name,
                 "value" => $datum->id,
             ];
         }
