@@ -68,7 +68,7 @@
           <div class="controls-container">
               <div>
                   <label class="typo__label">Select agents you need:</label>
-                  <multiselect v-model="multiple_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
+                  <multiselect v-model="multiple_selected_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
                       <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span></template>
                   </multiselect>
               </div>
@@ -198,14 +198,7 @@
       selectedAgent:null,
       selectedAgentUid:null,
       multiple_value: null,
-      multiple_options:[
-        { name: 'Vue.js', value: 'JavaScript' },
-        { name: 'Adonis', value: 'JavaScript' },
-        { name: 'Rails', value: 'Ruby' },
-        { name: 'Sinatra', value: 'Ruby' },
-        { name: 'Laravel', value: 'PHP' },
-        { name: 'Phoenix', value: 'Elixir' }
-      ]
+      multiple_options:[]
     }),
     methods: {
       getDate(timeStamp){
@@ -318,8 +311,8 @@
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
           .then(function (response) {
             self.setChartData(response.data.diagrama);
-          self.setTableData(response.data.calls);
-          self.setMultiDropdown(response.data.agents);
+            self.setTableData(response.data.calls);
+            self.setMultiDropdown(response.data.agents);
             self.datePickerSetToday()
           })
           .catch(function (error) {
@@ -381,6 +374,7 @@
       },
       getDataByDate(startDate,period){
         var self = this
+        var selected_agents_array = this.multiple_selected_value;
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period)
           .then(function (response) {
             let tableData = response.data.calls
