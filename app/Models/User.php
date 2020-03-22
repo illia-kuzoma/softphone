@@ -191,13 +191,25 @@ class User extends Model
     {
         $res = [];
         $data = self::query()->where('role', '=', User::ROLE_AGENT)->select(['id', 'first_name', 'last_name'])->get();
+
+        /**
+         * @var $datum self
+         */
         foreach($data as $datum){
             $res[] = [
                 "name" => $datum->first_name ." ". $datum->last_name,
-                "value" => $datum->id,
+                "value" => $datum->_getIdVal(),
             ];
         }
         return $res;
+    }
+
+    protected function _getIdKey(){
+        return 'id';
+    }
+
+    protected function _getIdVal(){
+        return (string)$this->{$this->_getIdKey()}; //
     }
 
 }

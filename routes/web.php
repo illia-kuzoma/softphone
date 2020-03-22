@@ -39,7 +39,7 @@ Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{p
     return redirect(404);
 });
 // getAll
-Route::get('/report/missed/{startDate?}/{period?}', 'SoftPhone\ReportUnattended@getAll');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{period?}', static function () {
+Route::get('/report/missed/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportUnattended@getAll');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{period?}/{uids?}', static function () {
     return redirect(404);
 });
