@@ -183,6 +183,21 @@ class User extends Model
             $this->insertSingleUserData($singleUserData);
         }
     }
-
+    public static function getAllAgentIDs(): array
+    {
+        return self::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
+    }
+    public static function getAllAgentIDFullName(): array
+    {
+        $res = [];
+        $data = self::query()->where('role', '=', User::ROLE_AGENT)->select(['id', 'first_name', 'last_name'])->get();
+        foreach($data as $datum){
+            $res[] = [
+                "text" => $datum->first_name ." ". $datum->last_name,
+                "value" => $datum->id,
+            ];
+        }
+        return $res;
+    }
 
 }

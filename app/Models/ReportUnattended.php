@@ -174,7 +174,7 @@ class ReportUnattended extends Model
             }
             else
             {
-                $a_agent_id = User::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
+                $a_agent_id = User::getAllAgentIDs();
             }
             foreach($a_agent_id as $i_agent_id)
             {

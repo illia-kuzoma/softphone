@@ -11,7 +11,6 @@
         <div class="header-container">
           <h1>Missed Calls</h1>
         </div>
-
         <div class="controls-container">
           <div class="date-container">
             <button
@@ -49,6 +48,7 @@
               >Year
             </button>
           </div>
+
           <div class="search-container">
             <input
               v-model="searchText"
@@ -63,8 +63,16 @@
                 >Search
               </button>
           </div>
-        </div>
 
+        </div>
+          <div class="controls-container">
+              <div>
+                  <label class="typo__label">Select agents you need:</label>
+                  <multiselect v-model="multiple_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="name" :preselect-first="true">
+                      <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span></template>
+                  </multiselect>
+              </div>
+          </div>
         <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
           <h2>MISSED CALLS</h2>
           <line-chart
@@ -101,7 +109,7 @@
                   <p>{{ item.user_data.full_name }}</p>
                 </div>
               </template>
-              
+
               <template v-slot:item.business="{ item }">
                 <div class='business'>
                   <a
@@ -155,13 +163,16 @@
   import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
+  import Multiselect from 'vue-multiselect'
+
 
   export default {
     name: 'HelloWorld',
-    components: { 
+    components: {
       HeaderComponent,
       DatePicker,
       LineChart,
+      Multiselect,
     },
     data: () => ({
       // firstLoad:true,
@@ -186,31 +197,40 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
+      multiple_value: null,
+      multiple_options:[
+        { name: 'Vue.js', language: 'JavaScript' },
+        { name: 'Adonis', language: 'JavaScript' },
+        { name: 'Rails', language: 'Ruby' },
+        { name: 'Sinatra', language: 'Ruby' },
+        { name: 'Laravel', language: 'PHP' },
+        { name: 'Phoenix', language: 'Elixir' }
+      ]
     }),
     methods: {
       getDate(timeStamp){
         var utc = new Date(timeStamp * 1000)
-        var date = moment(utc).format('ll'); 
+        var date = moment(utc).format('ll');
         var time = moment(utc).format('hh:mm:ss a');
         return time+" "+date
       },
       setDate(range){
         this.searchText = '';
         switch(range) {
-          case 'today':  
+          case 'today':
 
             var today = new Date();
             var DD = today.getDate();
-            var MM = today.getMonth() + 1; 
+            var MM = today.getMonth() + 1;
             var YYYY = today.getFullYear();
 
             if (DD < 10) {
               DD = '0' + DD;
-            } 
+            }
 
             if (MM < 10) {
               MM = '0' + MM;
-            } 
+            }
 
             today = YYYY + '-' + MM + '-' + DD;
             this.selectedDate = today;
@@ -223,37 +243,37 @@
             this.period='day';
           break;
 
-          case 'week':  
+          case 'week':
             this.getDataByDate(this.selectedDate,'week')
             this.period='week';
           break;
 
-          case 'month':  
+          case 'month':
             this.getDataByDate(this.selectedDate,'month')
             this.period='month';
           break;
 
-          case 'year': 
+          case 'year':
             this.getDataByDate(this.selectedDate,'year')
             this.period='year';
           break;
-        }  
+        }
       },
       datePickerSetToday(){
         var today = new Date();
         var DD = today.getDate();
-        var MM = today.getMonth() + 1; 
+        var MM = today.getMonth() + 1;
         var YYYY = today.getFullYear();
 
         if (DD < 10) {
           DD = '0' + DD;
-        } 
+        }
 
         if (MM < 10) {
           MM = '0' + MM;
-        } 
+        }
 
-        today = YYYY+ '-' + MM+ '-' + DD 
+        today = YYYY+ '-' + MM+ '-' + DD
         this.selectedDate = today;
         this.period='day';
       },
@@ -278,7 +298,7 @@
           this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
           this.getDataByOptions();
           return
-        } 
+        }
       },
       changePage(page){
         this.options.page = page
@@ -297,8 +317,9 @@
         let self = this;
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
           .then(function (response) {
-            self.setChartData(response.data.diagrama)
-            self.setTableData(response.data.calls);
+            self.setChartData(response.data.diagrama);
+          self.setTableData(response.data.calls);
+          self.setMultiDropdown(response.data.agents);
             self.datePickerSetToday()
           })
           .catch(function (error) {
@@ -306,8 +327,8 @@
           })
       },
       getDataByOptions(){
-        
-        let self = this; 
+
+        let self = this;
 
         // if(this.firstLoad){
         //   this.firstLoad = false
@@ -335,19 +356,19 @@
         if(this.options.sortDesc[0] === false){
           sortBy = 'asc'
         }
-        
+
         if(this.options.sortDesc[0] === true){
           sortBy = 'desc'
         }
 
         HttpService.methods.get(
           'http://callcentr.wellnessliving.com/report/missed/call/'+
-           startDate + '/' + 
-           period + '/' + 
-           uid + '/' + 
-           searchWord + '/' + 
-           sortField + '/' + 
-           sortBy + '/' + 
+           startDate + '/' +
+           period + '/' +
+           uid + '/' +
+           searchWord + '/' +
+           sortField + '/' +
+           sortBy + '/' +
            page
           )
           .then(function (response) {
@@ -398,6 +419,10 @@
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
       },
+      setMultiDropdown(data){
+        console.log(data);
+        this.multiple_options = data;
+      },
     },
     created: function(){
       this.getChartData();
@@ -406,7 +431,7 @@
     },
   };
 </script>
-  
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped lang="less">
   @import "../assets/less/main";
   .user{
@@ -559,7 +584,7 @@
         .v-data-table__wrapper{
           max-height: 420px !important;
         }
-      } 
+      }
       /deep/ .table-pagination{
         .v-pagination__item {
             background-color: #6C757D !important;

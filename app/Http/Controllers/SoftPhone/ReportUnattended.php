@@ -11,6 +11,7 @@ class ReportUnattended extends Controller
     private const DIAGRAM_DATA = 'diagrama';
     private const CALLS_DATA = 'calls';
     private const USER_DATA = 'user';
+    private const AGENT_IDS = 'agents';
 
     /**
      * @param null $dateStart
@@ -34,6 +35,7 @@ class ReportUnattended extends Controller
             self::CALLS_DATA => $unattendedCalls->getList(),
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::USER_DATA => $user->toArray(),
+            self::AGENT_IDS => User::getAllAgentIDFullName(),
         ];
 
         return json_encode($out);
