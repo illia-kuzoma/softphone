@@ -198,7 +198,8 @@
       selectedAgent:null,
       selectedAgentUid:null,
       multiple_value: null,
-      multiple_options:[]
+      multiple_options:[],
+      multiple_selected_value:null,
     }),
     methods: {
       getDate(timeStamp){
