@@ -375,6 +375,7 @@
       getDataByDate(startDate,period){
         var self = this
         var selected_agents_array = this.multiple_selected_value;
+        console.log(selected_agents_array)
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period)
           .then(function (response) {
             let tableData = response.data.calls
