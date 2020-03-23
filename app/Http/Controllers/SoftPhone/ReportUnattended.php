@@ -18,7 +18,7 @@ class ReportUnattended extends Controller
      * @param null $period
      * @return false|string
      */
-    public function getAll($dateStart=null, $period=null): string
+    public function getAll($dateStart=null, $period=null, $uids=null): string
     {
         $user = new User();
         $user->getData($email = 'support@wellnessliving.com');
@@ -27,8 +27,12 @@ class ReportUnattended extends Controller
                 'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
             );
         }
+        $a_uid = [];
+        if(is_string($uids))
+            $a_uid = explode(',', $uids);
 
         $unattendedCalls = new ReportUnattendedCall();
+        $unattendedCalls->setFilterByUsers($a_uid);
         $unattendedCalls->loadFromRemoteServer();
 
         $out = [

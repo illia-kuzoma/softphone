@@ -19,12 +19,24 @@ class ReportUnattended extends Model
     const PRIORITY_LOW = 'low';
     const PRIORITY_MEDIUM = 'medium';
     const PRIORITY_HIGH = 'high';
+    /**
+     * @var array
+     */
+    private $a_uid_filter = [];
 
     protected function _getIdKey(){
         return 'agent_id'; // 'user_id'
     }
     protected function _getIdVal($item){
         return (string)$item->{$this->_getIdKey()}; //
+    }
+
+    public function setFilterByUsers(array $a_uid)
+    {
+        if(!empty($a_uid))
+        {
+            $this->a_uid_filter = $a_uid;
+        }
     }
 
     public function getPeriod($period)
@@ -158,7 +170,7 @@ class ReportUnattended extends Model
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-        if($this->diffNowAndLastCreation() > 3600)
+        if($this->diffNowAndLastCreation() > 3600 )
         {
             $max_time_start_call = $this->maxTimeCreate();
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
@@ -176,6 +188,9 @@ class ReportUnattended extends Model
             {
                 $a_agent_id = User::getAllAgentIDs();
             }
+            $a_agent_id = $this->filterUsers($a_agent_id);
+            print_r($a_agent_id);exit;
+
             foreach($a_agent_id as $i_agent_id)
             {
                 $o_uc->setDataByAgent($i_agent_id);
@@ -188,5 +203,14 @@ class ReportUnattended extends Model
 
             (new ReportUnattendedGraph())->updateDB();
         }
+    }
+
+    private function filterUsers(array $a_agent_id)
+    {
+        if($this->a_uid_filter)
+        {
+            $a_agent_id = array_intersect($a_agent_id, $this->a_uid_filter);
+        }
+        return $a_agent_id;
     }
 }

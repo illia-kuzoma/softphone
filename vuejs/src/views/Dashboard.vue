@@ -376,16 +376,18 @@
       getDataByDate(startDate,period){
         var self = this
         var selected_agents_array = this.multiple_selected_value;
-        var selected_agents_array_len = selected_agents_array.length
-        console.log(selected_agents_array.length)
+        var selected_agents_array_len = selected_agents_array.length;
+        console.log(selected_agents_array.length);
         var s_agent_id = ''
-        for (var i = 0; i < selected_agents_array_len; i++){
-          s_agent_id += selected_agents_array[i].value;
-          if(i+1 !==  selected_agents_array_len){
-            s_agent_id +=",";
+        if(selected_agents_array_len)
+        {
+          for (var i = 0; i < selected_agents_array_len; i++){
+            s_agent_id += selected_agents_array[i].value;
+            if(i+1 !==  selected_agents_array_len){
+              s_agent_id +=",";
+            }
           }
         }
-        console.log(s_agent_id)
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + s_agent_id)
           .then(function (response) {
             let tableData = response.data.calls
