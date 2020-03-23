@@ -391,7 +391,11 @@
             }
           }
         }
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + '/' + s_agent_id)
+        if(s_agent_id !== "")
+        {
+          s_agent_id = "/" + s_agent_id;
+        }
+        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+ startDate + '/' + period + s_agent_id)
           .then(function (response) {
             let tableData = response.data.calls
             self.setTableData(tableData);
