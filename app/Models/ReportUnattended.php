@@ -189,7 +189,7 @@ class ReportUnattended extends Model
                 $a_agent_id = User::getAllAgentIDs();
             }
             $a_agent_id = $this->filterUsers($a_agent_id);
-            print_r($a_agent_id);exit;
+            //print_r($a_agent_id);exit;
 
             foreach($a_agent_id as $i_agent_id)
             {
