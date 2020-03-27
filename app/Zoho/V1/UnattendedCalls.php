@@ -33,8 +33,9 @@ class UnattendedCalls extends ZohoV1
 
     public function __construct($i_time_from = null, $i_time_to = null)
     {
-        $time_to = $i_time_to? $this->getTimeFormate($i_time_to): $this->getTimeFormate(time());
-        $time_from = $i_time_from? $this->getTimeFormate($i_time_from): $this->getTimeFormate($time_to - 86400 * 365);
+        $i_now = time();
+        $time_to = $i_time_to? $this->getTimeFormate($i_time_to): $this->getTimeFormate($i_now);
+        $time_from = $i_time_from? $this->getTimeFormate($i_time_from): $this->getTimeFormate($i_now - (86400 * 100));
         $this->time_from = $time_from;
         $this->time_to = $time_to;
     }

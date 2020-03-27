@@ -12,10 +12,11 @@ class ReportUnattendedGraph extends ReportUnattended
 {
     use Common;
 
+    const TABLE_NAME = "report_unattended_group";
     /**
      * Table name.
      */
-    public $table = "report_unattended_group";
+    public $table = "";
     /**
      * Выбирает данные под диаграмму по указанному временному периоду.
      *
@@ -26,15 +27,22 @@ class ReportUnattendedGraph extends ReportUnattended
     public function getList($dateStart, $period): array
     {
         [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
-        $graph_list = \DB::table( $this->table)->select([
+        $call_list_q = \DB::table( $this->table)->select([
             //'users.id as user_id',
             $this->table.'.agent_id as agent_id',
             $this->table.'.count',
             'users.first_name',
             'users.last_name'
-        ])->join('users', $this->table.'.agent_id', '=', 'users.id')
-        ->whereBetween('day', [$dateFrom, $dateTo])
-        ->orderBy('users.first_name')->get();
+        ])->join('users', $this->table.'.agent_id', '=', 'users.id');
+
+        $a_filter_by_agents = $this->getAgentIdFilter();
+        //print_r($a_filter_by_agents);
+        if($a_filter_by_agents && count($a_filter_by_agents) > 1)
+            $call_list_q->whereIn('agent_id', $a_filter_by_agents);
+
+        $call_list_q->whereBetween('day', [$dateFrom, $dateTo]);
+        $graph_list = $call_list_q->orderBy('users.first_name')->get();
+        //print_r($graph_list);exit;
         return $this->formatDataGraphList( $graph_list );
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use DB;
 use Validator;
 
 /**
@@ -11,11 +10,12 @@ use Validator;
  */
 class ReportUnattendedCall extends ReportUnattended
 {
-
     use Common;
 
-    public $table = "report_unattended_call";
     const PAGES_PER_PAGE = 20;
+    const TABLE_NAME = "report_unattended_call";
+
+    public $table = "";
 
     /**
      * Выборка пропущенных звонков списоком. С возможноснями сортировки, выборок и поиска.
@@ -29,11 +29,10 @@ class ReportUnattendedCall extends ReportUnattended
      * @param int $page
      * @return array
      */
-    public function getList($dateStart = '', $period = '', $uid = '',
+    public function getList($dateStart = '', $period = '',
                             $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                             $page = 1): array
     {
-        $uid = $this->getUid($uid);
         $searchWord = $this->getSearchWord($searchWord);
         $sortField = $this->getSortField($sortField);
         $sortBy = $this->getSortOrder($sortBy);
@@ -55,15 +54,21 @@ class ReportUnattendedCall extends ReportUnattended
             'users.first_name',
             'users.last_name'
         ])->join('users', $this->table.'.agent_id', '=', 'users.id');
+
+        $a_filter_by_agents = $this->getAgentIdFilter();
+       #print_r($a_filter_by_agents);exit;
+        if(!empty($a_filter_by_agents))
+            $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
+
         $call_list_q->where('time_start', '>=', $dateFrom);
         $call_list_q->where('time_start', '<=', $dateTo);
         $call_list_q->orderBy( $sortField, $sortBy );
-        if($uid)
+        /*if($uid)
         {
             $call_list_q->when(request($this->_getIdKey(), $uid), function ($q, $uid) {
                 return $q->where($this->_getIdKey(), $uid);
             });
-        }
+        }*/
         if($searchWord)
         {
             $call_list_q->where(function ($q) use ($searchWord)
@@ -82,7 +87,6 @@ class ReportUnattendedCall extends ReportUnattended
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
-
         return [
             'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,
@@ -131,18 +135,6 @@ class ReportUnattendedCall extends ReportUnattended
 
         return $result;
     }
-
-    /**
-     * get Diagram list
-     * @param $dateStart
-     * @param $period
-     * @return array
-     */
-    public function getDiagramList($dateStart = null, $period = null): array
-    {
-        return (new ReportUnattendedGraph())->getList($dateStart, $period);
-    }
-
 
     /**
      * Insert new Call
@@ -234,23 +226,6 @@ class ReportUnattendedCall extends ReportUnattended
         }
     }
 
-    public function maxTimeCreate(): ?string
-    {
-        return DB::table($this->table)->max('time_start');
-    }
-    public function maxRecordTimeCreate(): ?string
-    {
-        return DB::table($this->table)->max('created_at');
-    }
-    public function diffNowAndLastCreation(): int
-    {
-        $date = $this->maxRecordTimeCreate();
-        if(empty($date))
-        {
-            return 999999999;
-        }
-        return time() - strtotime($date);
-    }
     public function updateDB()
     {
 

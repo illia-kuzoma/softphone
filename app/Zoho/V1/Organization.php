@@ -10,7 +10,7 @@ class Organization extends ZohoV1
         $organizations = $this->request(
             "https://desk.zoho.com/api/v1/organizations"
         );
-        if(!is_array($organizations))
+        if(empty($organizations))
         {
             throw new \Exception(sprintf("Organizations list is empty!"));
         }

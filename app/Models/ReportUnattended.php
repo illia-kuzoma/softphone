@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReportUnattended extends Model
 {
+    const TABLE_NAME = '';
     const DATE_DAY_FORMAT = 'Y-m-d';
     const DATE_TIME_FORMAT = "Y-m-d H:i:s";
     const FIELD_TIME_CREATE = 'time_start';
@@ -22,27 +23,48 @@ class ReportUnattended extends Model
     /**
      * @var array
      */
-    private $a_uid_filter = [];
+    private $a_agent_id_filter = [];
 
-    protected function _getIdKey(){
+    protected $table = '';
+
+    /**
+     * ReportUnattended constructor.
+     * @param array $a_agent_id_filter
+     */
+    public function __construct(array $a_agent_id_filter = [])
+    {
+        $this->table = static::TABLE_NAME;
+        $this->a_agent_id_filter = $a_agent_id_filter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAgentIdFilter(): array
+    {
+        return $this->a_agent_id_filter;
+    }
+
+    protected function _getIdKey()
+    {
         return 'agent_id'; // 'user_id'
     }
-    protected function _getIdVal($item){
+
+    protected function _getIdVal($item)
+    {
         return (string)$item->{$this->_getIdKey()}; //
     }
 
-    public function setFilterByUsers(array $a_uid)
+    public function setAgentIdFilter(array $a_uid)
     {
-        if(!empty($a_uid))
-        {
-            $this->a_uid_filter = $a_uid;
+        if(!empty($a_uid)){
+            $this->a_agent_id_filter = $a_uid;
         }
     }
 
     public function getPeriod($period)
     {
-        if($this->checkPeriod($period))
-        {
+        if($this->checkPeriod($period)){
             $period = 'day';
         }
         return $period;
@@ -51,27 +73,27 @@ class ReportUnattended extends Model
     protected function checkPeriod($period)
     {
         return $period == '-' || !$period || !in_array($period,
-                [self::PERIOD_DAY,self::PERIOD_WEEK,self::PERIOD_MONTH,self::PERIOD_YEAR]);
+                [self::PERIOD_DAY, self::PERIOD_WEEK, self::PERIOD_MONTH, self::PERIOD_YEAR]);
     }
 
     public function getDateFromAndTo($dateStart, $period)
     {
-        $dateStart = strtotime( $dateStart );
-        $dateFrom = $dateTo = date( self::DATE_DAY_FORMAT, $dateStart) ;
+        $dateStart = strtotime($dateStart);
+        $dateFrom = $dateTo = date(self::DATE_DAY_FORMAT, $dateStart);
         // set period
         $currentDayOfWeek = date('w', $dateStart);
-        switch (strtolower($period)) {
+        switch(strtolower($period)){
             case self::PERIOD_WEEK:
-                $dateFrom = (date( self::DATE_DAY_FORMAT, strtotime( '-' . $currentDayOfWeek . ' days',  $dateStart ) ));
-                $dateTo   = (date( self::DATE_DAY_FORMAT, strtotime( '+' . ( 6 - $currentDayOfWeek ) . ' days', $dateStart ) ));
+                $dateFrom = (date(self::DATE_DAY_FORMAT, strtotime('-' . $currentDayOfWeek . ' days', $dateStart)));
+                $dateTo = (date(self::DATE_DAY_FORMAT, strtotime('+' . (6 - $currentDayOfWeek) . ' days', $dateStart)));
                 break;
             case self::PERIOD_MONTH:
-                $dateFrom = (date(self::DATE_DAY_FORMAT, strtotime('first day of this month', $dateStart) ));
-                $dateTo = (date(self::DATE_DAY_FORMAT, strtotime('last day of this month', $dateStart) ));
+                $dateFrom = (date(self::DATE_DAY_FORMAT, strtotime('first day of this month', $dateStart)));
+                $dateTo = (date(self::DATE_DAY_FORMAT, strtotime('last day of this month', $dateStart)));
                 break;
             case self::PERIOD_YEAR:
-                $dateFrom = (date(self::DATE_DAY_FORMAT, strtotime('first day of January', $dateStart) ));
-                $dateTo = (date(self::DATE_DAY_FORMAT, strtotime('last day of December', $dateStart) ));
+                $dateFrom = (date(self::DATE_DAY_FORMAT, strtotime('first day of January', $dateStart)));
+                $dateTo = (date(self::DATE_DAY_FORMAT, strtotime('last day of December', $dateStart)));
                 break;
             case self::PERIOD_DAY:
             default:
@@ -82,8 +104,7 @@ class ReportUnattended extends Model
 
     public function getUid($uid)
     {
-        if($this->checkUid($uid))
-        {
+        if($this->checkUid($uid)){
             $uid = null;
         }
         return $uid;
@@ -97,8 +118,7 @@ class ReportUnattended extends Model
     public function getSearchWord($word)
     {
         $word = htmlspecialchars($word);
-        if($this->checkSearchWord($word))
-        {
+        if($this->checkSearchWord($word)){
             $word = '';
         }
         return $word;
@@ -119,7 +139,7 @@ class ReportUnattended extends Model
 
     protected function checkSortField($field)
     {
-        return !in_array(strtolower($field),[self::FIELD_TIME_CREATE,'contact', 'first_name', 'business_name']);
+        return !in_array(strtolower($field), [self::FIELD_TIME_CREATE, 'contact', 'first_name', 'business_name']);
     }
 
     public function getSortOrder($order)
@@ -132,19 +152,18 @@ class ReportUnattended extends Model
 
     protected function checkSortBy($by)
     {
-        return !in_array(strtolower($by),[self::ORDER_ASC,self::ORDER_DESC]);
+        return !in_array(strtolower($by), [self::ORDER_ASC, self::ORDER_DESC]);
     }
 
     public function getPage($page)
     {
-        if($this->checkPage($page))
-        {
+        if($this->checkPage($page)){
             $page = 1;
         }
         return $page;
     }
 
-    protected function checkPage(string $page)
+    protected function checkPage($page)
     {
         $page = (int)$page;
         return (int)$page < 1;
@@ -152,8 +171,7 @@ class ReportUnattended extends Model
 
     protected function getDateStart($dateStart)
     {
-        if($this->checkDate($dateStart))
-        {
+        if($this->checkDate($dateStart)){
             $dateStart = date(self::DATE_DAY_FORMAT);
         }
         return $dateStart;
@@ -170,34 +188,31 @@ class ReportUnattended extends Model
         // Делаю запросы к Зохо только если разница текущего врмеени и
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
-        if($this->diffNowAndLastCreation() > 3600 )
-        {
-            $max_time_start_call = $this->maxTimeCreate();
+        $i_diff_dates = $this->diffNowAndLastCreation(ReportUnattendedCall::TABLE_NAME);
+        if($i_diff_dates > 3600){
+            $max_time_start_call = $this->maxTimeCreate(ReportUnattendedCall::TABLE_NAME);
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
-            $o_uc = new UnattendedCalls(strtotime($max_time_start_call." -1 day"));
+            $o_uc = new UnattendedCalls(strtotime($max_time_start_call . " -1 day"));
             $a_agent_id = [];
             $o_users = new User();
-            if($this->diffNowAndLastCreation() > 100000)
-                // С головы придуманное число. Идея в том что навряд ли агенты будут создаваться часто.
+            if($i_diff_dates > 100000)// С головы придуманное число. Идея в том что навряд ли агенты будут создаваться часто.
             {
                 $users_agent = $o_uc->getAgentsList();
                 $a_agent_id = array_column($users_agent, 'user_id');
                 $o_users->insert($users_agent);
-            }
-            else
-            {
+            }else{
                 $a_agent_id = User::getAllAgentIDs();
             }
             $a_agent_id = $this->filterUsers($a_agent_id);
             //print_r($a_agent_id);exit;
 
-            foreach($a_agent_id as $i_agent_id)
-            {
+            $o_calls = new ReportUnattendedCall();
+            foreach($a_agent_id as $i_agent_id){
                 $o_uc->setDataByAgent($i_agent_id);
                 // In optimization purposes.
                 $o_users->insert($o_uc->getAUsersClient());
                 $o_uc->setAUsersClient([]);
-                $this->insert($o_uc->getAUnattended());
+                $o_calls->insert($o_uc->getAUnattended());
                 $o_uc->setAUnattended([]);
             }
 
@@ -207,10 +222,45 @@ class ReportUnattended extends Model
 
     private function filterUsers(array $a_agent_id)
     {
-        if($this->a_uid_filter)
-        {
-            $a_agent_id = array_intersect($a_agent_id, $this->a_uid_filter);
+        if($this->a_agent_id_filter){
+            $a_agent_id = array_intersect($a_agent_id, $this->a_agent_id_filter);
         }
         return $a_agent_id;
+    }
+
+    /**
+     * get Diagram list
+     * @param $dateStart
+     * @param $period
+     * @return array
+     */
+    public function getDiagramList($dateStart = null, $period = null): array
+    {
+        return (new ReportUnattendedGraph($this->getAgentIdFilter()))->getList($dateStart, $period);
+    }
+
+    public function getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page): array
+    {
+        return (new ReportUnattendedCall($this->getAgentIdFilter()))->getList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
+    }
+
+    public function maxTimeCreate($table): ?string
+    {
+        // TODO if column doesn't exists - please create its manually.
+        return \DB::table($table)->max('time_start');
+    }
+
+    public function maxRecordTimeCreate($table): ?string
+    {
+        return \DB::table($table)->max('created_at');
+    }
+
+    public function diffNowAndLastCreation($table): int
+    {
+        $date = $this->maxRecordTimeCreate($table);
+        if(empty($date)){
+            return 999999999;
+        }
+        return time() - strtotime($date);
     }
 }

@@ -3,6 +3,7 @@ namespace App\Zoho\V1;
 
 use App\Zoho\Auth;
 use App\Zoho\Config;
+use App\Zoho\Log;
 use zcrmsdk\crm\utility\ZCRMConfigUtil;
 
 class ZohoV1
@@ -19,7 +20,7 @@ class ZohoV1
     {
         if (!isset($data['data']))
         {
-            throw new \Exception(sprintf("Response in %s has error!\n %s", __METHOD__, json_encode($data)));
+            throw new \Exception(sprintf("Response structure in %s has error!\n %s", __METHOD__, json_encode($data)));
         }
     }
 
@@ -35,6 +36,8 @@ class ZohoV1
         if(($s_result = curl_exec($ch)) === false)
         {
             Log::put(sprintf("Error curl: %s", curl_error($ch)));
+            throw new \Exception(sprintf("Response in %s has error!\n %s\n code err is %d\n",
+                __METHOD__, curl_error($ch), curl_error($ch)));
         }
         else
         {

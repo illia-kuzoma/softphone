@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
-use App\Models\ReportUnattendedCall;
 use App\Models\User;
 
 class ReportUnattended extends Controller
@@ -27,16 +26,15 @@ class ReportUnattended extends Controller
                 'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
             );
         }
-        $a_uid = [];
+        $a_agent_id = [];
         if(is_string($uids))
-            $a_uid = explode(',', $uids);
+            $a_agent_id = explode(',', $uids);
 
-        $unattendedCalls = new ReportUnattendedCall();
-        $unattendedCalls->setFilterByUsers($a_uid);
+        $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $unattendedCalls->loadFromRemoteServer();
 
         $out = [
-            self::CALLS_DATA => $unattendedCalls->getList(),
+            self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::USER_DATA => $user->toArray(),
             self::AGENT_IDS => User::getAllAgentIDFullName(),
@@ -48,7 +46,7 @@ class ReportUnattended extends Controller
     /**
      * @param null $dateStart
      * @param null $period
-     * @param null $uid
+     * @param null $uids
      * @param null $searchWord
      * @param null $sortField
      * @param string $sortBy
@@ -58,12 +56,31 @@ class ReportUnattended extends Controller
      */
     public function getCalls($dateStart=null, $period=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
-        $unattendedCalls = new ReportUnattendedCall();
+        $a_agent_id = [];
+
+        if($uid == '-' || !$uid){
+            $a_agent_id = [];
+        }
+        elseif(is_string($uid))
+        {
+            $a_agent_id = explode(',', $uid);
+            if(count($a_agent_id) > 1)
+            {
+                // Значит фильтруем по несольким юзерам
+            }
+            elseif(count($a_agent_id) == 1){
+                $a_agent_id = [(int)$a_agent_id[0]];
+            }
+        }
+        elseif(is_int($uid))
+            $a_agent_id = [$uid];
+
+        $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $unattendedCalls->loadFromRemoteServer();
 
         $out = [
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
-            self::CALLS_DATA => $unattendedCalls->getList($dateStart, $period, $uid, $searchWord, $sortField, $sortBy, $page)
+            self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page)
         ];
         return json_encode($out);
     }
