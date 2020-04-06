@@ -8,8 +8,8 @@ class AuthByToken extends Auth
     /**
      * @var string list of scopes to enter to zoho console to get grant Token. It field doesn't use in code.
      */
-    private static $scopes = 'ZohoCRM.modules.ALL,ZohoCRM.users.ALL,ZohoCRM.org.ALL,ZohoCRM.settings.ALL,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ';
-    private static $grantToken = '1000.3a4b523d7d4c150d4516f193d72e2cc1.25d6b295a69ab887944b9dbfb1985545';
+    private static $scopes = 'ZohoCRM.modules.ALL,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ';
+    private static $grantToken = '1000.1886a50678947c94b3c342079d069f1a.15b7801b55c582c303cb61aa928e751a';
     private static $refreshToken = '';
     public $token_file_name = '';
     /**

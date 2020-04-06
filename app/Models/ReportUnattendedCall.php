@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Zoho\V2\Contacts;
 use Validator;
 
 /**
@@ -94,12 +95,31 @@ class ReportUnattendedCall extends ReportUnattended
         ];
     }
 
-    private function getContactName($s_contact)
+    private function getContactName($s_contact): string
     {
         $a_contact = json_decode($s_contact, true);
         $a_contact = array_diff($a_contact, array(''));
         $a_contact['name'] = implode(' ', array_unique(explode(' ', $a_contact['name'])));
         return implode(', ', $a_contact);
+    }
+
+    private $a_business_data = [];
+    public function getBusinessData($call): array
+    {
+        $a_business_data = [];
+        if(empty($call->business_name))
+        {
+            // Если данных в БД нет
+            $a_business = $this->parseBusinessData($call);
+        }
+        else
+        {
+            // Если данные по бизнесу в БД есть.
+            $a_business = json_decode($call->business_name, true);
+        }
+        $a_business_data['name'] = $a_business['name'];
+        $a_business_data['link'] = $a_business['link'];
+        return $a_business_data;
     }
 
     /**
@@ -112,14 +132,16 @@ class ReportUnattendedCall extends ReportUnattended
     private function formatDataCallList($data): array
     {
         $result = [];
-        if ( ! empty( $data ) ) {
-            foreach ( $data as $item ) {
-
+        if ( ! empty( $data ) )
+        {
+            foreach ( $data as $item )
+            {
+                $business_data = $this->getBusinessData($item);
                 $result[] = [
                     'uid'         => $this->_getIdVal($item),//$item->user_id,
                     'business'    => [
-                        'business_name' => $item->business_name,
-                        'business_link' => "https://zoho.url.com", // new field in DB ???
+                        'business_name' => $business_data['name'],
+                        'business_link' => $business_data['link'],
                     ],
                     'contact'     => [
                         'contact_name' => $this->getContactName($item->contact),
@@ -133,7 +155,24 @@ class ReportUnattendedCall extends ReportUnattended
             }
         }
 
+        $this->updateBusinessName();
+
         return $result;
+    }
+
+    public function updateBusinessName()
+    {
+        if($this->a_business_data)
+        {
+            foreach($this->a_business_data as $id=>$s_business)
+            {
+                \DB::table( $this->table )->where('id','=', $id)->update(
+                    [
+                        'business_name' => $s_business,
+                    ]
+                );
+            }
+        }
     }
 
     /**
@@ -229,6 +268,61 @@ class ReportUnattendedCall extends ReportUnattended
     public function updateDB()
     {
 
+    }
+
+    private function getBusinessDataByContacts($a_contact)
+    {
+        $o_zoho_contacts = new Contacts();
+        $a_contacts = [];
+        #print_r($a_contact);exit;
+        foreach($a_contact as $field=>$value){
+
+            if(!$value)
+                continue;
+
+            switch($field)
+            {
+                case 'email':
+                    $a_contacts = $o_zoho_contacts->searchInContactsByEmail($value);
+                    break;
+                case 'phone':
+                    $a_contacts = $o_zoho_contacts->searchInContactsByPhone($value);
+                    break;
+                /*case 'name':
+                    $o_zoho_contacts->searchInContactsByEmail($value);
+                    break;*/
+            }
+            if($a_contacts)
+            {
+                break;
+            }
+        }
+        return $a_contacts;
+    }
+
+    /**
+     * Getting business data from remote server.
+     * @param $call
+     * @return array
+     */
+    private function parseBusinessData($call)
+    {
+        $a_contact = json_decode($call->contact, true);
+        if(empty($a_contact['phone']))
+        {
+            $a_contact['phone'] = $call->phone;
+        }
+        $a_business = $this->getBusinessDataByContacts($a_contact);
+        if(empty($a_business['name']))
+        {
+            $a_business['name'] = $a_contact['name'];
+        }
+        if(empty($a_business['link']))
+        {
+            $a_business['link'] = null;
+        }
+        $this->a_business_data[$call->id] = json_encode($a_business);
+        return $a_business;
     }
 
 }

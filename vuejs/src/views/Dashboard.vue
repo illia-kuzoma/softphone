@@ -70,7 +70,7 @@
             <div class="controls-container">
                 <div>
                     <label class="typo__label">Select agents you need:</label>
-                    <multiselect v-model="multiple_selected_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
+                    <multiselect @close="setUsers" v-model="multiple_selected_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
                         <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span></template>
                     </multiselect>
                 </div>
@@ -207,6 +207,7 @@
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
+      period:'today'
     }),
     methods: {
       getDate(timeStamp){
@@ -215,7 +216,12 @@
         var time = moment(utc).format('hh:mm:ss a');
         return time+" "+date
       },
+      setUsers(){
+        this.setDate(this.period);
+      }
+      ,
       setDate(range){
+        //this.period = range;
         this.searchText = '';
         switch(range) {
           case 'today':
