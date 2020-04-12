@@ -16,9 +16,14 @@
             <div class="controls-container">
                 <div class="date-container">
                     <button
-                        class="button button-li date-item color-grey color-dark"
+                        class="button button-li date-item color-grey"
                         v-on:click="setDate('today'); setActive($event)"
                     >Today
+                    </button>
+                    <button
+                        class="button button-li date-item color-grey"
+                        v-on:click="setBeforeDate(); setActive($event)"
+                    > &#9666;
                     </button>
 
                     <date-picker
@@ -31,11 +36,16 @@
 
                     <button
                         class="button button-li date-item color-grey"
+                        v-on:click="setNextDate(); setActive($event)"
+                    > &#9656;
+                    </button>
+                    <button
+                        class="button button-li date-item color-grey"
                         v-on:click="setDate('day'); setActive($event)"
                     >Day
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
+                        class="button button-li date-item color-grey color-dark"
                         v-on:click="setDate('week'); setActive($event)"
                     >Week
                     </button>
@@ -84,6 +94,7 @@
                     :is-resizable="true"
                     :use-css-transforms="true"
                     @clicked="getAgentFromChart"
+                    @close="ffFff"
                     class="chart">
                 </line-chart>
             </div>
@@ -207,7 +218,7 @@
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
-      period:'today'
+      period:'week'
     }),
     methods: {
       getDate(timeStamp){
@@ -217,13 +228,18 @@
         return time+" "+date
       },
       setUsers(){
+        this.selectedAgentUid = null;
         this.setDate(this.period);
+      },
+      ffFff(){
+        console.log("!!!!!!!!");
       }
       ,
       setDate(range){
-        //this.period = range;
+
+        this.period=range;
         this.searchText = '';
-        switch(range) {
+        switch(this.period) {
           case 'today':
 
             var today = new Date();
@@ -264,9 +280,18 @@
             this.getDataByDate(this.selectedDate,'year')
             this.period='year';
             break;
+          default:
+            this.period = 'week';
+            break;
         }
       },
-      datePickerSetToday(){
+      setBeforeDate(){
+        console.log("setBeforeDate "+this.period)
+      },
+      setNextDate(){
+        console.log("setNextDate "+this.period)
+      },
+      datePickerSetDefaultPeriod(period){
         var today = new Date();
         var DD = today.getDate();
         var MM = today.getMonth() + 1;
@@ -282,7 +307,8 @@
 
         today = YYYY+ '-' + MM+ '-' + DD
         this.selectedDate = today;
-        this.period='day';
+        console.log(period);
+        this.period=period;
       },
       setActive(ev){
         document.querySelector('.color-dark').classList.remove('color-dark');
@@ -295,7 +321,7 @@
       getAgentFromChart(element){
         if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
           this.selectedAgent = null;
-          this.selectedAgentUid = null;
+          this.selectedAgentUid = this.s_agent_id || null;
           this.getDataByOptions();
           return
         }
@@ -322,12 +348,12 @@
       },
       getChartData(){
         let self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
+        HttpService.methods.get('http://softphone/report/missed')
         .then(function (response) {
           self.setChartData(response.data.diagrama);
           self.setTableData(response.data.calls);
           self.setMultiDropdown(response.data.agents);
-          self.datePickerSetToday()
+          self.datePickerSetDefaultPeriod(self.period)
         })
         .catch(function (error) {
           console.log(error)
@@ -370,7 +396,7 @@
         }
 
         HttpService.methods.get(
-          'http://callcentr.wellnessliving.com/report/missed/call/'+
+          'http://softphone/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -395,7 +421,7 @@
         {
           ss_agent_id = "/" + self.s_agent_id
         }
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+
+        HttpService.methods.get('http://softphone/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           let tableData = response.data.calls
@@ -408,7 +434,7 @@
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
+        HttpService.methods.get('http://softphone/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);
@@ -456,11 +482,11 @@
             }
           }
         }
-        if(s_agent_id !== "")
+       /* if(s_agent_id !== "")
         {
           //s_agent_id = "/" + s_agent_id;
           this.selectedAgentUid = null;
-        }
+        }*/
         //console.log(s_agent_id);
         this.s_agent_id = s_agent_id;
       },

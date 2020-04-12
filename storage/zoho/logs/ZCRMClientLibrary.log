@@ -1109,3 +1109,7 @@ Trace::#0 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonA
 2020-04-05 19:30:08 INFO: Access Token has expired. Hence refreshing.
 2020-04-05 20:38:28 INFO: Access Token has expired. Hence refreshing.
 2020-04-06 05:24:49 INFO: Access Token has expired. Hence refreshing.
+2020-04-09 14:19:04 INFO: Access Token has expired. Hence refreshing.
+2020-04-12 15:44:45 INFO: Access Token has expired. Hence refreshing.
+2020-04-12 16:56:39 INFO: Access Token has expired. Hence refreshing.
+2020-04-12 18:46:28 INFO: Access Token has expired. Hence refreshing.

@@ -65,7 +65,7 @@ class ReportUnattended extends Model
     public function getPeriod($period)
     {
         if($this->checkPeriod($period)){
-            $period = 'day';
+            $period = self::PERIOD_WEEK;
         }
         return $period;
     }
