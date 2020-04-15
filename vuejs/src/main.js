@@ -13,7 +13,7 @@ Vue.use(Vuex)
 Vue.use(VueLoading, {
     //dark: true, // default false
     text: 'Loading ...', // default 'Loading'
-    loading: true, // default false
+    loading: false, // default false
     //customLoader: myVueComponent, // replaces the spinner and text with your own
     //background: 'rgb(215,255,215)', // set custom background
     classes: ['myclass'] // array, object or string

@@ -34,7 +34,7 @@
 
               </v-toolbar>
               <v-card-text>
-                
+
                 <v-form class='form'>
                   <p class='placeholder'>EMAIL</p>
 
@@ -49,7 +49,7 @@
                   <div style='display:flex; justify-content:space-between'>
                     <p class='placeholder'>PASSWORD</p>
                     <p
-                      class="placeholder forgot" 
+                      class="placeholder forgot"
                       @click="forgotFunc">
                       Forgot Password?
                     </p>
@@ -105,11 +105,13 @@
       },
       login(){
         var self = this
+        this.$loading(true);
         HttpService.methods.post('http://callcentr.wellnessliving.com/auth',{
             email:this.email,
             password:this.password,
           })
           .then(function (response) {
+            self.$loading(false);
             if(response.data.user){
               self.$store.state.user = response.data.user
               router.push('/dashboard')
