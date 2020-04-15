@@ -180,7 +180,6 @@
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
 
-
   export default {
     name: 'HelloWorld',
     components: {
@@ -218,7 +217,7 @@
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
-      period:'week'
+      period:'week',
     }),
     methods: {
       getDate(timeStamp){
@@ -348,8 +347,10 @@
       },
       getChartData(){
         let self = this;
+        this.$loading(true);
         HttpService.methods.get('http://softphone/report/missed')
         .then(function (response) {
+          self.$loading(false);
           self.setChartData(response.data.diagrama);
           self.setTableData(response.data.calls);
           self.setMultiDropdown(response.data.agents);
@@ -395,6 +396,7 @@
           sortBy = 'desc'
         }
 
+        this.$loading(true);
         HttpService.methods.get(
           'http://softphone/report/missed/call/'+
           startDate + '/' +
@@ -406,6 +408,7 @@
           page
         )
         .then(function (response) {
+          self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
         })
@@ -421,9 +424,11 @@
         {
           ss_agent_id = "/" + self.s_agent_id
         }
+        this.$loading(true);
         HttpService.methods.get('http://softphone/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
+          self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
           self.setChartData(response.data.diagrama)
