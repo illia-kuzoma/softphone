@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -11,10 +12,11 @@ class User extends Model
     use Common;
     const ROLE_AGENT = 'agent';
     const ROLE_USER = 'user';
+    const ROLE_ADMIN = 'admin';
 
     public $table = "users";
     /**
-     * @var
+     * @var User
      */
     private $user;
 
@@ -37,10 +39,33 @@ class User extends Model
      */
     public function getData($email)
     {
-        $getUserByEmail = \DB::table( $this->table)->where( 'email', $email  )->first();
+        $getUserByEmail = \DB::table( $this->table)->where( 'email','=', $email  )->first();
+        if(!$getUserByEmail){
+            throw new \Exception("User didn't exist!");
+        }
         $this->user     = $getUserByEmail;
     }
 
+    public function getUserByLoginAndPass($email, $pass)
+    {
+        $this->getData($email);
+        if($this->user->password != md5($pass)){
+            throw new \Exception("User password is wrong!");
+        }
+    }
+
+    public function getUserByToken($token)
+    {
+        if(!$token || $token==='-')
+        {
+            throw new \Exception("User not authorized!");
+        }
+        $getUserByToken = \DB::table( $this->table)->where('token', '=', $token)->first();
+        if(!$getUserByToken){
+            throw new \Exception("User by token didn't exist!");
+        }
+        $this->user     = $getUserByToken;
+    }
     /**
      * @return array
      */
@@ -212,4 +237,15 @@ class User extends Model
         return (string)$this->{$this->_getIdKey()}; //
     }
 
+    public function updateToken($s_token)
+    {
+        \DB::table( $this->table)->where( 'email', $this->user->email  )
+            ->update(['token'=>$s_token, 'date_login'=> Carbon::now()]);
+        $this->user->token = $s_token;
+    }
+
+    public function getToken()
+    {
+        return $this->user->token;
+    }
 }

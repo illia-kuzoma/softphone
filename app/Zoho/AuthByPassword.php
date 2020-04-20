@@ -35,7 +35,7 @@ class AuthByPassword extends Auth
         if(file_exists($token_path) && !$new){
             $token = file_get_contents($token_path);
             if($token){
-                return $token;
+                return trim($token);
             }
         }else{
             Log::put(sprintf("file_put_contents %s", $token_path));
@@ -45,12 +45,12 @@ class AuthByPassword extends Auth
 
         $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
-        echo $param."\n";
+        //echo $param."\n";
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         $result = curl_exec($ch);
-        var_dump($result);
+        //var_dump($result);
         if(($result) === false){
 
             echo 'Ошибка curl: ' . curl_error($ch);
@@ -65,9 +65,10 @@ class AuthByPassword extends Auth
             $cmp = strcmp($authToken['0'], "AUTHTOKEN");
             #echo $anArray['2'] . "";
             if($cmp == 0){
+                $token = trim($authToken['1']);
                 #echo "Created Authtoken is : " . $authToken['1'];
-                file_put_contents($token_path, $authToken['1']);
-                return $authToken['1'];
+                file_put_contents($token_path, $token);
+                return $token;
             }
         }
         curl_close($ch);
@@ -76,8 +77,17 @@ class AuthByPassword extends Auth
 
     public function getMyRecords($username = null)
     {
+        try{
+            $token = $this->getToken();
+        }
+        catch(\Exception $e)
+        {
+            return redirect()->action(
+                'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
+            );
+        }
         $this->recheckUserName($username);
-        $param = 'authtoken=' . $this->getToken() . '&scope=crmapi&Email=' . $username . '&fromIndex=1&toIndex=2';
+        $param = 'authtoken=' . $token . '&scope=crmapi&Email=' . $username . '&fromIndex=1&toIndex=2';
         echo $param;
         $ch = curl_init("https://crm.zoho.com/crm/private/xml/Leads/getMyRecords");
         curl_setopt($ch, CURLOPT_POST, true);

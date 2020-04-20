@@ -22,7 +22,7 @@ Route::get('/test', 'SoftPhone\Auth@getTest');
 
 Route::post('/auth', 'SoftPhone\Auth@postAuth');
 Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
-    return redirect(404);
+    return redirect('/');
 });
 /*Route::group([
     'middleware' => ['api', 'cors'],
@@ -36,10 +36,11 @@ Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
 // getCalls
 Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportUnattended@getCalls');
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
-    return redirect(404);
+    return redirect('/');
 });
 // getAll
-Route::get('/report/missed/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportUnattended@getAll');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{startDate?}/{period?}/{uids?}', static function () {
-    return redirect(404);
+Route::get('/report/missed/{token?}/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportUnattended@getAll');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{token?}/{startDate?}/{period?}/{uids?}', static function () {
+    return redirect('/');
 });
+return redirect('/');

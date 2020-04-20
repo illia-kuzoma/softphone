@@ -13,17 +13,28 @@ class ReportUnattended extends Controller
     private const AGENT_IDS = 'agents';
 
     /**
+     * @param $token
      * @param null $dateStart
      * @param null $period
-     * @return false|string
+     * @param null $uids
+     * @return string
+     * @throws \Exception
      */
-    public function getAll($dateStart=null, $period=null, $uids=null): string
+    public function getAll($token, $dateStart=null, $period=null, $uids=null): string
     {
-        $user = new User();
-        $user->getData($email = 'support@wellnessliving.com');
-        if(!$user->checkToken()){
+        try{
+            $user = new User();
+            $user->getUserByToken($token);
+            if(!$user->checkToken()){
+                return redirect()->action(
+                    'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
+                );
+            }
+        }
+        catch(\Exception $e)
+        {
             return redirect()->action(
-                'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
+                'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
             );
         }
         $a_agent_id = [];
@@ -38,6 +49,7 @@ class ReportUnattended extends Controller
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::USER_DATA => $user->toArray(),
             self::AGENT_IDS => User::getAllAgentIDFullName(),
+            'token' => $user->getToken()
         ];
 
         return json_encode($out);

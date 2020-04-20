@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Zoho\AuthByPassword;
 use Illuminate\Http\Request;
 
@@ -41,11 +42,32 @@ class Auth extends Controller
      */
     public function postAuth(Request $request)
     {
-        $zo = new AuthByPassword();
-        $res = $zo->getToken($request->post('email'));
+        try{
+
+            $zo = new AuthByPassword();
+            $res = $zo->getToken($request->post('email'));
+        }
+        catch(\Exception $e)
+        {
+            return redirect()->action(
+                'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
+            );
+        }
         if($res)
         {
-            return \Redirect::to('/report/missed/');
+            try{
+                $user = new User();
+                $user->getUserByLoginAndPass($request->post('email'),$request->post('password'));
+                $user->updateToken($res);
+            }
+            catch(\Exception $e)
+            {
+                return redirect()->action(
+                    'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
+                );
+            }
+            //echo '/report/missed/'.$user->getToken();exit;
+            return \Redirect::to('/report/missed/'.$user->getToken());
         }
         return redirect()->action(
             'SoftPhone\Auth@getAuth', ['message' => "Please enter correct login and password."]

@@ -39,7 +39,8 @@ class Organization extends ZohoV1
 
     public function getIdWellnessliving()
     {
-        $org_id = $this->getOrgId(self::WELNESSLIVING);
+        $org_id = 57033616; // Если перестанет работать то раскоментируй строку ниже.
+        // $org_id = $this->getOrgId(self::WELNESSLIVING);
         if(!$org_id)
         {
             throw new \Exception(sprintf("Org Id >>> %s <<< isn't correct!",$org_id));

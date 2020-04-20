@@ -22,9 +22,16 @@
                     </button>
                     <button
                         class="button button-li date-item color-grey"
-                        v-on:click="setBeforeDate(); setActive($event)"
+                        v-on:click="setBeforeDate(); setArrowActive($event)"
                     > &#9666;
                     </button>
+
+                    <!--
+                        :format="momentFormat"
+                        valueType="format"
+                        placeholder="placeholder1"
+                        v-on:change="dateSelected()"
+                     -->
 
                     <date-picker
                         v-model="selectedDate"
@@ -32,11 +39,12 @@
                         class="date-item"
                         valueType="YYYY-MM-DD"
                         format="DD/MM/YYYY"
+                        v-on:change="dateSelected()"
                     ></date-picker>
 
                     <button
                         class="button button-li date-item color-grey"
-                        v-on:click="setNextDate(); setActive($event)"
+                        v-on:click="setNextDate(); setArrowActive($event)"
                     > &#9656;
                     </button>
                     <button
@@ -179,6 +187,7 @@
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
+  import router from '../router'
 
   export default {
     name: 'HelloWorld',
@@ -218,8 +227,61 @@
       prevIcon: '<',
       s_agent_id: '',
       period:'week',
+      // Use moment.js instead of the default
+      /*momentFormat: {
+        // Date to String
+        stringify: (date) => {
+          console.log(parent.parent.period);
+          console.log(date);
+          //console.log("period = "+ this.getPeriod());
+          console.log(moment(date));
+          console.log(moment(date).format('YYYY') );
+          console.log(moment(date).format('MMMM') );
+          console.log(moment(date).format('DD') );
+          console.log(moment(date).format('dddd') );
+          return date ? moment(date).format('MM/dd/YYY') : new Date()
+        },
+        // String to Date
+        parse: (value) => {
+          console.log("parse");
+          console.log(value);
+          let arr = value.split(' | ');
+          console.log(arr[0]);
+          console.log(arr[1]);
+          let period = arr[1];
+          let date = arr[0];
+          console.log(date);
+          let format =  'MM/dd/YYY';
+          if(period === 'year')
+          {
+            format = "YYYY"
+          }
+          else if(period === 'month')
+          {
+            format = "MMMM/YYYY"
+          }
+          else if(period === 'week')
+          {
+            format = "w ddd YYYY"
+          }
+          else if(period === 'day')
+          {
+            format = "MMMM"
+          }
+
+          console.log(date);
+          console.log(format);
+          console.log(moment(date, format).toDate());
+          return date ? moment(date, format).toDate() : null
+        }
+      },
+      date_o:null*/
     }),
     methods: {
+      getPeriod()
+      {
+        return this.period;
+      },
       getDate(timeStamp){
         var utc = new Date(timeStamp * 1000)
         var date = moment(utc).format('ll');
@@ -255,27 +317,32 @@
             }
 
             today = YYYY + '-' + MM + '-' + DD;
+            console.log("today=" + today);
             this.selectedDate = today;
             this.getDataByDate(this.selectedDate,'day')
             this.period='day';
             break;
 
           case 'day':
+            console.log("day=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'day')
             this.period='day';
             break;
 
           case 'week':
+            console.log("week=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'week')
             this.period='week';
             break;
 
           case 'month':
+            console.log("month=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'month')
             this.period='month';
             break;
 
           case 'year':
+            console.log("year=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'year')
             this.period='year';
             break;
@@ -285,10 +352,76 @@
         }
       },
       setBeforeDate(){
-        console.log("setBeforeDate "+this.period)
+        console.log("setBeforeDate "+this.period +" "+ this.selectedDate)
+        let selected_date = moment(this.selectedDate, "YYYY-MM-DD").toDate()/*.add(1, 'days')*/;
+
+        /*console.log(selected_date);
+        let before_date = moment(moment(selected_date.setDate(selected_date.getDate()-1))
+        .format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
+        console.log(before_date);
+        console.log(moment(selected_date.setDate(selected_date.getDate()-1))
+        .format("YYYY-MM-DD"));*/
+        /*console.log(before_date.getDay());
+        console.log(before_date);
+        let DD = before_date.getDay();
+        let MM = before_date.getMonth() + 1;
+        let YYYY = before_date.getFullYear();
+
+        if (DD < 10) {
+          DD = '0' + DD;
+        }
+
+        if (MM < 10) {
+          MM = '0' + MM;
+        }
+
+        let s_tomorrow = YYYY + '-' + MM + '-' + DD;*/
+        switch (this.period) {
+          case 'today':
+          case 'day':
+
+            this.selectedDate = moment(selected_date.setDate(selected_date.getDate()-1))
+            .format("YYYY-MM-DD")
+            break;
+            case "week":
+              this.selectedDate = moment(selected_date.setDate(selected_date.getDate()-7))
+              .format("YYYY-MM-DD")
+              break;
+          case 'month':
+              this.selectedDate = moment(selected_date.setMonth(selected_date.getMonth()-1,selected_date.getDate()))
+              .format("YYYY-MM-DD")
+            break;
+          case 'year':
+            this.selectedDate = moment(selected_date.setFullYear(selected_date.getFullYear()-1,selected_date.getMonth(),selected_date.getDate()))
+            .format("YYYY-MM-DD")
+            break;
+        }
+        this.setDate(this.period)
       },
       setNextDate(){
-        console.log("setNextDate "+this.period)
+        console.log("setNextDate "+this.period +" " + this.selectedDate)
+        let selected_date = moment(this.selectedDate, "YYYY-MM-DD").toDate()/*.add(1, 'days')*/;
+        switch (this.period) {
+          case 'today':
+          case 'day':
+
+            this.selectedDate = moment(selected_date.setDate(selected_date.getDate()+1))
+            .format("YYYY-MM-DD")
+            break;
+          case "week":
+            this.selectedDate = moment(selected_date.setDate(selected_date.getDate()+7))
+            .format("YYYY-MM-DD")
+            break;
+          case 'month':
+            this.selectedDate = moment(selected_date.setMonth(selected_date.getMonth()+1,selected_date.getDate()))
+            .format("YYYY-MM-DD")
+            break;
+          case 'year':
+            this.selectedDate = moment(selected_date.setFullYear(selected_date.getFullYear()+1,selected_date.getMonth(),selected_date.getDate()))
+            .format("YYYY-MM-DD")
+            break;
+        }
+        this.setDate(this.period)
       },
       datePickerSetDefaultPeriod(period){
         var today = new Date();
@@ -306,12 +439,27 @@
 
         today = YYYY+ '-' + MM+ '-' + DD
         this.selectedDate = today;
-        console.log(period);
+        console.log("datePickerSetDefaultPeriod="+period);
         this.period=period;
+      },
+      setArrowActive(ev)
+      {
+        let f = document.querySelector('.color-blue');
+        if(f !== null)
+        {
+          f.classList.remove('color-blue');
+        }
+        console.log('setArrowActive');
+        ev.target.classList.add('color-blue');
       },
       setActive(ev){
         document.querySelector('.color-dark').classList.remove('color-dark');
         ev.target.classList.add('color-dark');
+        let f = document.querySelector('.color-blue');
+        if(f !== null)
+        {
+          f.classList.remove('color-blue')
+        }
       },
       search(){
         console.log();
@@ -346,19 +494,39 @@
         this.getDataByOptions()
       },
       getChartData(){
+
         let self = this;
-        this.$loading(true);
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed')
-        .then(function (response) {
-          self.$loading(false);
-          self.setChartData(response.data.diagrama);
-          self.setTableData(response.data.calls);
-          self.setMultiDropdown(response.data.agents);
-          self.datePickerSetDefaultPeriod(self.period)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+
+        let token = localStorage.token ;
+
+        if(token === '-')
+        {
+          router.push('/')
+        }
+        else {
+          this.$loading(true);
+          HttpService.methods.get('http://softphone/report/missed/'+token)
+          .then(function (response) {
+            self.$loading(false);
+            if(response.data.error===true){
+              localStorage.token = '';
+              self.isValid = true
+              alert(response.data.message)
+            }
+            self.setChartData(response.data.diagrama);
+            self.setTableData(response.data.calls);
+            self.setMultiDropdown(response.data.agents);
+            self.datePickerSetDefaultPeriod(self.period)
+            self.$store.state.user = response.data.user;
+            console.log('response.data.user');
+            console.log(response.data.user);
+            //HeaderComponent.getUserData();
+          })
+          .catch(function (error) {
+            self.$loading(false);
+            console.log(error)
+          })
+        }
       },
       getDataByOptions(){
 
@@ -398,7 +566,7 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://callcentr.wellnessliving.com/report/missed/call/'+
+          'http://softphone/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -411,6 +579,7 @@
           self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
+          self.setChartData(response.data.diagrama)
         })
         .catch(function (error) {
           console.log(error)
@@ -425,7 +594,7 @@
           ss_agent_id = "/" + self.s_agent_id
         }
         this.$loading(true);
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+
+        HttpService.methods.get('http://softphone/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
@@ -439,7 +608,7 @@
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
+        HttpService.methods.get('http://softphone/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);
@@ -495,12 +664,20 @@
         //console.log(s_agent_id);
         this.s_agent_id = s_agent_id;
       },
+        dateSelected()
+        {
+          console.log('dateSelected +');
+          console.log(this.selectedDate);
+          this.getDataByDate(this.selectedDate,this.period)
+          //this.setDate(this.period);
+         // this.selectedDate= this.selectedDate + " | " + this.period
+        }
     },
     created: function(){
       this.getChartData();
     },
     mounted () {
-    },
+    }
   };
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

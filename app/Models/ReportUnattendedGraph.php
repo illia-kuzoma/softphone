@@ -37,7 +37,7 @@ class ReportUnattendedGraph extends ReportUnattended
 
         $a_filter_by_agents = $this->getAgentIdFilter();
         //print_r($a_filter_by_agents);
-        if($a_filter_by_agents && count($a_filter_by_agents) > 1)
+        if($a_filter_by_agents && count($a_filter_by_agents) > 0)
             $call_list_q->whereIn('agent_id', $a_filter_by_agents);
 
         $call_list_q->whereBetween('day', [$dateFrom, $dateTo]);
@@ -73,6 +73,7 @@ class ReportUnattendedGraph extends ReportUnattended
                 }
             }
         }
+        //print_r($result);exit;
         return array_values($result);
     }
 

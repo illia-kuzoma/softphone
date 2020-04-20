@@ -113,15 +113,23 @@
           .then(function (response) {
             self.$loading(false);
             if(response.data.user){
-              self.$store.state.user = response.data.user
+              self.$store.state.user = response.data.user;
+
+              localStorage.token = response.data.token;
+              localStorage.user = response.data.user;
+
+              console.log(response.data.token);
+
               router.push('/dashboard')
             }
             if(response.data.error===true){
+              localStorage.token = '-';
               self.isValid = true
               alert(response.data.message)
             }
           })
           .catch(function (error) {
+            localStorage.token = '-';
             console.log(error)
           })
       },
@@ -130,6 +138,7 @@
       }
     },
     created: function(){
+      console.log("think about redirect to dashboard If token not empty")
     },
   };
 </script>
