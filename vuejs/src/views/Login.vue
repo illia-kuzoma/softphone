@@ -114,11 +114,8 @@
             self.$loading(false);
             if(response.data.user){
               self.$store.state.user = response.data.user;
-
               localStorage.token = response.data.token;
-              localStorage.user = response.data.user;
-
-              console.log(response.data.token);
+              //localStorage.user = response.data.user;
 
               router.push('/dashboard')
             }

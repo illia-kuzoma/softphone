@@ -4,7 +4,8 @@
     <div
         id="dashboard"
     >
-        <HeaderComponent/>
+        <HeaderComponent
+            :userObject='userData' />
 
         <div
             class="dashboard"
@@ -202,6 +203,7 @@
       selectedDate:null,
       dateType:'date',
       chartData:[],
+      userData:[],
       tableCallsData:[],
       serverChartData:null,
       options: {},
@@ -513,14 +515,14 @@
               self.isValid = true
               alert(response.data.message)
             }
+            // below 2 ways to set data to header
+            self.$store.state.user = response.data.user;
+            self.userData = response.data.user
+
             self.setChartData(response.data.diagrama);
             self.setTableData(response.data.calls);
             self.setMultiDropdown(response.data.agents);
             self.datePickerSetDefaultPeriod(self.period)
-            self.$store.state.user = response.data.user;
-            console.log('response.data.user');
-            console.log(response.data.user);
-            //HeaderComponent.getUserData();
           })
           .catch(function (error) {
             self.$loading(false);

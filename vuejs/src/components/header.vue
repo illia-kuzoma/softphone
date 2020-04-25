@@ -10,7 +10,7 @@
         src="../assets/images/logo-dashboard.png"
       />
       <div class="side">
-        <img 
+        <img
           v-if='userData'
           alt="user"
           :src='userData.photo_url'
@@ -19,7 +19,7 @@
           v-if='userData'
           class="menu">
           <div class="username" v-on:click='showModal'>
-            <p class="name">{{userData.first_name}} {{userData.last_name}}</p> 
+            <p class="name">{{userData.first_name}} {{userData.last_name}}</p>
             <p class="role">{{userData.role}}</p>
           </div>
           <div class="submenu" >
@@ -34,6 +34,7 @@
 <script>
   export default {
       name: 'HeaderComponent',
+        props: ["userObject"],
       data: () => ({
           isShowDropdown: false,
           userData:null,
@@ -42,10 +43,27 @@
           showModal() {
               this.isShowDropdown = true
           },
-          getUserData(){
-            var userD = this.$store.state.user
+        getUserData(){
+          var userD = this.$store.state.user
+          this.userData = userD
+        },
+        setUserData(newValue){
+          console.log("HeaderComponent setUserData newValue");
+          this.userData = newValue
+          /* Other way with store component
+          var userD = this.$store.state.user
             this.userData = userD
-          },
+           */
+        },
+      },
+      watch: {
+          userObject(newValue) {
+            /*console.log("HeaderComponent watch newValue");
+            console.log(newValue);
+            console.log("HeaderComponent watch this.$store.state.user");
+            console.log(this.$store.state.user);*/
+            this.setUserData(newValue);
+          }
       },
       created: function(){
         this.getUserData();
