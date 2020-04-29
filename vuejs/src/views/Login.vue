@@ -95,7 +95,7 @@
     }),
     methods: {
       validate(){
-        if(this.email =='' || this.password =='' ){
+        if(this.email ==='' || this.password ==='' ){
           this.isValid = true
         }
 

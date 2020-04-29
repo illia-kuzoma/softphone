@@ -495,13 +495,16 @@
       updateSortDesc(){
         this.getDataByOptions()
       },
+      tokenIsCorrect(token){
+        return !(!token || token === '-' || token === undefined);
+      },
       getChartData(){
 
         let self = this;
 
         let token = localStorage.token ;
 
-        if(token === '-')
+        if(!self.tokenIsCorrect(token))
         {
           router.push('/')
         }
@@ -527,6 +530,10 @@
           .catch(function (error) {
             self.$loading(false);
             console.log(error)
+            if(!self.tokenIsCorrect(token))
+            {
+              router.push('/')
+            }
           })
         }
       },
