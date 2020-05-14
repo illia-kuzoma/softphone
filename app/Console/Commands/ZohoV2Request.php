@@ -85,11 +85,12 @@ class ZohoV2Request extends Command
             echo 'getSequenceNumber='.$module->getSequenceNumber()."\n";;//to get the sequence number of the module
             echo "\n\n";
         }
+        echo "modules cnt = " . count($modules);
     }
     public function getRecord()
     {
-        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Contacts"); // To get module instance
-        $response = $moduleIns->getRecord("1602133000115995014"); // To get module records
+        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Calls"); // To get module instance  Contacts, Accounts, Calls
+        $response = $moduleIns->getRecord("102325000127108501"); // To get module records
         $record = $response->getData(); // To get response data
         try {
 
@@ -315,7 +316,7 @@ class ZohoV2Request extends Command
         }
     }
     public function asd(){
-        $zcrmModuleIns = ZCRMModule::getInstance("Contacts");
+        $zcrmModuleIns = ZCRMModule::getInstance("Calls");
         $bulkAPIResponse=$zcrmModuleIns->getRecords();
         $recordsArray = $bulkAPIResponse->getData(); // $r
         print_r($recordsArray); echo "\n\n";
@@ -328,11 +329,29 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
-        #$this->getAllModules();
+
+        $apiResponse=ZCRMModule::getInstance('Accounts')->getRecord(1602133000026462291); // 410405000001519001 - Lead Id
+        $record=$apiResponse->getData();
+        echo $record->getEntityId();
+        echo $record->getModuleApiName();
+        echo $record->getLookupLabel();
+        echo $record->getCreatedBy()->getId();
+        echo $record->getModifiedBy()->getId();
+        echo $record->getOwner()->getId();
+        echo $record->getCreatedTime();
+        echo $record->getModifiedTime();
+        $map=$record->getData();
+        print_r($map);
+
+
+        exit;
+        //$this->getAllModules();
         #$this->getRecord();
+        $this->asd();
+        exit;
         #$this->getAllAdminUsers();
         #$this->getAllProfiles();
-        #$this->asd();
+
         #$this->getDepartments();
         #$this->getActivitiesRecord();
         #$this->getUser();
@@ -592,6 +611,80 @@ class ZohoV2Request extends Command
             echo $role->getDisplayLabel()." \n";//to get the display label of the role
             echo $role->isAdminRole()." \n";//to check whether it is the administrator role
             echo "\n\n";
+        }
+    }
+
+    public function getRelatedListRecords()
+    {
+        $record = ZCRMRestClient::getInstance()->getRecordInstance("{module_api_name}", "{record_id}"); // To get record instance
+        /* For VERSION <=2.0.6 $relatedlistrecords = $record->getRelatedListRecords("Attachments")->getData(); // to get the related list records in form of ZCRMRecord instance*/
+
+        $param_map=array("page"=>"1","per_page"=>"200"); // key-value pair containing all the parameters - optional
+        $header_map = array("if-modified-since"=>"2019-10-10T15:26:49+05:30"); // key-value pair containing all the headers - optional
+        $relatedlistrecords = $record->getRelatedListRecords("Attachments",$param_map,$header_map)->getData(); // to get the related list records in form of ZCRMRecord instance
+
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("File_Name"); // to get the file name
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("Products")->getData(); // to get the related list record inform of ZCRMRecord instance
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getFieldValue("Product_Name"); // to get the product name
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Product_Code"); // to get the product code
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("Activities")->getData(); // to get the related list record inform of ZCRMRecord instance
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Subject"); // to get the subject of the activity
+            echo $relatedlistrecord->getFieldValue("Due_Date"); // to get the due date of the activity
+            echo $relatedlistrecord->getFieldValue("Billable"); // to get the billable value
+            echo $relatedlistrecord->getFieldValue("Activity_Type"); // to get the activity type
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("Campaigns")->getData(); // to get the related list record inform of ZCRMRecord instance
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Campaign_Name"); // to get the campaigns name
+            echo $relatedlistrecord->getFieldValue("Description"); // to get the campaign's description
+            echo $relatedlistrecord->getFieldValue("Member_Status"); // to get the member status
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("Quotes")->getData(); // to get the related list record inform of ZCRMRecord instance
+
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Carrier"); // to get the carrier
+            echo $relatedlistrecord->getFieldValue("Quote_Stage"); // to get the quote stage
+            echo $relatedlistrecord->getFieldValue("Subject"); // to get the quote subject
+            echo $relatedlistrecord->getFieldValue("Quote_Number"); // to get the quote number
+            echo $relatedlistrecord->getFieldValue("currency_symbol"); // to get the currency symbol
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("SalesOrders")->getData(); // to get the related list record inform of ZCRMRecord instance
+
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Carrier"); // to get the carrier
+            echo $relatedlistrecord->getFieldValue("Status"); // to get the status of the sales order
+            echo $relatedlistrecord->getFieldValue("Billing_Street"); // to get the billing street
+            echo $relatedlistrecord->getFieldValue("Billing_Code"); // to get the billing code
+            echo $relatedlistrecord->getFieldValue("Subject"); // to get the subject
+            echo $relatedlistrecord->getFieldValue("Billing_City"); // to get the billing city
+            echo $relatedlistrecord->getFieldValue("SO_Number"); // to get the sales order number
+            echo $relatedlistrecord->getFieldValue("Billing_State"); // to get the billing state
+        }
+        $relatedlistrecords = $record->getRelatedListRecords("Cases")->getData(); // to get the related list record inform of ZCRMRecord instance
+        foreach ($relatedlistrecords as $relatedlistrecord) {
+            echo $relatedlistrecord->getModuleApiName(); // to get the api name of the module
+            echo $relatedlistrecord->getEntityId(); // to get the entity id
+            echo $relatedlistrecord->getFieldValue("Status"); // to get the status of the case
+            echo $relatedlistrecord->getFieldValue("Email"); // to get the email id
+            echo $relatedlistrecord->getFieldValue("Case_Origin"); // to get the case origin
+            echo $relatedlistrecord->getFieldValue("Case_Number"); // to get the case number
         }
     }
 }

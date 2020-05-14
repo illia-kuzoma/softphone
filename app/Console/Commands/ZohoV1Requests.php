@@ -7,7 +7,9 @@ use App\Models\ReportUnattendedGraph;
 use App\Models\User;
 use App\Zoho\V1\Organization;
 use App\Zoho\V1\UnattendedCalls;
+use App\Zoho\V2\Contacts;
 use Illuminate\Console\Command;
+use zcrmsdk\crm\utility\ZCRMConfigUtil;
 
 /**
  * Class ZohoV1Requests for testing 1st version SDK.
@@ -103,10 +105,92 @@ class ZohoV1Requests extends Command
      */
     public function handle()
     {
+        $this->zo = new UnattendedCalls();
+        $users_agent = $this->zo->getAgentsList();
+        print_R($users_agent);
+        exit;
+        print_r((new Contacts())->searchInContactsByEmail("fabianaclaure@gmail.com"));
+        exit;
+        $res = exec('curl "https://www.zohoapis.com/crm/v2/Contacts/search?phone=905-447-3933" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -X GET');
+print_r($res);exit;
+
+       /* $t = (new AuthByPassword())->getToken(null,null); // ZCRMConfigUtil::getAccessToken()
+
+        $url = "https://crm.zoho.com/crm/private/json/Calls/getRecords";
+        $param= "authtoken=".$t."&scope=crmapi";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        echo $result;
+        exit();
+
+
+        exit();*/
+
+        $res = exec('curl "https://www.zohoapis.com/crm/v2/Contacts/search?word=Believe+Yoga" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -X GET');
+
+        echo $res;exit;
+
+        $res = exec('curl "https://www.zohoapis.com/crm/v2/coql" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -d "@/var/www/softphone/app/Console/Commands/input.json" -X POST');
+
+        echo $res;exit;
+        $res = exec('curl "https://www.zohoapis.com/crm/v2/Contacts/search?phone=17789087037" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -X GET');
+
+        /*Industry
+        Business_Link
+        Business_Group
+        "Account_Name":{
+        "name":"Believe Yoga",
+            "id":"1602133000026462291"
+
+        }
+        "Business_ID":"82456",
+                 "Legal_Business_Name":"NAMASTACYS KICK ASS YOGA",
+
+
+         "Business_Group":"Yoga and Pilates",
+        */
+
+        echo $res;exit;
+       $res = exec('curl "https://www.zohoapis.com/crm/v2/coql" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -d "@/var/www/softphone/app/Console/Commands/input.json" -X POST');
+       echo $res;exit;
+        $a_headers = $a_result = [];
+        $s_param = '';
+        $d =
+        $data_string =
+        $s_url = "https://www.zohoapis.com/crm/v2/coql";
+        $ch = curl_init($s_url /*. '?' . $s_param*/);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization:Zoho-oauthtoken ' . ZCRMConfigUtil::getAccessToken()]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $s_result = curl_exec($ch);
+        /*if(($s_result = curl_exec($ch)) === false)
+        {
+            Log::put(sprintf("Error curl: %s", curl_error($ch)));
+            throw new \Exception(sprintf("Response in %s has error!\n %s\n code err is %d\n",
+                __METHOD__, curl_error($ch), curl_error($ch)));
+        }
+        else
+        {
+            // Log::put(sprintf("curl_exec %s", $s_result));
+            $a_result = json_decode($s_result, true);
+        }
+        print_r($s_result);*/
+        curl_close($ch);
+        print_r($s_result);
+
+        exit;
 
      /*   $unattendedCalls = new ReportUnattendedCall();
         $unattendedCalls->loadFromRemoteServer();
-        exit;*/
+        exit;
         /*$unattendedCalls = new ReportUnattendedCall();
         $unattendedCalls->loadFromRemoteServer();
         exit;*/
