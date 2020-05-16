@@ -106,7 +106,7 @@
       login(){
         var self = this
         this.$loading(true);
-        HttpService.methods.post('http://softphone/auth',{
+        HttpService.methods.post('http://callcentr.wellnessliving.com/auth',{
             email:this.email,
             password:this.password,
           })
