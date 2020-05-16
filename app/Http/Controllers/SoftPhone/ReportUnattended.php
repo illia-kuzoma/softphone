@@ -12,15 +12,7 @@ class ReportUnattended extends Controller
     private const USER_DATA = 'user';
     private const AGENT_IDS = 'agents';
 
-    /**
-     * @param $token
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uids
-     * @return string
-     * @throws \Exception
-     */
-    public function getAll($token, $dateStart=null, $period=null, $uids=null): string
+    private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
         try{
             $user = new User();
@@ -42,7 +34,9 @@ class ReportUnattended extends Controller
             $a_agent_id = explode(',', $uids);
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
-        $unattendedCalls->loadFromRemoteServer();
+
+        if($refresh)
+            $unattendedCalls->loadFromRemoteServer();
 
         $out = [
             self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
@@ -53,6 +47,19 @@ class ReportUnattended extends Controller
         ];
 
         return json_encode($out);
+    }
+
+    /**
+     * @param $token
+     * @param null $dateStart
+     * @param null $period
+     * @param null $uids
+     * @return string
+     * @throws \Exception
+     */
+    public function getAll($token, $dateStart=null, $period=null, $uids=null): string
+    {
+        return $this->_getAll($token, $dateStart, $period, $uids);
     }
 
     /**
@@ -88,12 +95,25 @@ class ReportUnattended extends Controller
             $a_agent_id = [$uid];
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
-        $unattendedCalls->loadFromRemoteServer();
+        //$unattendedCalls->loadFromRemoteServer();
 
         $out = [
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page)
         ];
         return json_encode($out);
+    }
+
+    /**
+     * @param $token
+     * @param null $dateStart
+     * @param null $period
+     * @param null $uids
+     * @return string
+     * @throws \Exception
+     */
+    public function getFreshData($token, $dateStart=null, $period=null, $uids=null): string
+    {
+        return $this->_getAll($token, $dateStart, $period, $uids, true);
     }
 }

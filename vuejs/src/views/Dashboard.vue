@@ -11,13 +11,16 @@
             class="dashboard"
         >
 
-            <button
-                class="button button-li date-item color-grey"
-                v-on:click="updateData();"
-            > Update Data
-            </button>
             <div class="header-container">
-                <h1>Missed Calls</h1>
+                <span style="float: left"><h1>Missed Calls</h1></span>
+                <span style="float: right">
+                    <button
+                        class="button button-li date-item color-grey"
+                        v-on:click="updateData();"
+                    > Update Data
+                    </button>
+                </span>
+                <div style="clear: both"></div>
             </div>
             <div class="controls-container">
                 <div class="date-container">
@@ -216,7 +219,7 @@
         { text: 'Agent', value: 'user_data' },
         { text: 'Business Name', value: 'business' },
         { text: 'Contact', value: 'contact' ,width: 200},
-        { text: 'Priority', value: 'priority', sortable: false},
+        //{ text: 'Priority', value: 'priority', sortable: false},
         { text: 'Phone', value: 'phone', sortable: false ,width: 150},
         { text: 'Created Time', value: 'time_create', sortable: false,width: 120 },
       ],
@@ -503,8 +506,7 @@
       tokenIsCorrect(token){
         return !(!token || token === '-' || token === undefined);
       },
-      getChartData(){
-
+      getReportData(refresh = false){
         let self = this;
 
         let token = localStorage.token ;
@@ -515,7 +517,7 @@
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://softphone/report/missed/'+token)
+          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
             self.$loading(false);
             if(response.data.error===true){
@@ -541,6 +543,10 @@
             }
           })
         }
+      },
+      getChartData(){
+
+        this.getReportData()
       },
       getDataByOptions(){
 
@@ -688,8 +694,7 @@
       },
       updateData()
       {
-        console.log('updateData +');
-
+        this.getReportData(true)
       }
     },
     created: function(){

@@ -2,6 +2,7 @@
 namespace App\Zoho\V1;
 
 use App\Models\User;
+use App\Zoho\V2\Contacts;
 
 class UnattendedCalls extends ZohoV1
 {
@@ -167,20 +168,40 @@ class UnattendedCalls extends ZohoV1
     {
         if(empty($unattended_agent))
             return;
+
         foreach ($unattended_agent as $datum)
         {
+            $phone = preg_replace("/[^0-9]/", '', $datum['calledFrom']);
+            $contact_name = $datum['contact']['firstName'] .' '. $datum['contact']['lastName'];
+
+            /////// Get business name and link data //////////
+            $o_zoho_contacts = new Contacts();
+            $a_business = $o_zoho_contacts->searchInContactsByEmail($datum['contact']['email']);
+            if(empty($a_business))
+                $a_business = $o_zoho_contacts->searchInContactsByPhone($phone);
+
+            if(empty($a_business['name']))
+            {
+                $a_business['name'] = $contact_name;
+            }
+            if(empty($a_business['link']))
+            {
+                $a_business['link'] = null;
+            }
+            ////////////////////////////////////////////////////
+
             $this->a_unattended[] = [
                 'id' => $datum['call']['id'],
                 'agent_id' => $agent_id,
                 'user_id' => $datum['contact']['id'],
-                'business_name' => '',
+                'business_name' => json_encode($a_business),
                 'contact' => json_encode([
-                    'name' => $datum['contact']['firstName'] .' '. $datum['contact']['lastName'],
+                    'name' => $contact_name,
                     'phone' => $datum['contact']['phone'],
                     'email' =>  $datum['contact']['email'],
                 ]),
                 'priority' => 'low',
-                'phone' => preg_replace("/[^0-9]/", '', $datum['calledFrom']),
+                'phone' => $phone,
                 'time_start' => $datum['callTime'],
             ];
 

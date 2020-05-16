@@ -38,6 +38,11 @@ Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sor
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
     return redirect('/');
 });
+// refreshData
+Route::get('/report/missed/refresh/{token?}/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportUnattended@getFreshData');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/refresh/{token?}/{startDate?}/{period?}/{uids?}', static function () {
+    return redirect('/');
+});
 // getAll
 Route::get('/report/missed/{token?}/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportUnattended@getAll');
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/{token?}/{startDate?}/{period?}/{uids?}', static function () {

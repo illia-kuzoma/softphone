@@ -136,7 +136,8 @@ class ReportUnattendedCall extends ReportUnattended
         {
             foreach ( $data as $item )
             {
-                $business_data = $this->getBusinessData($item);
+               // $business_data = $this->getBusinessData($item);
+                $business_data = json_decode($item->business_name, true);
                 $result[] = [
                     'uid'         => $this->_getIdVal($item),//$item->user_id,
                     'business'    => [
@@ -172,6 +173,7 @@ class ReportUnattendedCall extends ReportUnattended
                     ]
                 );
             }
+            $this->a_business_data = [];
         }
     }
 
@@ -234,7 +236,6 @@ class ReportUnattendedCall extends ReportUnattended
      */
     public function insertSingleCallData($singleCallData): void
     {
-        $singleCallData['business_name'] = $singleCallData['business_name']??'-';
         $singleCallData['time_start'] = date(self::DATE_TIME_FORMAT, strtotime($singleCallData['time_start']));
         if ( $this->validateBeforeInsert($singleCallData) ) {
             $res = \DB::table( $this->table )->updateOrInsert(['id' => $singleCallData['id']],
@@ -267,7 +268,27 @@ class ReportUnattendedCall extends ReportUnattended
 
     public function updateDB()
     {
+        $this->updateEmptyBusinessNames();
+    }
 
+    public function updateEmptyBusinessNames()
+    {
+        $call_list_q = ReportUnattendedCall::query()->select([
+            //'users.id as user_id',
+            $this->table.'.id',
+            $this->table.'.contact',
+            $this->table.'.phone'
+        ])->where('business_name', '=','');
+        $call_list = $call_list_q->get();
+
+        if ( ! empty( $call_list ) )
+        {
+            foreach ( $call_list as $item )
+            {
+                $this->parseBusinessData($item);
+            }
+        }
+        $this->updateBusinessName();
     }
 
     private function getBusinessDataByContacts($a_contact)
