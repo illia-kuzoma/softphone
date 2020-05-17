@@ -188,8 +188,8 @@ class ReportUnattended extends Model
         // последней созданной в БД записи больше 1го часа.
         // Не нужно часто дергать АПИ. Там есть лимиты https://www.zoho.com/recruit/api-new/api-limits.html
         $i_diff_dates = $this->diffNowAndLastCreation(ReportUnattendedCall::TABLE_NAME);
-        if($i_diff_dates > 3600 || 1){
-            /*$max_time_start_call = $this->maxTimeCreate(ReportUnattendedCall::TABLE_NAME);
+        if($i_diff_dates > 3600){
+            $max_time_start_call = $this->maxTimeCreate(ReportUnattendedCall::TABLE_NAME);
             // Делаю выборку за день с существующего в БД. Поскольку в этот день выборка могла быть не полной.
             $o_uc = new UnattendedCalls(strtotime($max_time_start_call . " -1 day"));
             $a_agent_id = [];
@@ -215,7 +215,7 @@ class ReportUnattended extends Model
                 $o_uc->setAUnattended([]);
             }
 
-            (new ReportUnattendedGraph())->updateDB();*/
+            (new ReportUnattendedGraph())->updateDB();
             (new ReportUnattendedCall())->updateDB();
         }
     }
