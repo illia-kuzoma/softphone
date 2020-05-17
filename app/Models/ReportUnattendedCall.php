@@ -286,9 +286,9 @@ class ReportUnattendedCall extends ReportUnattended
             foreach ( $call_list as $item )
             {
                 $this->parseBusinessData($item);
+                $this->updateBusinessName();
             }
         }
-        $this->updateBusinessName();
     }
 
     private function getBusinessDataByContacts($a_contact)
