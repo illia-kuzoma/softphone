@@ -280,7 +280,7 @@ class ReportUnattendedCall extends ReportUnattended
             $this->table.'.phone'
         ])->where('business_name', '=','');
         $call_list = $call_list_q->get();
-print_R(count($call_list));exit;
+
         if ( ! empty( $call_list ) )
         {
             foreach ( $call_list as $item )
