@@ -286,6 +286,7 @@ class ReportUnattendedCall extends ReportUnattended
             foreach ( $call_list as $item )
             {
                 $this->parseBusinessData($item);
+                // В целях оптимизации, иначе данные не успевают соханиться, изза падения севера, когда много записей просим с ЗОХО
                 $this->updateBusinessName();
             }
         }
