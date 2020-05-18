@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Zoho\V1\UnattendedCalls;
 use Illuminate\Database\Eloquent\Model;
 
 class ReportUnattended extends Model
