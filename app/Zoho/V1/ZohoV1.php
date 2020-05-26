@@ -27,9 +27,12 @@ class ZohoV1
     protected function request($s_url, $s_param = '', $a_headers = [])
     {
         $a_result = [];
-        $ch = curl_init($s_url . '?' . $s_param);
+        $url = $s_url . (($s_param)?'?' . $s_param:'');
+        $ch = curl_init($url);
+        //echo $url."\n";
+        $a_headers[] = 'Authorization:Zoho-oauthtoken ' . ZCRMConfigUtil::getAccessToken();
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(
-            ['Authorization:Zoho-oauthtoken ' . ZCRMConfigUtil::getAccessToken()],
             $a_headers
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -3,13 +3,28 @@
 namespace App\Zoho;
 use zcrmsdk\oauth\ZohoOAuth;
 
+/**
+ * Docs https://www.zoho.com/projects/help/rest-api/get-tickets-api.html
+ *
+ * Link to get grant token https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,Desk.tickets.READ,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ&client_id=1000.YZO05BI18M18TAUKJGUA38BKMVNYKH&response_type=code&access_type=offline&redirect_uri=https://www.wellnessliving.com&prompt=consent
+ *
+ * Link to get grant token https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,Desk.tickets.READ,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ&client_id=1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH&response_type=code&access_type=offline&redirect_uri=https://www.wellnessliving.com&prompt=consent
+ *
+ * Class AuthByToken
+ * @package App\Zoho
+ */
 class AuthByToken extends Auth
 {
     /**
-     * @var string list of scopes to enter to zoho console to get grant Token. It field doesn't use in code.
+     * @deprecated
+     * @var string list of scopes to enter to zoho console to get grant Token. It field doesn't use in code. It is rudeement.
      */
-    private static $scopes = 'ZohoCRM.modules.ALL,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ';
-    private static $grantToken = '1000.1886a50678947c94b3c342079d069f1a.15b7801b55c582c303cb61aa928e751a';
+    private static $scopes = 'ZohoCRM.modules.ALL,Desk.tickets.READ,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ';
+    /**
+     * @deprecated
+     * @var string|null  Uses just only as field to contain a value.
+     */
+    private static $grantToken = '1000.e622781f464ad1124b7d3f2bd856eb80.388a25ea6c3fd6717714efa82ae01ad9';
     private static $refreshToken = '';
     public $token_file_name = '';
     /**
@@ -28,19 +43,6 @@ class AuthByToken extends Auth
             self::$grantToken = $token;
         }
         #self::setGrantToken();
-    }
-
-    public function setGrantToken()
-    {
-        $path = $this->config->getPathToToken('zcrm_oauthtokens.txt');
-        if(file_exists($path))
-        {
-            $oAuthTokens = unserialize(file_get_contents($path));
-            print_r($oAuthTokens);
-            $oAuthToken = $oAuthTokens[count($oAuthTokens)-1];
-            echo $oAuthToken->getAccessToken();
-            self::$grantToken = $oAuthToken->getAccessToken();
-        }
     }
 
     public static function generateAccessTokenFromGrantToken(){
