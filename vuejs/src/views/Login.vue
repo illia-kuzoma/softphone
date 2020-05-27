@@ -117,7 +117,7 @@
               localStorage.token = response.data.token;
               //localStorage.user = response.data.user;
 
-              router.push('/dashboard')
+              router.push('/dashboard/missed-calls')
             }
             if(response.data.error===true){
               localStorage.token = '-';
