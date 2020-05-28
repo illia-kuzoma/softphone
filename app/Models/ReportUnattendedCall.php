@@ -296,7 +296,6 @@ class ReportUnattendedCall extends ReportUnattended
     {
         $o_zoho_contacts = new Contacts();
         $a_contacts = [];
-        #print_r($a_contact);exit;
         foreach($a_contact as $field=>$value){
 
             if(!$value)

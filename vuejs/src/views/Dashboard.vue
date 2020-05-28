@@ -1,3 +1,7 @@
+<!--
+callcentr.wellnessliving.com
+softphone
+-->
 <template>
     <div
         id="dashboard">
@@ -100,9 +104,9 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
-      multiple_value: null,
-      multiple_options:[],
-      multiple_selected_value:null,
+      //multiple_value: null,
+      agent_multiple_options:[],
+      agent_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
@@ -387,7 +391,7 @@
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/'+(refresh?'refresh/':'')+token)
+          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
             self.$loading(false);
             if(response.data.error===true){
@@ -401,7 +405,7 @@
 
             self.setChartData(response.data.diagrama);
             self.setTableData(response.data.calls);
-            self.setMultiDropdown(response.data.agents);
+            self.setAgentMultiDropdown(response.data.agents);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
@@ -456,7 +460,7 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://callcentr.wellnessliving.com/report/missed/call/'+
+          'http://softphone/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -484,7 +488,7 @@
           ss_agent_id = "/" + self.s_agent_id
         }
         this.$loading(true);
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+
+        HttpService.methods.get('http://softphone/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
@@ -498,7 +502,7 @@
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
+        HttpService.methods.get('http://softphone/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);
@@ -524,16 +528,16 @@
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
       },
-      setMultiDropdown(data){
+      setAgentMultiDropdown(data){
         console.log(data);
-        this.multiple_options = data;
+        this.agent_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
         let s_agent_id = '';
-        if(this.multiple_selected_value !== null)
+        if(this.agent_multiple_selected_value !== null)
         {
-          let selected_agents_array = this.multiple_selected_value;
+          let selected_agents_array = this.agent_multiple_selected_value;
           let selected_agents_array_len = selected_agents_array.length;
           console.log(selected_agents_array_len);
           if(selected_agents_array_len)

@@ -1142,3 +1142,149 @@ Trace::#0 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonA
 2020-05-16 17:43:09 INFO: Access Token has expired. Hence refreshing.
 2020-05-16 18:43:22 INFO: Access Token has expired. Hence refreshing.
 2020-05-16 19:48:15 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 07:27:03 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 07:27:12 ERROR: zcrmsdk\crm\exception\ZCRMException Caused by:'the module name given seems to be invalid' in /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/BulkAPIResponse.php(72)
+Trace::#0 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonAPIResponse.php(76): zcrmsdk\crm\api\response\BulkAPIResponse->handleForFaultyResponses()
+#1 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonAPIResponse.php(67): zcrmsdk\crm\api\response\CommonAPIResponse->processResponse()
+#2 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/BulkAPIResponse.php(47): zcrmsdk\crm\api\response\CommonAPIResponse->__construct('HTTP/1.1 400 \r\n...', 400)
+#3 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/APIRequest.php(148): zcrmsdk\crm\api\response\BulkAPIResponse->__construct('HTTP/1.1 400 \r\n...', 400)
+#4 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/handler/MassEntityAPIHandler.php(291): zcrmsdk\crm\api\APIRequest->getBulkAPIResponse()
+#5 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/crud/ZCRMModule.php(1082): zcrmsdk\crm\api\handler\MassEntityAPIHandler->getRecords(Array, Array)
+#6 /var/www/softphone/app/Console/Commands/ZohoV2Request.php(371): zcrmsdk\crm\crud\ZCRMModule->getRecords()
+#7 /var/www/softphone/app/Console/Commands/ZohoV2Request.php(332): App\Console\Commands\ZohoV2Request->getDepartments()
+#8 [internal function]: App\Console\Commands\ZohoV2Request->handle()
+#9 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(32): call_user_func_array(Array, Array)
+#10 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#11 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#12 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#13 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#14 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(134): Illuminate\Container\Container->call(Array)
+#15 /var/www/softphone/vendor/symfony/console/Command/Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(121): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#17 /var/www/softphone/vendor/symfony/console/Application.php(1001): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/softphone/vendor/symfony/console/Application.php(271): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoV2Request), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 /var/www/softphone/vendor/symfony/console/Application.php(147): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#23 {main}
+2020-05-23 07:27:47 ERROR: zcrmsdk\crm\exception\ZCRMException Caused by:'the module name given seems to be invalid' in /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/BulkAPIResponse.php(72)
+Trace::#0 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonAPIResponse.php(76): zcrmsdk\crm\api\response\BulkAPIResponse->handleForFaultyResponses()
+#1 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonAPIResponse.php(67): zcrmsdk\crm\api\response\CommonAPIResponse->processResponse()
+#2 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/BulkAPIResponse.php(47): zcrmsdk\crm\api\response\CommonAPIResponse->__construct('HTTP/1.1 400 \r\n...', 400)
+#3 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/APIRequest.php(148): zcrmsdk\crm\api\response\BulkAPIResponse->__construct('HTTP/1.1 400 \r\n...', 400)
+#4 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/handler/MassEntityAPIHandler.php(291): zcrmsdk\crm\api\APIRequest->getBulkAPIResponse()
+#5 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/crud/ZCRMModule.php(1082): zcrmsdk\crm\api\handler\MassEntityAPIHandler->getRecords(Array, Array)
+#6 /var/www/softphone/app/Console/Commands/ZohoV2Request.php(371): zcrmsdk\crm\crud\ZCRMModule->getRecords()
+#7 /var/www/softphone/app/Console/Commands/ZohoV2Request.php(332): App\Console\Commands\ZohoV2Request->getDepartments()
+#8 [internal function]: App\Console\Commands\ZohoV2Request->handle()
+#9 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(32): call_user_func_array(Array, Array)
+#10 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#11 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#12 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#13 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#14 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(134): Illuminate\Container\Container->call(Array)
+#15 /var/www/softphone/vendor/symfony/console/Command/Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(121): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#17 /var/www/softphone/vendor/symfony/console/Application.php(1001): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/softphone/vendor/symfony/console/Application.php(271): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoV2Request), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 /var/www/softphone/vendor/symfony/console/Application.php(147): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#23 {main}
+2020-05-23 09:31:22 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 10:56:46 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 12:56:29 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 14:17:48 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 16:42:28 INFO: Access Token has expired. Hence refreshing.
+2020-05-23 19:05:42 INFO: Access Token has expired. Hence refreshing.
+2020-05-25 19:12:07 SEVERE: Exception occured while fetching OAuthTokens from file(file::ZohoOAuthPersistenceByFile)(file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory)
+ErrorException: file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory in /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php:42
+Stack trace:
+#0 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'file_get_conten...', '/var/www/softph...', 42, Array)
+#1 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php(42): file_get_contents('/var/www/softph...')
+#2 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/ZohoOAuthClient.php(38): zcrmsdk\oauth\persistence\ZohoOAuthPersistenceByFile->getOAuthTokens('support@wellnes...')
+#3 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/utility/ZCRMConfigUtil.php(104): zcrmsdk\oauth\ZohoOAuthClient->getAccessToken('support@wellnes...')
+#4 /var/www/softphone/app/Zoho/V1/ZohoV1.php(33): zcrmsdk\crm\utility\ZCRMConfigUtil::getAccessToken()
+#5 /var/www/softphone/app/Zoho/V1/ActiveTimers.php(14): App\Zoho\V1\ZohoV1->request('https://desk.zo...', 'departmentId=10...', Array)
+#6 /var/www/softphone/app/Console/Commands/ZohoV2Request.php(336): App\Zoho\V1\ActiveTimers->getAll(102325000000006907)
+#7 [internal function]: App\Console\Commands\ZohoV2Request->handle()
+#8 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(32): call_user_func_array(Array, Array)
+#9 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#10 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#11 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#12 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#13 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(134): Illuminate\Container\Container->call(Array)
+#14 /var/www/softphone/vendor/symfony/console/Command/Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#15 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(121): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 /var/www/softphone/vendor/symfony/console/Application.php(1001): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 /var/www/softphone/vendor/symfony/console/Application.php(271): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoV2Request), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/softphone/vendor/symfony/console/Application.php(147): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 {main}
+2020-05-25 19:17:42 SEVERE: Exception occured while Saving OAuthTokens to file(file::ZohoOAuthPersistenceByFile)(file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory)
+ErrorException: file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory in /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php:72
+Stack trace:
+#0 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'file_get_conten...', '/var/www/softph...', 72, Array)
+#1 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php(72): file_get_contents('/var/www/softph...')
+#2 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php(23): zcrmsdk\oauth\persistence\ZohoOAuthPersistenceByFile->deleteOAuthTokens(NULL)
+#3 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/ZohoOAuthClient.php(66): zcrmsdk\oauth\persistence\ZohoOAuthPersistenceByFile->saveOAuthData(Object(zcrmsdk\oauth\utility\ZohoOAuthTokens))
+#4 /var/www/softphone/app/Zoho/AuthByToken.php(52): zcrmsdk\oauth\ZohoOAuthClient->generateAccessToken('1000.7258def69e...')
+#5 /var/www/softphone/app/Zoho/AuthByToken.php(69): App\Zoho\AuthByToken::generateAccessTokenFromGrantToken()
+#6 /var/www/softphone/app/Console/Commands/ZohoRegenerateToken.php(48): App\Zoho\AuthByToken::generateAccessToken()
+#7 [internal function]: App\Console\Commands\ZohoRegenerateToken->handle()
+#8 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(32): call_user_func_array(Array, Array)
+#9 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#10 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#11 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#12 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#13 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(134): Illuminate\Container\Container->call(Array)
+#14 /var/www/softphone/vendor/symfony/console/Command/Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#15 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(121): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 /var/www/softphone/vendor/symfony/console/Application.php(1001): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 /var/www/softphone/vendor/symfony/console/Application.php(271): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoRegenerateToken), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/softphone/vendor/symfony/console/Application.php(147): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 {main}
+2020-05-25 19:17:42 SEVERE: Exception occured while Saving OAuthTokens to file(file::ZohoOAuthPersistenceByFile)(file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory)
+ErrorException: file_get_contents(/var/www/softphone/storage/zoho/token_storage/1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH//zcrm_oauthtokens.txt): failed to open stream: No such file or directory in /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php:72
+Stack trace:
+#0 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'file_get_conten...', '/var/www/softph...', 72, Array)
+#1 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php(72): file_get_contents('/var/www/softph...')
+#2 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/persistence/ZohoOAuthPersistenceByFile.php(23): zcrmsdk\oauth\persistence\ZohoOAuthPersistenceByFile->deleteOAuthTokens(NULL)
+#3 /var/www/softphone/vendor/zohocrm/php-sdk/src/oauth/ZohoOAuthClient.php(66): zcrmsdk\oauth\persistence\ZohoOAuthPersistenceByFile->saveOAuthData(Object(zcrmsdk\oauth\utility\ZohoOAuthTokens))
+#4 /var/www/softphone/app/Zoho/AuthByToken.php(52): zcrmsdk\oauth\ZohoOAuthClient->generateAccessToken('1000.7258def69e...')
+#5 /var/www/softphone/app/Zoho/AuthByToken.php(69): App\Zoho\AuthByToken::generateAccessTokenFromGrantToken()
+#6 /var/www/softphone/app/Console/Commands/ZohoRegenerateToken.php(48): App\Zoho\AuthByToken::generateAccessToken()
+#7 [internal function]: App\Console\Commands\ZohoRegenerateToken->handle()
+#8 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(32): call_user_func_array(Array, Array)
+#9 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Util.php(36): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#10 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(90): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#11 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(34): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Array, Object(Closure))
+#12 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Container/Container.php(590): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Array, Array, NULL)
+#13 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(134): Illuminate\Container\Container->call(Array)
+#14 /var/www/softphone/vendor/symfony/console/Command/Command.php(255): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#15 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Command.php(121): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Illuminate\Console\OutputStyle))
+#16 /var/www/softphone/vendor/symfony/console/Application.php(1001): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 /var/www/softphone/vendor/symfony/console/Application.php(271): Symfony\Component\Console\Application->doRunCommand(Object(App\Console\Commands\ZohoRegenerateToken), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/softphone/vendor/symfony/console/Application.php(147): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Console/Application.php(93): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 {main}
+2020-05-26 09:00:35 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 07:45:06 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 11:48:39 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 16:20:15 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 19:21:36 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 20:30:19 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 09:54:36 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 11:01:17 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 12:04:27 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 13:06:58 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 16:20:59 INFO: Access Token has expired. Hence refreshing.

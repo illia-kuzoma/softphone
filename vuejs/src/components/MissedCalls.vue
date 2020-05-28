@@ -74,11 +74,11 @@
             </div>
             <div class="controls-container multiselect-items">
                 <div>
-                    <label class="typo__label">Select Dpartment(s)</label>
+                    <label class="typo__label">Select Department(s)</label>
                     <multiselect
                         @close="setUsers"
-                        v-model="multiple_selected_value"
-                        :options="multiple_options"
+                        v-model="department_multiple_selected_value"
+                        :options="department_multiple_options"
                         :multiple="true"
                         :close-on-select="false"
                         :clear-on-select="false"
@@ -102,8 +102,8 @@
                     <label class="typo__label">Select Team(s)</label>
                     <multiselect
                         @close="setUsers"
-                        v-model="multiple_selected_value"
-                        :options="multiple_options"
+                        v-model="team_multiple_selected_value"
+                        :options="team_multiple_options"
                         :multiple="true"
                         :close-on-select="false"
                         :clear-on-select="false"
@@ -127,8 +127,8 @@
                     <label class="typo__label">Select agent(s)</label>
                     <multiselect
                         @close="setUsers"
-                        v-model="multiple_selected_value"
-                        :options="multiple_options"
+                        v-model="agent_multiple_selected_value"
+                        :options="agent_multiple_options"
                         :multiple="true"
                         :close-on-select="false"
                         :clear-on-select="false"
@@ -184,6 +184,16 @@
                         <div class='user'>
                             <img :src="item.user_data.photo_url" alt="">
                             <p>{{ item.user_data.full_name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.department="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.department.name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.team="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.team.name }}</p>
                         </div>
                     </template>
 
@@ -263,8 +273,8 @@
       options: {},
       tableCallsHeaders: [
         { text: 'Agent', value: 'user_data' },
-        { text: 'Department', value: 'user_data' },
-        { text: 'Team', value: 'user_data' },
+        { text: 'Department', value: 'user_data.department' },
+        { text: 'Team', value: 'user_data.team' },
         { text: 'Business Name', value: 'business' },
         { text: 'Contact', value: 'contact' ,width: 200},
         //{ text: 'Priority', value: 'priority', sortable: false},
@@ -278,12 +288,18 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
-      multiple_value: null,
-      multiple_options:[],
-      multiple_selected_value:null,
+      //multiple_value: null,
+      agent_multiple_options:[],
+      agent_multiple_selected_value:null,
+      department_multiple_options:[],
+      department_multiple_selected_value:null,
+      team_multiple_options:[],
+      team_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
+      s_department_id:'',
+      s_team_id:'',
       period:'week',
       // Use moment.js instead of the default
       /*momentFormat: {
@@ -350,11 +366,16 @@
         this.selectedAgentUid = null;
         this.setDate(this.period);
       },
+      setDepartments(){
+        this.selectedAgentUid = null;
+        this.setDate(this.period);
+      },
       ffFff(){
         console.log("!!!!!!!!");
-      }
-      ,
+      },
       setDate(range){
+
+        console.log(localStorage.serve_host);
 
         this.period=range;
         this.searchText = '';
@@ -579,7 +600,8 @@
 
             self.setChartData(response.data.diagrama);
             self.setTableData(response.data.calls);
-            self.setMultiDropdown(response.data.agents);
+            self.setAgentMultiDropdown(response.data.agents);
+            self.setDepartmentMultiDropdown(response.data.departments);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
@@ -601,6 +623,8 @@
         let self = this;
 
         self.generateSelectedAgentIdString();
+        self.generateSelectedDepartmentIdString();
+        self.generateSelectedTeamIdString();
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
@@ -608,6 +632,8 @@
 
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
+        let department = this.s_department_id || '-';
+        let team = this.s_team_id || '-';
         let uid = this.selectedAgentUid || this.s_agent_id || '-';
         let searchWord = this.searchText || '-';
         let page = this.options.page || '-';
@@ -637,6 +663,8 @@
           'http://callcentr.wellnessliving.com/report/missed/call/'+
           startDate + '/' +
           period + '/' +
+          department + '/' +
+          team + '/' +
           uid + '/' +
           searchWord + '/' +
           sortField + '/' +
@@ -656,19 +684,25 @@
       getDataByDate(startDate,period){
         var self = this
         self.generateSelectedAgentIdString();
+        self.generateSelectedDepartmentIdString();
+        self.generateSelectedTeamIdString();
         var ss_agent_id = '';
         if(self.s_agent_id !== '')
         {
           ss_agent_id = "/" + self.s_agent_id
         }
+        let department = this.s_department_id || '-';
+        let team = this.s_team_id || '-';
         this.$loading(true);
         HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+
-          startDate + '/' + period + ss_agent_id)
+          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
           self.setChartData(response.data.diagrama)
+          self.setTeamMultiDropdown(response.data.teams)
+          self.setAgentMultiDropdown(response.data.agents);
         })
         .catch(function (error) {
           console.log(error)
@@ -702,16 +736,24 @@
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
       },
-      setMultiDropdown(data){
+      setAgentMultiDropdown(data){
+        //console.log(data);
+        this.agent_multiple_options = data;
+      },
+      setDepartmentMultiDropdown(data){
         console.log(data);
-        this.multiple_options = data;
+        this.department_multiple_options = data;
+      },
+      setTeamMultiDropdown(data){
+        console.log(data);
+        this.team_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
         let s_agent_id = '';
-        if(this.multiple_selected_value !== null)
+        if(this.agent_multiple_selected_value !== null)
         {
-          let selected_agents_array = this.multiple_selected_value;
+          let selected_agents_array = this.agent_multiple_selected_value;
           let selected_agents_array_len = selected_agents_array.length;
           console.log(selected_agents_array_len);
           if(selected_agents_array_len)
@@ -731,6 +773,48 @@
         }*/
         //console.log(s_agent_id);
         this.s_agent_id = s_agent_id;
+      },
+      generateSelectedDepartmentIdString()
+      {
+        console.log('generateSelectedDepartmentIdString');
+        let s_department_id = '';
+        if(this.department_multiple_selected_value !== null)
+        {
+          let selected_departments_array = this.department_multiple_selected_value;
+          let selected_departments_array_len = selected_departments_array.length;
+          console.log(selected_departments_array_len);
+          if(selected_departments_array_len)
+          {
+            for (let i = 0; i < selected_departments_array_len; i++){
+              s_department_id += selected_departments_array[i].value;
+              if(i+1 !==  selected_departments_array_len){
+                s_department_id +=",";
+              }
+            }
+          }
+        }
+        this.s_department_id = s_department_id;
+      },
+      generateSelectedTeamIdString()
+      {
+        console.log('generateSelectedTeamIdString');
+        let s_team_id = '';
+        if(this.team_multiple_selected_value !== null)
+        {
+          let selected_teams_array = this.team_multiple_selected_value;
+          let selected_teams_array_len = selected_teams_array.length;
+          console.log(selected_teams_array_len);
+          if(selected_teams_array_len)
+          {
+            for (let i = 0; i < selected_teams_array_len; i++){
+              s_team_id += selected_teams_array[i].value;
+              if(i+1 !==  selected_teams_array_len){
+                s_team_id +=",";
+              }
+            }
+          }
+        }
+        this.s_team_id = s_team_id;
       },
       dateSelected()
       {

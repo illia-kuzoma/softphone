@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use App\Zoho\Auth;
 use App\Zoho\Config;
+use App\Zoho\V1\ActiveTimers;
+use App\Zoho\V1\Department;
+use App\Zoho\V1\Team;
 use Illuminate\Console\Command;
 use zcrmsdk\crm\crud\ZCRMModule;
 use zcrmsdk\crm\crud\ZCRMRecord;
@@ -329,7 +332,21 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
+        /*print_R((new Team())->getAllDataArr(102325000000006907));
 
+        exit;*/
+        (new ActiveTimers())->getAll(102325000000006907);
+        exit;
+        (new Team())->getAllDataArr(102325000000006907);
+        exit;
+        (new Department())->getDataArr();
+        exit;
+        $this->getAllModules();
+        exit;
+        $this->getDepartments();
+
+
+        exit;
         $apiResponse=ZCRMModule::getInstance('Accounts')->getRecord(1602133000026462291); // 410405000001519001 - Lead Id
         $record=$apiResponse->getData();
         echo $record->getEntityId();
@@ -364,7 +381,7 @@ class ZohoV2Request extends Command
 
     public function getDepartments()
     {
-        $zcrmModuleIns = ZCRMModule::getInstance("departments");
+        $zcrmModuleIns = ZCRMModule::getInstance("Departments");
         $bulkAPIResponse=$zcrmModuleIns->getRecords();
         $recordsArray = $bulkAPIResponse->getData(); // $r
         print_r($recordsArray); echo "\n\n";

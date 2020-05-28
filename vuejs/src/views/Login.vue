@@ -106,6 +106,8 @@
       login(){
         var self = this
         this.$loading(true);
+        localStorage.serve_host = 'http://softphone/';
+        console.log(localStorage.serve_host)
         HttpService.methods.post('http://callcentr.wellnessliving.com/auth',{
             email:this.email,
             password:this.password,
