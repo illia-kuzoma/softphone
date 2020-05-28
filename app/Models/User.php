@@ -212,11 +212,14 @@ class User extends Model
     {
         return self::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
     }
-    public static function getAllAgentIDFullName(): array
+    public static function getAllAgentIDFullName($user_ids = []): array
     {
         $res = [];
-        $data = self::query()->where('role', '=', User::ROLE_AGENT)->select(['id', 'first_name', 'last_name'])->get();
-
+        $query = self::query()->where('role', '=', User::ROLE_AGENT);
+        if($user_ids)
+            $query->whereIn('id', $user_ids);
+        $query->select(['id', 'first_name', 'last_name']);
+        $data = $query->get();
         /**
          * @var $datum self
          */

@@ -1277,3 +1277,14 @@ Stack trace:
 #20 /var/www/softphone/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(131): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #21 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #22 {main}
+2020-05-26 09:00:35 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 07:45:06 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 11:48:39 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 16:20:15 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 19:21:36 INFO: Access Token has expired. Hence refreshing.
+2020-05-27 20:30:19 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 09:54:36 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 11:01:17 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 12:04:27 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 13:06:58 INFO: Access Token has expired. Hence refreshing.
+2020-05-28 16:20:59 INFO: Access Token has expired. Hence refreshing.

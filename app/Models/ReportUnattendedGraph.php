@@ -36,7 +36,6 @@ class ReportUnattendedGraph extends ReportUnattended
         ])->join('users', $this->table.'.agent_id', '=', 'users.id');
 
         $a_filter_by_agents = $this->getAgentIdFilter();
-        //print_r($a_filter_by_agents);
         if($a_filter_by_agents && count($a_filter_by_agents) > 0)
             $call_list_q->whereIn('agent_id', $a_filter_by_agents);
 

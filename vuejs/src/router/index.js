@@ -3,6 +3,10 @@ import VueRouter from 'vue-router'
 // import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
+import MissedCalls from '../components/MissedCalls.vue'
+import AgentStatusTimeTracking from '../components/AgentStatusTimeTracking.vue'
+// import Another from '../components/Another.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -12,10 +16,36 @@ const routes = [
     component: Login
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:id',
     name: 'Dashboard',
-    component: Dashboard
+    component: Dashboard,
+    children: [
+        {
+          path: "/dashboard/missed-calls",
+          component: MissedCalls
+        },
+        {
+          path: "/dashboard/agent-status",
+          component: AgentStatusTimeTracking
+        },
+        // {
+        //   path: "/dashboard/another",
+        //   component: Another
+        // }
+    ]
   },
+  // {
+  //   path: '/dashboard/MissedCalls',
+  //   name: 'MissedCalls',
+  //   component: MissedCalls
+  // },
+  // {
+  //   path: '/dashboard/AgentStatusTimeTracking',
+  //   name: 'AgentStatusTimeTracking',
+  //   component: AgentStatusTimeTracking
+  // },
+
+
 
   // {
   //   path: '/about',

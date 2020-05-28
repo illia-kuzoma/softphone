@@ -1,188 +1,30 @@
+<!--
+callcentr.wellnessliving.com
+softphone
+-->
 <template>
-    <!--http://callcentr.wellnessliving.com
-   http://softphone-->
     <div
-        id="dashboard"
-    >
-        <HeaderComponent
-            :userObject='userData' />
+        id="dashboard">
+        <HeaderComponent :userObject='userData' />
 
         <div
-            class="dashboard"
-        >
+            class="dashboard" >
 
-            <div class="header-container">
-                <span style="float: left"><h1>Missed Calls</h1></span>
-                <span style="float: right">
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="updateData();"
-                    > Update Data
-                    </button>
-                </span>
-                <div style="clear: both"></div>
-            </div>
-            <div class="controls-container">
-                <div class="date-container">
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('today'); setActive($event)"
-                    >Today
-                    </button>
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setBeforeDate(); setArrowActive($event)"
-                    > &#9666;
-                    </button>
 
-                    <!--
-                        :format="momentFormat"
-                        valueType="format"
-                        placeholder="placeholder1"
-                        v-on:change="dateSelected()"
-                     -->
-
-                    <date-picker
-                        v-model="selectedDate"
-                        type="date"
-                        class="date-item"
-                        valueType="YYYY-MM-DD"
-                        format="DD/MM/YYYY"
-                        v-on:change="dateSelected()"
-                    ></date-picker>
-
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setNextDate(); setArrowActive($event)"
-                    > &#9656;
-                    </button>
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('day'); setActive($event)"
-                    >Day
-                    </button>
-                    <button
-                        class="button button-li date-item color-grey color-dark"
-                        v-on:click="setDate('week'); setActive($event)"
-                    >Week
-                    </button>
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('month'); setActive($event)"
-                    >Month
-                    </button>
-                    <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('year'); setActive($event)"
-                    >Year
-                    </button>
-                </div>
-
-                <div class="search-container">
-                    <input
-                        v-model="searchText"
-                        type="text"
-                        id="search"
-                        placeholder="Search..."
-                        name="search">
-                    <button
-                        id="search-button"
-                        class="button color-violet"
-                        v-on:click="search(searchText) ; "
-                    >Search
-                    </button>
-                </div>
-
-            </div>
-            <div class="controls-container">
-                <div>
-                    <label class="typo__label">Select agents you need:</label>
-                    <multiselect @close="setUsers" v-model="multiple_selected_value" :options="multiple_options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="value" :preselect-first="true">
-                        <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} options selected</span></template>
-                    </multiselect>
-                </div>
-            </div>
-            <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
-                <h2>MISSED CALLS</h2>
-                <line-chart
-                    id="chartId"
-                    v-if='chartData'
-                    :chartObject='chartData'
-                    :is-resizable="true"
-                    :use-css-transforms="true"
-                    @clicked="getAgentFromChart"
-                    @close="ffFff"
-                    class="chart">
-                </line-chart>
-            </div>
-
-            <div class="table-container" v-if='Object.keys(chartData).length === 0'>
-                <h1>No Chart Data For This Period</h1>
-            </div>
-
-            <div class="table-container" v-if='tableCallsData.length>0'>
-                <v-data-table
-                    :headers="tableCallsHeaders"
-                    :items="tableCallsData"
-                    :items-per-page="20"
-                    :page.sync="tablePage"
-                    :options.sync='options'
-                    :hide-default-footer="true"
-                    class="v-data-table elevation-1"
-                    fixed-header
-                    @update:page="updatePage"
-                    @update:sort-desc="updateSortDesc"
-                >
-                    <template v-slot:item.user_data="{ item }">
-                        <div class='user'>
-                            <img :src="item.user_data.photo_url" alt="">
-                            <p>{{ item.user_data.full_name }}</p>
-                        </div>
-                    </template>
-
-                    <template v-slot:item.business="{ item }">
-                        <div class='business'>
-                            <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.business.business_link)'
-                                class='url'
-                                :href="item.business.business_link"
-                            >{{ item.business.business_name }}
-                            </a>
-                        </div>
-                    </template>
-
-                    <template v-slot:item.contact="{ item }">
-                        <div class='user'>
-                            <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.contact.contact_link)'
-                                class='url'
-                                :href="item.contact.contact_link"
-                            >{{ item.contact.contact_name }}
-                            </a>
-                        </div>
-                    </template>
-
-                    <template v-slot:item.time_create="{ item }">
-                        <div class='table-date-cell' >{{getDate(item["time_create"])}}</div>
-                    </template>
-
-                </v-data-table>
-                <v-pagination
-                    v-if="tablePageCount>1"
-                    v-model="tablePage"
-                    :length="tablePageCount"
-                    class="table-pagination"
-                    @input="changePage"
-                    :next-icon="nextIcon"
-                    :prev-icon="prevIcon"
-                ></v-pagination>
-            </div>
-
-            <div class="table-container" v-if='tableCallsData.length==0'>
-                <h1>No Table Data For This Period</h1>
-            </div>
+          <div>
+              <v-tabs
+                class="tabs"
+                centered
+                grow
+                height="60px"
+                v-model="activeTab"
+              >
+                <v-tab v-for="tab in tabs" :key="tab.id" :to="tab.path" exact>
+                  {{ tab.name }}
+                </v-tab>
+              </v-tabs>
+              <router-view></router-view>
+          </div>
 
         </div>
     </div>
@@ -190,24 +32,56 @@
 
 <script>
   import HeaderComponent from '@/components/header.vue'
-  import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
-  import Multiselect from 'vue-multiselect'
   import router from '../router'
+  // import DashboardRouter from '../dashboard-router'
+  // import DatePicker from 'vue2-datepicker';
+  import MissedCalls from '@/components/MissedCalls.vue'
+  import AgentStatusTimeTracking from '@/components/AgentStatusTimeTracking.vue'
+  // import Multiselect from 'vue-multiselect'
+  // import Another from '@/components/Another.vue'
 
   export default {
     name: 'HelloWorld',
     components: {
       HeaderComponent,
-      DatePicker,
-      LineChart,
-      Multiselect,
+      // DatePicker,
+      // LineChart,
+      // Multiselect,
     },
     data: () => ({
       // firstLoad:true,
+      activeTab:null,
+
+      tabs:[
+        {
+          name:'Missed Calls',
+          path:'/dashboard/missed-calls',
+          component:MissedCalls,
+        },
+        {
+          name:'Agent Status Time Tracking',
+          path:'/dashboard/agent-status',
+          component:AgentStatusTimeTracking,
+        },
+
+
+
+        // {
+        //   name:'Another',
+        //   path:'/dashboard/another',
+        //   component:Another,
+        // },
+
+
+
+      ],
+
+
+
+
       selectedDate:null,
       dateType:'date',
       chartData:[],
@@ -230,9 +104,9 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
-      multiple_value: null,
-      multiple_options:[],
-      multiple_selected_value:null,
+      //multiple_value: null,
+      agent_multiple_options:[],
+      agent_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
@@ -517,7 +391,7 @@
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/'+(refresh?'refresh/':'')+token)
+          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
             self.$loading(false);
             if(response.data.error===true){
@@ -531,7 +405,7 @@
 
             self.setChartData(response.data.diagrama);
             self.setTableData(response.data.calls);
-            self.setMultiDropdown(response.data.agents);
+            self.setAgentMultiDropdown(response.data.agents);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
@@ -586,7 +460,7 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://callcentr.wellnessliving.com/report/missed/call/'+
+          'http://softphone/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -614,7 +488,7 @@
           ss_agent_id = "/" + self.s_agent_id
         }
         this.$loading(true);
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call/'+
+        HttpService.methods.get('http://softphone/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
@@ -628,7 +502,7 @@
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://callcentr.wellnessliving.com/report/missed/call')
+        HttpService.methods.get('http://softphone/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);
@@ -654,16 +528,16 @@
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
       },
-      setMultiDropdown(data){
+      setAgentMultiDropdown(data){
         console.log(data);
-        this.multiple_options = data;
+        this.agent_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
         let s_agent_id = '';
-        if(this.multiple_selected_value !== null)
+        if(this.agent_multiple_selected_value !== null)
         {
-          let selected_agents_array = this.multiple_selected_value;
+          let selected_agents_array = this.agent_multiple_selected_value;
           let selected_agents_array_len = selected_agents_array.length;
           console.log(selected_agents_array_len);
           if(selected_agents_array_len)
@@ -698,7 +572,7 @@
       }
     },
     created: function(){
-      this.getChartData();
+      // this.getChartData();
     },
     mounted () {
     }

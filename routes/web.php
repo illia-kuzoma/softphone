@@ -34,8 +34,8 @@ Route::match(array( 'PUT', 'DELETE'),'/auth', static function () {
 });*/
 
 // getCalls
-Route::get('/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportUnattended@getCalls');
-Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
+Route::get('/report/missed/call/{startDate?}/{period?}/{departments?}/{teams?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', 'SoftPhone\ReportUnattended@getCalls');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/missed/call/{startDate?}/{period?}/{departments?}/{teams?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
     return redirect('/');
 });
 // refreshData

@@ -46,6 +46,8 @@
         getUserData(){
           var userD = this.$store.state.user
           this.userData = userD
+          console.log(this.$store.state)
+          console.log(this.$store.state.user)
         },
         setUserData(newValue){
           console.log("HeaderComponent setUserData newValue");
