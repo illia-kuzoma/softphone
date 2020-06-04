@@ -53,8 +53,12 @@ class ReportUnattendedCall extends ReportUnattended
             $this->table.'.phone',
             $this->table.'.time_start',
             'users.first_name',
-            'users.last_name'
-        ])->join('users', $this->table.'.agent_id', '=', 'users.id');
+            'users.last_name',
+            'users.photo',
+            'users.department_id',
+            'users.team_id'
+        ])->join('users', $this->table.'.agent_id', '=', 'users.id')
+       /* ->join('users', 'departments.id', '=', 'users.department_id')*/;
 
         $a_filter_by_agents = $this->getAgentIdFilter();
        #print_r($a_filter_by_agents);exit;
@@ -88,6 +92,7 @@ class ReportUnattendedCall extends ReportUnattended
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
+
         return [
             'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,
@@ -148,7 +153,7 @@ class ReportUnattendedCall extends ReportUnattended
                         'contact_name' => $this->getContactName($item->contact),
                         'contact_link' => "https://desk.zoho.com/support/wellnessliving/ShowHomePage.do#Calls/dv/". $item->id,
                     ],
-                    'user_data'   => ( new User() )->getUserData( $item->agent_id ), // TODO need to optimization in One request with all agent_ids.
+                    'user_data'   => User::prepareUserData((array)$item->attributes),//( new User() )->getUserData( $item->agent_id ), // TODO need to optimization in One request with all agent_ids.
                     'priority'    => $item->priority,
                     'phone'       => $item->phone,
                     'time_create' => strtotime( $item->time_start ),

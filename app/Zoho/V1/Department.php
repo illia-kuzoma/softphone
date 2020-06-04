@@ -40,8 +40,25 @@ class Department extends ZohoV1
         $departments = $this->getAll()['data'];
         foreach($departments as $department){
             $a_return[] = [
+                'id' => $department['id'],
                 'name' => $department['nameInCustomerPortal'],
-                'value' => $department['id'],
+                'description' => $department['description'],
+            ];
+        }
+        return $a_return;
+    }
+
+    public function getAllTeamDataArr($department_id)
+    {
+        $a_return = [];
+        $a_teams = (new Team())->getAll($department_id)[Team::DATA_FIELD];
+        foreach($a_teams as $team){
+            $a_return[] = [
+                'id' => $team['id'],
+                'name' => $team['name'],
+                'agents' => $team['agents'],
+                'description' => $team['description'],
+                'department_id' => $team['departmentId']
             ];
         }
         return $a_return;

@@ -136,16 +136,30 @@ class UnattendedCalls extends ZohoV1
         $from = self::FROM;
         do{
             $a_grouped_by_agents = $this->getAllCount($this->getOrgId(),'2010-02-14T00:00:00.0Z',$this->getTimeFormate(time()- 10000),$from,self::LIMIT);
-            foreach($a_grouped_by_agents as $datum){
-                $users_agent[] = [
+            foreach($a_grouped_by_agents as $datum)
+            {
+                $agent_id = $datum['agent']['id'];
+                $a_client_tmp = [
                     // 'email' - TODO get email from Accounts/{user_id}
                     'first_name' => $datum['agent']['firstName'],
                     'last_name' => $datum['agent']['lastName'],
                     'photo' => $datum['agent']['photoURL'],
                     'role' => 'agent',
                     'unattended_count' => $datum['count'],
-                    'user_id' => $datum['agent']['id'],
+                    'user_id' => $agent_id,
                 ];
+
+                if(isset($this->a_additional_agents_data[$agent_id]))
+                {
+                    $a_client_tmp['team_id'] = '';
+                    if(!empty($this->a_additional_agents_data[$agent_id]['team_id']))
+                    {
+                        $a_client_tmp['team_id'] = implode(',', array_keys($this->a_additional_agents_data[$agent_id]['team_id']));
+                    }
+                    $a_client_tmp['department_id'] = $this->a_additional_agents_data[$agent_id]['department_id'];
+                }
+
+                $users_agent[] = $a_client_tmp;
             }
             $from += self::LIMIT;
         }while(isset($a_grouped_by_agents[self::LIMIT]));
@@ -205,7 +219,7 @@ class UnattendedCalls extends ZohoV1
                 'time_start' => $datum['callTime'],
             ];
 
-            $this->a_users_client[] = [
+            $a_client_tmp = [
                 'email' => $datum['contact']['email'],
                 'first_name' => $datum['contact']['firstName'],
                 'last_name' =>  $datum['contact']['lastName'],
@@ -213,11 +227,30 @@ class UnattendedCalls extends ZohoV1
                 'role' => User::ROLE_USER,
                 'user_id' => $datum['contact']['id'],
             ];
+            $this->a_users_client[] = $a_client_tmp;
         }
 
         if(count($unattended_agent) >= self::LIMIT)
         {
             $this->requestUnattendedByAgent($agent_id, $from + self::LIMIT);
         }
+    }
+
+    private $a_additional_agents_data = [];
+
+    /**
+     * @return array
+     */
+    public function getAAdditionalAgentsData(): array
+    {
+        return $this->a_additional_agents_data;
+    }
+
+    /**
+     * @param array $a_additional_agents_data
+     */
+    public function setAAdditionalAgentsData(array $a_additional_agents_data): void
+    {
+        $this->a_additional_agents_data = $a_additional_agents_data;
     }
 }

@@ -3,7 +3,7 @@ namespace App\Zoho\V1;
 
 class Team extends ZohoV1
 {
-    private const DATA_FIELD = 'teams';
+    public const DATA_FIELD = 'teams';
     protected function checkResponse($data): void
     {
         if (!isset($data[static::DATA_FIELD]))
@@ -50,22 +50,6 @@ class Team extends ZohoV1
         return $a_team;
     }
 
-    public function getAllDataArr($department_id)
-    {
-        $a_return = [];
-        $a_teams = $this->getAll($department_id)[static::DATA_FIELD];
-        foreach($a_teams as $team){
-            $a_return[] = [
-                'id' => $team['id'],
-                'name' => $team['name'],
-                'agents' => $team['agents'],
-                'description' => $team['description'],
-                'department_id' => $team['departmentId']
-            ];
-        }
-        return $a_return;
-    }
-
     public function getTeamDataArr($team_id)
     {
         $a_return = [];
@@ -76,6 +60,6 @@ class Team extends ZohoV1
             'agents' => $a_team['agents'],
             'description' => $a_team['description']
         ];
-        return $a_return;
+        return $a_team;
     }
 }

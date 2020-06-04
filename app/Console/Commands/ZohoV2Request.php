@@ -332,12 +332,18 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
+        print_r(
+            (new Team())->getTeamDataArr(102325000097304271));
+        exit;
+        print_r(
+        (new ActiveTimers())->getAll(102325000000006907));
+        exit;
         /*print_R((new Team())->getAllDataArr(102325000000006907));
 
         exit;*/
         (new ActiveTimers())->getAll(102325000000006907);
         exit;
-        (new Team())->getAllDataArr(102325000000006907);
+        (new Department())->getAllTeamDataArr(102325000000006907);
         exit;
         (new Department())->getDataArr();
         exit;

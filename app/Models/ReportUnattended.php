@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Zoho\V1\Department;
 use App\Zoho\V1\UnattendedCalls;
 use Illuminate\Database\Eloquent\Model;
 
@@ -139,7 +140,7 @@ class ReportUnattended extends Model
 
     protected function checkSortField($field)
     {
-        return !in_array(strtolower($field), [self::FIELD_TIME_CREATE, 'contact', 'first_name', 'business_name']);
+        return !in_array(strtolower($field), [self::FIELD_TIME_CREATE, 'contact', 'first_name', 'business_name'/*,'department_name','team_name'*/]);
     }
 
     public function getSortOrder($order)
@@ -195,8 +196,38 @@ class ReportUnattended extends Model
             $o_uc = new UnattendedCalls(strtotime($max_time_start_call . " -1 day"));
             $a_agent_id = [];
             $o_users = new User();
-            if($i_diff_dates > 100000)// С головы придуманное число. Идея в том что навряд ли агенты будут создаваться часто.
+            if($i_diff_dates > 10000)// С головы придуманное число. Идея в том что навряд ли агенты будут создаваться часто.
             {
+                $o_department = new \App\Models\Department();
+                $o_department_zoho = new Department();
+                $a_department = $o_department_zoho->getDataArr();
+                $o_department->insert($a_department);
+
+                $a_uid_data = [];
+                $o_team = new \App\Models\Team();
+                $a_team = [];
+                foreach($a_department as $item)
+                {
+                    $a_team_tmp = $o_department_zoho->getAllTeamDataArr($item['id']);
+                    //print_r($a_team_tmp);
+                    $a_team = array_merge($a_team, $a_team_tmp);
+                    foreach($a_team_tmp as $team){
+                        foreach($team['agents'] as $uid)
+                        {
+                            if(!isset($a_uid_data[$uid]))
+                                $a_uid_data[$uid] = [
+                                    'team_id' => [],
+                                    'department_id' => $item['id']
+                                ];
+
+                            if(!isset($a_uid_data[$uid]['team_id'][$team['id']]))
+                                $a_uid_data[$uid]['team_id'][$team['id']] = null;
+                        }
+                    }
+                }
+                $o_team->insert($a_team);
+
+                $o_uc->setAAdditionalAgentsData($a_uid_data);
                 $users_agent = $o_uc->getAgentsList();
                 $a_agent_id = array_column($users_agent, 'user_id');
                 $o_users->insert($users_agent);
@@ -204,7 +235,6 @@ class ReportUnattended extends Model
                 $a_agent_id = User::getAllAgentIDs();
             }
             $a_agent_id = $this->filterUsers($a_agent_id);
-            //print_r($a_agent_id);exit;
 
             $o_calls = new ReportUnattendedCall();
             foreach($a_agent_id as $i_agent_id){

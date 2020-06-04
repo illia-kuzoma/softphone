@@ -29,7 +29,7 @@ class ZohoV1
         $a_result = [];
         $url = $s_url . (($s_param)?'?' . $s_param:'');
         $ch = curl_init($url);
-        //echo $url."\n";
+        //echo $url."\n\n";
         $a_headers[] = 'Authorization:Zoho-oauthtoken ' . ZCRMConfigUtil::getAccessToken();
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(

@@ -648,6 +648,12 @@
         if(this.options.sortBy[0] === 'contact'){
           sortField = 'contact'
         }
+        if(this.options.sortBy[0] === 'user_data.department'){
+          sortField = 'department_name'
+        }
+        if(this.options.sortBy[0] === 'user_data.team'){
+          sortField = 'team_name'
+        }
 
         var sortBy = this.options.sortDesc[0] || '-';
         if(this.options.sortDesc[0] === false){

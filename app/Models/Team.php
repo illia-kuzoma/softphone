@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property string $name
  * @property string $description
+ * @property integer $department_id
  * @property string $created_at
  * @property string $updated_at
  */
-class Department extends Model
+class Team extends Model
 {
     use Common;
 
-    const TABLE_NAME = "departments";
+    const TABLE_NAME = "teams";
 
     public $table = "";
     /**
@@ -28,7 +29,7 @@ class Department extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'description', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'description', 'department_id', 'created_at', 'updated_at'];
 
     public function __construct()
     {
@@ -75,6 +76,7 @@ class Department extends Model
                     'id'            => $singleCallData['id'],
                     'name'          => $singleCallData['name'],
                     'description'   => $singleCallData['description']?$singleCallData['description']:'',
+                    'department_id' => $singleCallData['department_id'],
                 ]
             );
         }
@@ -92,12 +94,14 @@ class Department extends Model
             [
                 'id'            => $callData['id'],
                 'name'          => $callData['name'],
-                'description'   => $callData['description']
+                'description'   => $callData['description'],
+                'department_id' => $callData['department_id'],
             ],
             [
                 'id'            => 'required|digits_between:10,19', // required|string|unique:report_missed_calls|
                 'name'          => 'max:100',
                 'description'   => 'max:400',
+                'department_id' => 'required|digits_between:10,19',
             ]
         );
         if($validator->fails()){
@@ -106,10 +110,12 @@ class Department extends Model
         return ! $validator->fails();
     }
 
-    public function getAllArr($ids = [])
+    public function getAllArr($a_department_id = [], $ids = [])
     {
         $res = [];
         $query = self::query();
+        if($a_department_id)
+            $query->whereIn('department_id', $a_department_id);
         if($ids)
             $query->whereIn('id', $ids);
         $query->select(['id', 'name']);
@@ -125,5 +131,4 @@ class Department extends Model
         }
         return $res;
     }
-
 }

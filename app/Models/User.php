@@ -95,21 +95,38 @@ class User extends Model
      */
     public function getUserData($user_id): array
     {
-        $users = \DB::table($this->table)->where('id', '=', $user_id)->get()->sortBy('id');
-        $data = [];
+        $a_user = (array)\DB::table($this->table)->where('id', '=', $user_id)->first();
+        return self::prepareUserData($a_user);
+    }
 
-        if (!empty($users)) {
-            foreach ( $users as $user ) {
-                $data['full_name']  = $user->first_name . ' ' . $user->last_name ;
-                $data['photo_url']  = $user->photo;
-                $data['first_name'] = $user->first_name;
-                $data['last_name']  = $user->last_name;
-            }
+    public static function prepareUserData($a_user): array
+    {
+        $data = [];
+        $data['full_name']  = $a_user['first_name'] . ' ' . $a_user['last_name'] ;
+        $data['photo_url']  = $a_user['photo'];
+        $data['first_name'] = $a_user['first_name'];
+        $data['last_name']  = $a_user['last_name'];
+        $data['department']  = [
+            'id' => $a_user['department_id']?''.$a_user['department_id']:'',
+        ];
+
+        // TODO to optimize selection from db for team and department tables.
+        $data['department']['name'] = $a_user['department_id']?
+            Department::query()->where(['id' => $a_user['department_id']])->select('name')->first()['name']:
+            '';
+        $data['team']  = ['id' =>$a_user['team_id']?''.$a_user['team_id']:''];
+        $data['team']['name'] = '';
+        if($a_user['team_id'])
+        {
+            $a_team_id = explode(',', $a_user['team_id']);
+            $a_team_name = Team::query()->whereIn('id', $a_team_id)->pluck('name')->toArray();
+            $data['team']['name'] = implode(', ', $a_team_name);
         }
+
         return $data;
     }
 
-    /**
+        /**
      * Insert new User
      * @param $userData
      */
@@ -143,6 +160,8 @@ class User extends Model
                 'role'       => $userData['role'],
                 /*'token'      => $userData['token'],*/
                 'photo'      => $userData['photo'],
+                //'team_id'      => $userData['team_id'],
+                //'department_id'      => $userData['department_id'],
                 'date_login' => $userData['date_login'],
             ],
             [
@@ -154,6 +173,8 @@ class User extends Model
                 'role'       => 'max:32',
                 /*'token'      => 'max:32',*/
                 'photo'      => 'max:256',
+                //'team_id'      => '',
+                //'department_id'      => '',
                 'date_login' => 'date_format:Y-m-d H:i:s'
             ]
         );
@@ -189,6 +210,8 @@ class User extends Model
                         'role'       => $singleUserData['role']??'',
                         'token'      => $singleUserData['token']??'',
                         'photo'      => $singleUserData['photo']??'',
+                        'team_id'      => $singleUserData['team_id']??null,
+                        'department_id'      => $singleUserData['department_id']??null,
                         'date_login' => $singleUserData['date_login'],
                         'created_at' => date( 'Y-m-d H:i:s'),
                         'updated_at' => date( 'Y-m-d H:i:s'),
@@ -251,4 +274,27 @@ class User extends Model
     {
         return $this->user->token;
     }
+
+    public function getIdArrByTeams($a_department_id = [], $a_team_id = [])
+    {
+        $query = self::query()->where('role', '=', User::ROLE_AGENT);
+        if($a_team_id)
+        {
+            foreach($a_team_id as $k=>$_team_id){
+                if($k == 0)
+                {
+                    $query->where('team_id', 'LIKE', '%'.$_team_id.'%');
+                }
+                else
+                    $query->orWhere('team_id', 'LIKE', '%'.$_team_id.'%');
+            }
+        }
+        elseif($a_department_id)
+            $query->whereIn('department_id', $a_department_id);
+
+        $data = $query->pluck('id')->toArray();
+
+        return $data;
+    }
+
 }
