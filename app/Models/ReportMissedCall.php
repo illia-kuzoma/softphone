@@ -91,7 +91,7 @@ class ReportMissedCall extends ReportMissed
                         'contact_name' => $item->contact,
                         'contact_link' => "https://ufo.url.com",
                     ],
-                    'user_data'   => ( new User() )->getUserData( $item->user_id ),
+                    'user_data'   => ( new User() )->formatUserData( $item->user_id ),
                     'priority'    => $item->priority,
                     'phone'       => $item->phone,
                     'time_create' => strtotime( $item->time_start ),

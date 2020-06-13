@@ -61,19 +61,13 @@ class ReportUnattendedCall extends ReportUnattended
        /* ->join('users', 'departments.id', '=', 'users.department_id')*/;
 
         $a_filter_by_agents = $this->getAgentIdFilter();
-       #print_r($a_filter_by_agents);exit;
         if(!empty($a_filter_by_agents))
             $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
 
         $call_list_q->where('time_start', '>=', $dateFrom);
         $call_list_q->where('time_start', '<=', $dateTo);
         $call_list_q->orderBy( $sortField, $sortBy );
-        /*if($uid)
-        {
-            $call_list_q->when(request($this->_getIdKey(), $uid), function ($q, $uid) {
-                return $q->where($this->_getIdKey(), $uid);
-            });
-        }*/
+
         if($searchWord)
         {
             $call_list_q->where(function ($q) use ($searchWord)
@@ -109,6 +103,12 @@ class ReportUnattendedCall extends ReportUnattended
     }
 
     private $a_business_data = [];
+
+    /**
+     * Возвращает данные по бизнессу, каждый эелемент содержит ссылку на Wellnessliving и имя бизнесса.
+     * @param $call
+     * @return array
+     */
     public function getBusinessData($call): array
     {
         $a_business_data = [];
@@ -128,7 +128,8 @@ class ReportUnattendedCall extends ReportUnattended
     }
 
     /**
-     * Format Call List
+     * Format Call List to return to client app.
+     *
      * @param $data
      * @param $page
      *
@@ -153,7 +154,7 @@ class ReportUnattendedCall extends ReportUnattended
                         'contact_name' => $this->getContactName($item->contact),
                         'contact_link' => "https://desk.zoho.com/support/wellnessliving/ShowHomePage.do#Calls/dv/". $item->id,
                     ],
-                    'user_data'   => User::prepareUserData((array)$item->attributes),//( new User() )->getUserData( $item->agent_id ), // TODO need to optimization in One request with all agent_ids.
+                    'user_data'   => User::prepareUserData((array)$item->attributes),//( new User() )->getUserData( $item->agent_id ),
                     'priority'    => $item->priority,
                     'phone'       => $item->phone,
                     'time_create' => strtotime( $item->time_start ),
@@ -166,13 +167,16 @@ class ReportUnattendedCall extends ReportUnattended
         return $result;
     }
 
+    /**
+     * Обновляет данные бизнесса для каждого звонка.
+     */
     public function updateBusinessName()
     {
         if($this->a_business_data)
         {
-            foreach($this->a_business_data as $id=>$s_business)
+            foreach($this->a_business_data as $call_id=>$s_business)
             {
-                \DB::table( $this->table )->where('id','=', $id)->update(
+                \DB::table( $this->table )->where('id','=', $call_id)->update(
                     [
                         'business_name' => $s_business,
                     ]
@@ -271,11 +275,17 @@ class ReportUnattendedCall extends ReportUnattended
         }
     }
 
+    /**
+     * Обновить данные в БД для текущей таблицы.
+     */
     public function updateDB()
     {
         $this->updateEmptyBusinessNames();
     }
 
+    /**
+     * Функция ищет пустые имена бизнессов в БД и под них ищет данные на стороне Зохо.
+     */
     public function updateEmptyBusinessNames()
     {
         $call_list_q = ReportUnattendedCall::query()->select([
@@ -297,6 +307,13 @@ class ReportUnattendedCall extends ReportUnattended
         }
     }
 
+    /**
+     * Идет данные по бизнессу на основании данных контактов,
+     * которых может быть несколько в форме ассоциативного массива.
+     *
+     * @param $a_contact [] данные контактов что имеются, например емейл, телефон.
+     * @return array
+     */
     private function getBusinessDataByContacts($a_contact)
     {
         $o_zoho_contacts = new Contacts();
@@ -327,8 +344,9 @@ class ReportUnattendedCall extends ReportUnattended
     }
 
     /**
-     * Getting business data from remote server.
-     * @param $call
+     * Getting business data from remote server. And prepare got data to work with them.
+     *
+     * @param $call ReportUnattendedCall
      * @return array
      */
     private function parseBusinessData($call)

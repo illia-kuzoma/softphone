@@ -88,17 +88,24 @@ class User extends Model
     }
 
     /**
-     * getUserData
-     * @param $user_id
+     * Возвращает данные пользователя для отображения на екран.
+     *
+     * @param $user_id string Ключ пользователя.
      *
      * @return array
      */
-    public function getUserData($user_id): array
+    public function formatUserData($user_id): array
     {
         $a_user = (array)\DB::table($this->table)->where('id', '=', $user_id)->first();
         return self::prepareUserData($a_user);
     }
 
+    /**
+     * Подготавливает данные пользователя для отображения на екран.
+     *
+     * @param $a_user []
+     * @return array
+     */
     public static function prepareUserData($a_user): array
     {
         $data = [];
@@ -231,10 +238,19 @@ class User extends Model
             $this->insertSingleUserData($singleUserData);
         }
     }
+
+
     public static function getAllAgentIDs(): array
     {
         return self::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
     }
+
+    /**
+     * Возвращает массив пользователей. Где каждый элемент содержит имя и ИД пользователя.
+     *
+     * @param array $user_ids Ключи пользователей для выборки с БД.
+     * @return array
+     */
     public static function getAllAgentIDFullName($user_ids = []): array
     {
         $res = [];
@@ -263,6 +279,11 @@ class User extends Model
         return (string)$this->{$this->_getIdKey()}; //
     }
 
+    /**
+     * Обновить токен объкта по емейлу объекта.
+     *
+     * @param $s_token Новый токен.
+     */
     public function updateToken($s_token)
     {
         \DB::table( $this->table)->where( 'email', $this->user->email  )
@@ -275,6 +296,13 @@ class User extends Model
         return $this->user->token;
     }
 
+    /**
+     * Возвращает список ИД пользователей согласно переданным ИД отделов и команд.
+     *
+     * @param array $a_department_id Массив ИД отделов.
+     * @param array $a_team_id Массив ИД комманд.
+     * @return array
+     */
     public function getIdArrByTeams($a_department_id = [], $a_team_id = [])
     {
         $query = self::query()->where('role', '=', User::ROLE_AGENT);
@@ -282,9 +310,7 @@ class User extends Model
         {
             foreach($a_team_id as $k=>$_team_id){
                 if($k == 0)
-                {
                     $query->where('team_id', 'LIKE', '%'.$_team_id.'%');
-                }
                 else
                     $query->orWhere('team_id', 'LIKE', '%'.$_team_id.'%');
             }

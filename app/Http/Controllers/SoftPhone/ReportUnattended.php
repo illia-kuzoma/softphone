@@ -10,8 +10,11 @@ class ReportUnattended extends Controller
 {
     private const DIAGRAM_DATA = 'diagrama';
     private const CALLS_DATA = 'calls';
+    private const TEAM_IDS = 'teams';
     private const USER_DATA = 'user';
     private const AGENT_IDS = 'agents';
+    private const TOKEN_IDS = 'token';
+    private const DEPARTMENT_IDS = 'departments';
 
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
@@ -31,12 +34,10 @@ class ReportUnattended extends Controller
             );
         }
         $a_agent_id = [];
-        /*if(is_string($uids))
-            $a_agent_id = explode(',', $uids);*/
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
 
-        if($refresh)
+        if($refresh) // Подтянуть данные с Зохо.
             $unattendedCalls->loadFromRemoteServer();
 
         $out = [
@@ -44,8 +45,8 @@ class ReportUnattended extends Controller
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::USER_DATA => $user->toArray(),
             self::AGENT_IDS => User::getAllAgentIDFullName(),
-            'token' => $user->getToken(),
-            'departments' => (new \App\Models\Department())->getAllArr()
+            self::TOKEN_IDS => $user->getToken(),
+            self::DEPARTMENT_IDS => (new \App\Models\Department())->getAllArr()
         ];
 
         return json_encode($out);
@@ -67,12 +68,13 @@ class ReportUnattended extends Controller
     /**
      * @param null $dateStart
      * @param null $period
-     * @param null $uids
+     * @param null $departments
+     * @param null $teams
+     * @param null $uid
      * @param null $searchWord
      * @param null $sortField
      * @param string $sortBy
      * @param int $page
-     *
      * @return string
      */
     public function getCalls($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
@@ -81,67 +83,30 @@ class ReportUnattended extends Controller
         $a_team_id = $this->_getIdsAsArray($teams);
         $a_agent_id = $this->_getIdsAsArray($uid);
         $o_user = new User();
+        // Получаю список агентов согласно департментам и командам.
         $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
-        if(empty($a_agent_id))
-        {
+
+        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
             $a_agent_id = $a_agent_id_by_teams;
-        }
+
         $o_team = new Team();
         $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
 
-       /* $o_department = new \App\Models\Department();
-        $a_agent_id = $o_department->getUserIds($departments, $teams, $uid);
-        $a_agent_data = $o_department->getAAgentsData();
-        $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
-
-        //$unattendedCalls->loadFromRemoteServer();
-        $a_department = (new Department())->getDataArr();
-        $a_team = $o_department->getTeams($departments);*/
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $calls = $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
 
-        /*if(empty($a_agent_data))
-        {
-            $a_department_id = array_column($a_department, 'value');
-            $o_department->getUserIds($a_department_id);
-            $a_agent_data = $o_department->getAAgentsData();
-            $a_team = $o_department->getTeams($a_department_id);
-        }
-        foreach($calls['data'] as &$call)
-        {
-            $uid = $call['uid'];
-            $department_id = !empty($a_agent_data[$uid])?$a_agent_data[$uid]['department']['id']:null;
-            $team_id = !empty($a_agent_data[$uid])?$a_agent_data[$uid]['team']['id']:null;
-
-            $call['user_data']['department']['id'] = 0;
-            $call['user_data']['department']['name'] = '-';
-            $call['user_data']['team']['id'] = 0;
-            $call['user_data']['team']['name'] = '-';
-            foreach($a_department as $department){
-                if($department['value'] == $department_id)
-                {
-                    $call['user_data']['department']['id'] = $department_id;
-                    $call['user_data']['department']['name'] = $department['name'];
-                    break;
-                }
-            }
-            foreach($a_team as $team){
-                if($team['value'] == $team_id)
-                {
-                    $call['user_data']['team']['id'] = $team_id;
-                    $call['user_data']['team']['name'] = $team['name'];
-                    break;
-                }
-            }
-        }
-        unset($call);*/
         $out = [
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
             self::AGENT_IDS => User::getAllAgentIDFullName($a_agent_id_by_teams),
-            'teams' => $a_team
+            self::TEAM_IDS => $a_team
         ];
         return json_encode($out);
+    }
+
+    private function _getAgentIds()
+    {
+
     }
 
     /**

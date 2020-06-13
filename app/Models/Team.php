@@ -110,6 +110,13 @@ class Team extends Model
         return ! $validator->fails();
     }
 
+    /**
+     * Возвращает массив каоменда. Где каждый элемент содержит имя и ИД комаенды.
+     *
+     * @param array $a_department_id Список ИД отделов.
+     * @param array $ids Список ИД команд.
+     * @return array
+     */
     public function getAllArr($a_department_id = [], $ids = [])
     {
         $res = [];

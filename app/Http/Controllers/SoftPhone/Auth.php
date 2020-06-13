@@ -44,8 +44,8 @@ class Auth extends Controller
     {
         try{
 
-            $zo = new AuthByPassword();
-            $res = $zo->getToken($request->post('email'));
+            $o_zoho_pass = new AuthByPassword();
+            $s_token = $o_zoho_pass->getToken($request->post('email'));
         }
         catch(\Exception $e)
         {
@@ -53,12 +53,12 @@ class Auth extends Controller
                 'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
             );
         }
-        if($res)
+        if($s_token)
         {
             try{
                 $user = new User();
                 $user->getUserByLoginAndPass($request->post('email'),$request->post('password'));
-                $user->updateToken($res);
+                $user->updateToken($s_token);
             }
             catch(\Exception $e)
             {
@@ -66,12 +66,10 @@ class Auth extends Controller
                     'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
                 );
             }
-            //echo '/report/missed/'.$user->getToken();exit;
             return \Redirect::to('/report/missed/'.$user->getToken());
         }
         return redirect()->action(
             'SoftPhone\Auth@getAuth', ['message' => "Please enter correct login and password."]
         );
-        #return redirect()->route('auth', ['message' => "Please enter correct login and password!."]);
     }
 }

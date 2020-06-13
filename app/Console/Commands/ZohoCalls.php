@@ -2,30 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Zoho\Auth;
-use App\Zoho\Config;
-use App\Zoho\V1\ActiveTimers;
 use Illuminate\Console\Command;
+use zcrmsdk\crm\crud\ZCRMModule;
 
-/**
- * Class ZohoRequest for testing 2nd version SDK.
- * @package App\Console\Commands
- */
-class ZohoV2Request extends Command
+class ZohoCalls extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zoho:v2';
+    protected $signature = 'zoho:calls';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Get data from zoho servers.';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -35,12 +29,7 @@ class ZohoV2Request extends Command
     public function __construct()
     {
         parent::__construct();
-        new Config([
-            "redirect_uri"=>Auth::redirect_uri,
-            "currentUserEmail"=>Auth::userEmail
-        ]);
     }
-
 
     /**
      * Execute the console command.
@@ -49,7 +38,13 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
-        (new ActiveTimers())->getAll(102325000000006907);
-        echo ' ';
+        $this->calls();
+    }
+
+    public function calls(){
+        $zcrmModuleIns = ZCRMModule::getInstance("Calls");
+        $bulkAPIResponse=$zcrmModuleIns->getRecords();
+        $recordsArray = $bulkAPIResponse->getData(); // $r
+        print_r($recordsArray); echo "\n\n";
     }
 }

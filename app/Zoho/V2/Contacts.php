@@ -25,6 +25,16 @@ class Contacts
 
         #self::setGrantToken();
     }
+
+    /**
+     * Поиск данные контакта по одному полю.
+     *
+     * @param $param string параметр п окоторому ищем.
+     * @param $value string искомая строка.
+     * @return array данные контакта если найдены.
+     * @throws \ReflectionException
+     * @throws \zcrmsdk\crm\exception\ZCRMException
+     */
     private function searchInContacts($param, $value):array
     {
         $st = 'curl "https://www.zohoapis.com/crm/v2/'.(new \ReflectionClass($this))->getShortName().'/search?'.$param.'='.urlencode($value).'" -H "Authorization: Zoho-oauthtoken '.ZCRMConfigUtil::getAccessToken().'" -X GET';
@@ -37,10 +47,24 @@ class Contacts
         }
         return [];
     }
+
+    /**
+     * Ищет данные контакта по Телефону.
+     *
+     * @param $value
+     * @return array
+     */
     public function searchInContactsByPhone($value):array
     {
         return $this->searchInContacts('phone', $value);
     }
+
+    /**
+     * Ищет данные контакта по email.
+     *
+     * @param $value
+     * @return array
+     */
     public function searchInContactsByEmail($value):array
     {
         return $this->searchInContacts('email',  $value);
@@ -50,6 +74,12 @@ class Contacts
         return $this->searchInContacts('word', $value);
     }
 
+    /**
+     * Разбирает данные ответа Зохо с целью получить ссылку на сайт бизнесса Wellnessliving и его название.
+     *
+     * @param $a_response
+     * @return array
+     */
     private function parseResponse($a_response)
     {
         $a_return = [];

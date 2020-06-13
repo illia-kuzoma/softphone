@@ -3,6 +3,12 @@ namespace App\Zoho\V1;
 
 class Department extends ZohoV1
 {
+    /**
+     * Получисть все включенные отделы.
+     *
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getAll()
     {
         $departments = $this->request(
@@ -19,6 +25,11 @@ class Department extends ZohoV1
         return $departments;
     }
 
+    /**
+     * @param $department_id
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getOne($department_id)
     {
         $a_department = $this->request(
@@ -34,6 +45,12 @@ class Department extends ZohoV1
         return $a_department;
     }
 
+    /**
+     * Получить только нужные данные по отделам.
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getDataArr()
     {
         $a_return = [];
@@ -48,6 +65,13 @@ class Department extends ZohoV1
         return $a_return;
     }
 
+    /**
+     * Получить только нужные данные всех комманд отдела.
+     *
+     * @param $department_id integer ключ отдела.
+     * @return array
+     * @throws \Exception
+     */
     public function getAllTeamDataArr($department_id)
     {
         $a_return = [];

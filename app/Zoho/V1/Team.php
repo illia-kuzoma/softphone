@@ -11,6 +11,14 @@ class Team extends ZohoV1
             throw new \Exception(sprintf("Response structure in %s has error!\n %s", __METHOD__, json_encode($data)));
         }
     }
+
+    /**
+     * Получает данные по командам отдела с Зохо.
+     *
+     * @param $department_id integer Ключ отделаю
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getAll($department_id)
     {
         if(empty($department_id))
@@ -31,6 +39,13 @@ class Team extends ZohoV1
         return $a_teams;
     }
 
+    /**
+     * Получает данные команды с Зохо.
+     *
+     * @param $team_id integer ключ команды.
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getOne($team_id)
     {
         if(empty($team_id))
@@ -50,6 +65,13 @@ class Team extends ZohoV1
         return $a_team;
     }
 
+    /**
+     * Возвращает только нужные данныйе команды.
+     *
+     * @param $team_id integer ключ команды.
+     * @return array|mixed
+     * @throws \Exception
+     */
     public function getTeamDataArr($team_id)
     {
         $a_return = [];
