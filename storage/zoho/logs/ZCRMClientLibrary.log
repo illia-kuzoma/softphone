@@ -1546,3 +1546,6 @@ Trace::#0 /var/www/softphone/vendor/zohocrm/php-sdk/src/crm/api/response/CommonA
 #22 /var/www/softphone/artisan(37): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #23 {main}
 2020-06-13 19:55:43 INFO: Access Token has expired. Hence refreshing.
+2020-07-01 10:51:46 INFO: Access Token has expired. Hence refreshing.
+2020-07-03 10:26:52 INFO: Access Token has expired. Hence refreshing.
+2020-07-03 16:23:07 INFO: Access Token has expired. Hence refreshing.

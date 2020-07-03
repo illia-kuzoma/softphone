@@ -49,7 +49,7 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
-        (new ActiveTimers())->getAll(102325000000006907);
+        (new ActiveTimers())->getAll2();
         echo ' ';
     }
 }
