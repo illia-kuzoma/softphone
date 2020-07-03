@@ -95,7 +95,6 @@ class ReportUnattended extends Controller
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $calls = $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
 
-        print_r( $unattendedCalls->getDiagramList($dateStart, $period));exit;
         $out = [
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
