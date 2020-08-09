@@ -3,36 +3,23 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\Response;
+use App\Http\Controllers\Traits\UserAuth;
 use App\Models\Team;
 use App\Models\User;
 
 class ReportUnattended extends Controller
 {
+    use UserAuth;
+    use Response;
+
     private const DIAGRAM_DATA = 'diagrama';
     private const CALLS_DATA = 'calls';
     private const TEAM_IDS = 'teams';
-    private const USER_DATA = 'user';
-    private const AGENT_IDS = 'agents';
-    private const TOKEN_IDS = 'token';
-    private const DEPARTMENT_IDS = 'departments';
 
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
-        try{
-            $user = new User();
-            $user->getUserByToken($token);
-            if(!$user->checkToken()){
-                return redirect()->action(
-                    'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]
-                );
-            }
-        }
-        catch(\Exception $e)
-        {
-            return redirect()->action(
-                'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
-            );
-        }
+        $user = $this->getUser($token);
         $a_agent_id = [];
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
@@ -40,14 +27,10 @@ class ReportUnattended extends Controller
         if($refresh) // Подтянуть данные с Зохо.
             $unattendedCalls->loadFromRemoteServer();
 
-        $out = [
+        $out = array_merge($this->getResponse($user), [
             self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
-            self::USER_DATA => $user->toArray(),
-            self::AGENT_IDS => User::getAllAgentIDFullName(),
-            self::TOKEN_IDS => $user->getToken(),
-            self::DEPARTMENT_IDS => (new \App\Models\Department())->getAllArr()
-        ];
+        ]);
 
         return json_encode($out);
     }
@@ -95,12 +78,11 @@ class ReportUnattended extends Controller
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $calls = $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
 
-        $out = [
+        $out = array_merge([
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
-            self::AGENT_IDS => User::getAllAgentIDFullName($a_agent_id_by_teams),
             self::TEAM_IDS => $a_team
-        ];
+        ], $this->getAgentsArr());
         return json_encode($out);
     }
 

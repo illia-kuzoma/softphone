@@ -40,22 +40,23 @@ class ActiveTimers extends ZohoV1
         $this->checkResponse($a_results);
         return $a_results;
     }
-    public function getAll2($agent_id = 102325000021403205): array
+    public function getAll2($agent_id, $module='calls', $from=0, $limit=0, $created_time_from, $created_time_to): array
     {
-        $module = 'tickets'; // tasks
+        $createdTimeRange = $created_time_from.','.$created_time_to;
+        //$module = 'calls'; // tasks  calls  tickets
         $a_results = $this->request(
-            "https://desk.zoho.com/api/v1/agents/$agent_id/timeEntry", 'module='.$module.'&from=0&limit=10&include=owner&createdTimeRange=2020-06-16T06:00:00.000Z,2020-06-30T20:00:00.000Z&modifiedTimeRange=2020-06-16T06:00:00.000Z,2020-06-30T20:00:00.000Z',
+            //"https://desk.zoho.com/api/v1/agents/$agent_id/timeEntry", 'module='.$module.'&from=0&limit=100&include=owner&modifiedTimeRange=2020-02-10T06:00:00.000Z,2020-06-30T20:00:00.000Z',
+            "https://desk.zoho.com/api/v1/agents/$agent_id/timeEntry", 'module='.$module.'&from='.$from.'&limit='.$limit.'&include=owner&createdTimeRange='.$createdTimeRange,
             [
                 'orgId:' . ((new Organization())->getIdWellnessliving())
             ]
         );
-        print_r($a_results);exit;
         if(empty($a_results))
         {
             throw new \Exception(sprintf("Departments list is empty!"));
         }
         $this->checkResponse($a_results);
-        return $a_results;
+        return $a_results['data'];
     }
 
     public function getDataArr()

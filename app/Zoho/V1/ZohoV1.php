@@ -29,10 +29,12 @@ class ZohoV1
         $a_result = [];
         $url = $s_url . (($s_param)?'?' . $s_param:'');
         $ch = curl_init($url);
-        //echo $url."\n\n";
+//        echo "Request:\n";
+//        echo $url."\n\n";
         $a_headers[] = 'Authorization:Zoho-oauthtoken ' . ZCRMConfigUtil::getAccessToken();
-        //print_r($a_headers);
-        //echo "\n\n";
+//        echo "Headers:\n";
+//        print_r($a_headers);
+//        echo "\n\n";
         curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(
             $a_headers
         ));
@@ -45,7 +47,8 @@ class ZohoV1
         }
         else
         {
-            print_r($s_result);
+            //echo "Response:\n";
+            //print_r($s_result);
             // Log::put(sprintf("curl_exec %s", $s_result));
             $a_result = json_decode($s_result, true);
         }
