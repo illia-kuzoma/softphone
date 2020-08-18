@@ -29,7 +29,7 @@ class AuthByPassword extends Auth
 
     public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoCRM/crmapi'): ?string
     {
-        $this->recheckUserName($username, $password);
+        //$this->recheckUserName($username, $password);
 
         $token_path = $this->config->getPathToToken($username);
         if(file_exists($token_path) && !$new){

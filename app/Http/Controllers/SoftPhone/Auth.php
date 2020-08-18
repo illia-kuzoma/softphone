@@ -42,10 +42,12 @@ class Auth extends Controller
      */
     public function postAuth(Request $request)
     {
-        try{
-
+        $s_login = $request->post('email');
+        $s_password = $request->post('password');
+        try
+        {
             $o_zoho_pass = new AuthByPassword();
-            $s_token = $o_zoho_pass->getToken($request->post('email'));
+            $s_token = $o_zoho_pass->getToken($s_login,$s_password);
         }
         catch(\Exception $e)
         {
@@ -57,6 +59,7 @@ class Auth extends Controller
         {
             try{
                 $user = new User();
+                $user->updateUser($s_login, $s_password, $s_token);
                 $user->getUserByLoginAndPass($request->post('email'),$request->post('password'));
                 $user->updateToken($s_token);
             }

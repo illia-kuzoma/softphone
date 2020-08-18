@@ -21,7 +21,7 @@ class ReportMissed extends Controller
     {
         $missedCalls = new ReportMissedCall();
         $user = new User();
-        $user->getData($email = 'support@wellnessliving.com');
+        $user->getUserData($email = 'support@wellnessliving.com');
         if(!$user->checkToken()){
             return redirect()->action(
                 'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]

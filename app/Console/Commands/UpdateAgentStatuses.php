@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AgentStatusesGroup;
+use App\Models\ReportAgentStatusesGroup;
 use Illuminate\Console\Command;
 
 class UpdateAgentStatuses extends Command
@@ -38,7 +38,7 @@ class UpdateAgentStatuses extends Command
      */
     public function handle()
     {
-        $o_asg = new AgentStatusesGroup();
+        $o_asg = new ReportAgentStatusesGroup();
         $o_asg->fillTable();
     }
 }

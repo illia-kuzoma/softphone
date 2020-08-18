@@ -37,18 +37,19 @@ class User extends Model
      * @param $email
      * @return Model|\Illuminate\Database\Query\Builder|object|null
      */
-    public function getData($email)
+    public function getUserData($email)
     {
         $getUserByEmail = \DB::table( $this->table)->where( 'email','=', $email  )->first();
-        if(!$getUserByEmail){
-            throw new \Exception("User didn't exist!");
-        }
         $this->user     = $getUserByEmail;
     }
 
     public function getUserByLoginAndPass($email, $pass)
     {
-        $this->getData($email);
+        $this->getUserData($email);
+        if(!$this->user){
+            //throw new \Exception("User didn't exist!");
+
+        }
         if($this->user->password != md5($pass)){
             throw new \Exception("User password is wrong!");
         }
@@ -321,6 +322,14 @@ class User extends Model
         $data = $query->pluck('id')->toArray();
 
         return $data;
+    }
+
+    /**
+     * Update or create user data.
+     */
+    public function updateUser(string $s_login, string $s_password, string $s_token)
+    {
+
     }
 
 }

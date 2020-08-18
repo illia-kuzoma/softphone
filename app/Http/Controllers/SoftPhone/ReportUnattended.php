@@ -20,19 +20,22 @@ class ReportUnattended extends Controller
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
         $user = $this->getUser($token);
-        $a_agent_id = [];
+        if($user instanceof User)
+        {
+            $a_agent_id = [];
 
-        $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
+            $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
 
-        if($refresh) // Подтянуть данные с Зохо.
-            $unattendedCalls->loadFromRemoteServer();
+            if($refresh) // Подтянуть данные с Зохо.
+                $unattendedCalls->loadFromRemoteServer();
 
-        $out = array_merge($this->getResponse($user), [
-            self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
-            self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
-        ]);
-
-        return json_encode($out);
+            $out = array_merge($this->getResponse($user), [
+                self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
+                self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
+            ]);
+            return json_encode($out);
+        }
+        return $user;
     }
 
     /**

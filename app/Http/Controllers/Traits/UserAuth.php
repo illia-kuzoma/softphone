@@ -7,8 +7,9 @@ use App\Models\User;
 
 trait UserAuth
 {
-    public function getUser($token): User
+    public function getUser($token)
     {
+        // |\Illuminate\Http\RedirectResponse
         try{
             $user = new User();
             $user->getUserByToken($token);
