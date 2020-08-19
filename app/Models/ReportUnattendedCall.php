@@ -16,8 +16,6 @@ class ReportUnattendedCall extends ReportUnattended
     const PAGES_PER_PAGE = 20;
     const TABLE_NAME = "report_unattended_call";
 
-    public $table = "";
-
     /**
      * Выборка пропущенных звонков списоком. С возможноснями сортировки, выборок и поиска.
      *

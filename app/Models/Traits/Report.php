@@ -11,8 +11,6 @@ trait Report
      */
     private $a_agent_id_filter = [];
 
-    protected $table = '';
-
     /**
      * ReportUnattended constructor.
      * @param array $a_agent_id_filter
