@@ -513,7 +513,7 @@
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
+          HttpService.methods.get('/report/missed/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
             self.$loading(false);
             if(response.data.error===true){
@@ -582,7 +582,7 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://softphone/report/missed/call/'+
+          '/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -610,7 +610,7 @@
           ss_agent_id = "/" + self.s_agent_id
         }
         this.$loading(true);
-        HttpService.methods.get('http://softphone/report/missed/call/'+
+        HttpService.methods.get('/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
@@ -624,7 +624,7 @@
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://softphone/report/missed/call')
+        HttpService.methods.get('/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);

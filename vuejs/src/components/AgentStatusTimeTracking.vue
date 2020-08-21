@@ -1,6 +1,7 @@
 <template>
     <div id="Agent-Status">
         <div class="agent-status">
+
             <div class="controls-container">
                 <div class="date-container">
                     <button
@@ -11,7 +12,7 @@
                     <button
                         class="button button-li date-item color-grey"
                         v-on:click="setBeforeDate(); setArrowActive($event)"
-                    > &#9666;
+                    >&#9666;
                     </button>
 
                     <date-picker
@@ -26,7 +27,7 @@
                     <button
                         class="button button-li date-item color-grey"
                         v-on:click="setNextDate(); setArrowActive($event)"
-                    > &#9656;
+                    >&#9656;
                     </button>
                     <button
                         class="button button-li date-item color-grey"
@@ -61,20 +62,19 @@
                         id="search-button"
                         class="button color-violet"
                         v-on:click="search(searchText) ; "
-                        >Search
+                    >Search
                     </button>
-                </div>
 
+                </div>
                 <button
                     class="button button-li date-item color-grey"
                     v-on:click="updateData();"
                     > Update Data
                 </button>
             </div>
-
             <div class="controls-container multiselect-items">
                 <div>
-                    <label class="typo__label">Select Dpartment(s)</label>
+                    <label class="typo__label">Select Department(s)</label>
                     <multiselect
                         @close="setUsers"
                         v-model="department_multiple_selected_value"
@@ -149,8 +149,7 @@
                     </multiselect>
                 </div>
             </div>
-
-            <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
+          <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
                 <h2>MISSED CALLS</h2>
                 <line-chart
                     id="chartId"
@@ -166,7 +165,7 @@
 
             <div class="table-container" v-if='Object.keys(chartData).length === 0'>
                 <h1>No Chart Data For This Period</h1>
-            </div>
+            </div> -->
 
             <div class="table-container" v-if='tableCallsData.length>0'>
                 <v-data-table
@@ -185,6 +184,16 @@
                         <div class='user'>
                             <img :src="item.user_data.photo_url" alt="">
                             <p>{{ item.user_data.full_name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.department="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.department.name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.team="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.team.name }}</p>
                         </div>
                     </template>
 
@@ -215,6 +224,7 @@
                     <template v-slot:item.time_create="{ item }">
                         <div class='table-date-cell' >{{getDate(item["time_create"])}}</div>
                     </template>
+
                 </v-data-table>
                 <v-pagination
                     v-if="tablePageCount>1"
@@ -224,13 +234,13 @@
                     @input="changePage"
                     :next-icon="nextIcon"
                     :prev-icon="prevIcon"
-                    >
-                </v-pagination>
+                ></v-pagination>
             </div>
 
             <div class="table-container" v-if='tableCallsData.length==0'>
                 <h1>No Table Data For This Period</h1>
             </div>
+
         </div>
     </div>
 </template>
@@ -238,7 +248,7 @@
 <script>
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  import LineChart from '@/components/Bar.vue'
+  // import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
@@ -248,7 +258,7 @@
     name: 'AgentStatus',
     components: {
       DatePicker,
-      LineChart,
+      // LineChart,
       Multiselect,
     },
     data: () => ({
@@ -261,15 +271,15 @@
       serverChartData:null,
       options: {},
       tableCallsHeaders: [
-        { text: 'Agent', value: 'user_data' },
-        { text: 'Department', value: 'user_data' },
-        { text: 'Team', value: 'user_data' },
-        { text: 'Business Name', value: 'business' },
-        { text: 'Contact', value: 'contact' ,width: 200},
-        //{ text: 'Priority', value: 'priority', sortable: false},
-        { text: 'Phone', value: 'phone', sortable: false ,width: 150},
-        { text: 'Created Time', value: 'time_create', sortable: false,width: 120 },
+        { text: 'Agent', value: 'user_data.full_name' },
+        { text: 'Status Name', value: 'name' },
+        { text: 'Status Value', value: 'value' },
+        { text: 'Status In', value: 'time_start' },
+        { text: 'Status Out', value: 'time_end' ,width: 200},
+        { text: 'Status Duration', value: 'duration', sortable: false ,width: 150},
+        // { text: 'Summary', value: 'duration', sortable: false,width: 120 },
       ],
+
       tablePage:null,
       tableSort:null,
       tablePageCount:null,
@@ -280,9 +290,15 @@
       //multiple_value: null,
       agent_multiple_options:[],
       agent_multiple_selected_value:null,
+      department_multiple_options:[],
+      department_multiple_selected_value:null,
+      team_multiple_options:[],
+      team_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
+      s_department_id:'',
+      s_team_id:'',
       period:'week',
       // Use moment.js instead of the default
       /*momentFormat: {
@@ -335,8 +351,7 @@
       date_o:null*/
     }),
     methods: {
-      getPeriod()
-      {
+      getPeriod(){
         return this.period;
       },
       getDate(timeStamp){
@@ -349,11 +364,13 @@
         this.selectedAgentUid = null;
         this.setDate(this.period);
       },
-      ffFff(){
-        console.log("!!!!!!!!");
-      }
-      ,
+      setDepartments(){
+        this.selectedAgentUid = null;
+        this.setDate(this.period);
+      },
       setDate(range){
+
+        console.log(localStorage.serve_host);
 
         this.period=range;
         this.searchText = '';
@@ -496,17 +513,16 @@
 
         today = YYYY+ '-' + MM+ '-' + DD
         this.selectedDate = today;
-        console.log("datePickerSetDefaultPeriod="+period);
+        // console.log("datePickerSetDefaultPeriod="+period);
         this.period=period;
       },
-      setArrowActive(ev)
-      {
+      setArrowActive(ev){
         let f = document.querySelector('.color-blue');
         if(f !== null)
         {
           f.classList.remove('color-blue');
         }
-        console.log('setArrowActive');
+        // console.log('setArrowActive');
         ev.target.classList.add('color-blue');
       },
       setActive(ev){
@@ -519,7 +535,7 @@
         }
       },
       search(){
-        console.log();
+        // console.log();
         this.getDataByOptions();
       },
       getAgentFromChart(element){
@@ -564,8 +580,9 @@
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
+          HttpService.methods.get('/report/agent/status/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
+            // console.log(response)
             self.$loading(false);
             if(response.data.error===true){
               localStorage.token = '';
@@ -576,14 +593,14 @@
             self.$store.state.user = response.data.user;
             self.userData = response.data.user
 
-            self.setChartData(response.data.diagrama);
-            self.setTableData(response.data.calls);
+            // self.setChartData(response.data.diagrama);
+            self.setTableData(response.data.status);
             self.setAgentMultiDropdown(response.data.agents);
+            self.setDepartmentMultiDropdown(response.data.departments);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
-            self.$loading(false);
-            console.log(error)
+            self.errorHappen(error);
             if(!self.tokenIsCorrect(token))
             {
               router.push('/')
@@ -591,15 +608,13 @@
           })
         }
       },
-      getChartData(){
-
-        this.getReportData()
-      },
       getDataByOptions(){
 
         let self = this;
 
         self.generateSelectedAgentIdString();
+        self.generateSelectedDepartmentIdString();
+        self.generateSelectedTeamIdString();
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
@@ -607,6 +622,8 @@
 
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
+        let department = this.s_department_id || '-';
+        let team = this.s_team_id || '-';
         let uid = this.selectedAgentUid || this.s_agent_id || '-';
         let searchWord = this.searchText || '-';
         let page = this.options.page || '-';
@@ -621,6 +638,12 @@
         if(this.options.sortBy[0] === 'contact'){
           sortField = 'contact'
         }
+        if(this.options.sortBy[0] === 'user_data.department'){
+          sortField = 'department_name'
+        }
+        if(this.options.sortBy[0] === 'user_data.team'){
+          sortField = 'team_name'
+        }
 
         var sortBy = this.options.sortDesc[0] || '-';
         if(this.options.sortDesc[0] === false){
@@ -633,9 +656,11 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://softphone/report/missed/call/'+
+          '/report/agent/status/'+
           startDate + '/' +
           period + '/' +
+          department + '/' +
+          team + '/' +
           uid + '/' +
           searchWord + '/' +
           sortField + '/' +
@@ -643,68 +668,88 @@
           page
         )
         .then(function (response) {
+          // console.log(response)
           self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
-          self.setChartData(response.data.diagrama)
+          // self.setChartData(response.data.diagrama)
         })
         .catch(function (error) {
-          console.log(error)
+          self.errorHappen(error)
         })
       },
       getDataByDate(startDate,period){
         var self = this
         self.generateSelectedAgentIdString();
+        self.generateSelectedDepartmentIdString();
+        self.generateSelectedTeamIdString();
         var ss_agent_id = '';
         if(self.s_agent_id !== '')
         {
           ss_agent_id = "/" + self.s_agent_id
         }
+        let department = this.s_department_id || '-';
+        let team = this.s_team_id || '-';
         this.$loading(true);
-        HttpService.methods.get('http://softphone/report/missed/call/'+
-          startDate + '/' + period + ss_agent_id)
+        HttpService.methods.get('/report/agent/status/'+
+          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
         .then(function (response) {
+          // console.log(response)
           self.$loading(false);
           let tableData = response.data.calls
           self.setTableData(tableData);
-          self.setChartData(response.data.diagrama)
+          // self.setChartData(response.data.diagrama)
+          self.setTeamMultiDropdown(response.data.teams)
+          self.setAgentMultiDropdown(response.data.agents);
         })
         .catch(function (error) {
-          console.log(error)
+          self.errorHappen(error);
         })
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://softphone/report/missed/call')
+        HttpService.methods.get('/report/agent/status')
         .then(function (response) {
+          // console.log(response)
           let tableData = response.data.calls
           self.setTableData(tableData);
         })
         .catch(function (error) {
-          console.log(error)
+          self.errorHappen(error);
         })
       },
-      setChartData(data){
-        var obj = {};
-        this.serverChartData = data
+      // setChartData(data){
+      //   var obj = {};
+      //   this.serverChartData = data
 
-        for (var i = 0; i < data.length; i++) {
-          var name = data[i].full_name;
-          var count = data[i].calls_count;
-          obj[name] = count;
-        }
+      //   for (var i = 0; i < data.length; i++) {
+      //     var name = data[i].full_name;
+      //     var count = data[i].calls_count;
+      //     obj[name] = count;
+      //   }
 
-        this.chartData = obj
-      },
+      //   this.chartData = obj
+      // },
       setTableData(data){
+        // console.log(data)
         this.tableCallsData=data.data;
-        console.log(this.tableCallsData)
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
+        // console.log(this.tableCallsData)
+        // console.log(this.tablePage)
+        // console.log(this.tablePageCount)
       },
       setAgentMultiDropdown(data){
         //console.log(data);
         this.agent_multiple_options = data;
+      },
+      setDepartmentMultiDropdown(data){
+        // console.log(data);
+        this.department_multiple_options = data;
+      },
+      setTeamMultiDropdown(data){
+        console.log(data);
+        this.team_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
@@ -732,21 +777,67 @@
         //console.log(s_agent_id);
         this.s_agent_id = s_agent_id;
       },
-      dateSelected()
+      generateSelectedDepartmentIdString()
       {
+        console.log('generateSelectedDepartmentIdString');
+        let s_department_id = '';
+        if(this.department_multiple_selected_value !== null)
+        {
+          let selected_departments_array = this.department_multiple_selected_value;
+          let selected_departments_array_len = selected_departments_array.length;
+          console.log(selected_departments_array_len);
+          if(selected_departments_array_len)
+          {
+            for (let i = 0; i < selected_departments_array_len; i++){
+              s_department_id += selected_departments_array[i].value;
+              if(i+1 !==  selected_departments_array_len){
+                s_department_id +=",";
+              }
+            }
+          }
+        }
+        this.s_department_id = s_department_id;
+      },
+      generateSelectedTeamIdString()
+      {
+        console.log('generateSelectedTeamIdString');
+        let s_team_id = '';
+        if(this.team_multiple_selected_value !== null)
+        {
+          let selected_teams_array = this.team_multiple_selected_value;
+          let selected_teams_array_len = selected_teams_array.length;
+          console.log(selected_teams_array_len);
+          if(selected_teams_array_len)
+          {
+            for (let i = 0; i < selected_teams_array_len; i++){
+              s_team_id += selected_teams_array[i].value;
+              if(i+1 !==  selected_teams_array_len){
+                s_team_id +=",";
+              }
+            }
+          }
+        }
+        this.s_team_id = s_team_id;
+      },
+      dateSelected(){
         console.log('dateSelected +');
         console.log(this.selectedDate);
         this.getDataByDate(this.selectedDate,this.period)
           //this.setDate(this.period);
          // this.selectedDate= this.selectedDate + " | " + this.period
       },
-      updateData()
-      {
+      updateData(){
         this.getReportData(true)
+      },
+      errorHappen(error){
+        console.log('error : ',error);
+        alert('Something went wrong!');
+        this.$loading(false);
+        this.getReportData();
       }
     },
     created: function(){
-      this.getChartData();
+      this.getReportData();
     },
     mounted () {
     }
