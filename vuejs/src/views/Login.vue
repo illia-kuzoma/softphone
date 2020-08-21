@@ -106,9 +106,17 @@
       login(){
         var self = this
         this.$loading(true);
-        localStorage.serve_host = 'http://softphone/';
-        console.log(localStorage.serve_host)
-        HttpService.methods.post('http://softphone/auth',{
+        if(localStorage.serve_host !== ''){
+            localStorage.serve_host = ''
+        }
+
+        if(window.location.hostname === '127.0.0.1'){
+            localStorage.serve_host = 'http://softphone';
+        } else {
+            localStorage.serve_host = 'http://callcentr.wellnessliving.com';
+        }
+
+        HttpService.methods.post(`/auth`,{
             email:this.email,
             password:this.password,
           })
@@ -130,6 +138,9 @@
           .catch(function (error) {
             localStorage.token = '-';
             console.log(error)
+            alert('Something went wrong')
+            self.$loading(false);
+
           })
       },
       forgotFunc(){

@@ -11,9 +11,11 @@ export default {
     post (url, data) {
       // const setHeaders = store.state.headers
       // const setUrl = store.state.basicUrl + url
-      
+      const setUrl = localStorage.serve_host + url;
+
       return axios.post(
-        url,
+        setUrl,
+        // url,
         data,
         // setHeaders
       )
@@ -21,18 +23,20 @@ export default {
     get (url) {
       // const setHeaders = store.state.headers
       // const setUrl = store.state.basicUrl + url
+      const setUrl = localStorage.serve_host + url;
 
       return axios.get(
-        url,
+        setUrl,
+        // url,
         // setHeaders
       )
     },
-    
+
     // postFiles (url, data) {
     //   var setHeaders = store.state.headers
     //   setHeaders['headers']['Content-Type'] = 'multipart/form-data'
     //   const setUrl = store.state.basicUrl + url
-      
+
     //   return axios.post(
     //     setUrl,
     //     data,
@@ -72,7 +76,7 @@ export default {
 //     post (url, data) {
 //       const setHeaders = store.state.headers
 //       const setUrl = store.state.basicUrl + url
-      
+
 //       return axios.post(
 //         setUrl,
 //         data,
@@ -84,7 +88,7 @@ export default {
 //       var setHeaders = store.state.headers
 //       setHeaders['headers']['Content-Type'] = 'multipart/form-data'
 //       const setUrl = store.state.basicUrl + url
-      
+
 //       return axios.post(
 //         setUrl,
 //         data,
@@ -105,7 +109,7 @@ export default {
 //     put (url, data) {
 //       const setHeaders = store.state.headers
 //       const setUrl = store.state.basicUrl + url
-      
+
 //       return axios.put(
 //         setUrl,
 //         data,

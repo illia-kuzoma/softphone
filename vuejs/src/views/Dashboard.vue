@@ -1,7 +1,3 @@
-<!--
-callcentr.wellnessliving.com
-softphone
--->
 <template>
     <div
         id="dashboard">
@@ -9,8 +5,6 @@ softphone
 
         <div
             class="dashboard" >
-
-
           <div>
               <v-tabs
                 class="tabs"
@@ -66,22 +60,12 @@ softphone
           path:'/dashboard/agent-status',
           component:AgentStatusTimeTracking,
         },
-
-
-
         // {
         //   name:'Another',
         //   path:'/dashboard/another',
         //   component:Another,
         // },
-
-
-
       ],
-
-
-
-
       selectedDate:null,
       dateType:'date',
       chartData:[],
@@ -391,7 +375,7 @@ softphone
         }
         else {
           this.$loading(true);
-          HttpService.methods.get('http://softphone/report/missed/'+(refresh?'refresh/':'')+token)
+          HttpService.methods.get('/report/missed/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
             self.$loading(false);
             if(response.data.error===true){
@@ -460,7 +444,7 @@ softphone
 
         this.$loading(true);
         HttpService.methods.get(
-          'http://softphone/report/missed/call/'+
+          '/report/missed/call/'+
           startDate + '/' +
           period + '/' +
           uid + '/' +
@@ -488,7 +472,7 @@ softphone
           ss_agent_id = "/" + self.s_agent_id
         }
         this.$loading(true);
-        HttpService.methods.get('http://softphone/report/missed/call/'+
+        HttpService.methods.get('/report/missed/call/'+
           startDate + '/' + period + ss_agent_id)
         .then(function (response) {
           self.$loading(false);
@@ -502,7 +486,7 @@ softphone
       },
       getTableData(){
         var self = this;
-        HttpService.methods.get('http://softphone/report/missed/call')
+        HttpService.methods.get('/report/missed/call')
         .then(function (response) {
           let tableData = response.data.calls
           self.setTableData(tableData);
