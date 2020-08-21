@@ -46,8 +46,20 @@ class Auth extends Controller
         $s_password = $request->post('password');
         try
         {
-            $o_zoho_pass = new AuthByPassword();
-            $s_token = $o_zoho_pass->getToken($s_login,$s_password);
+            $user = new User();
+            $user->setUserData($s_login);
+            $user->checkUser();
+
+            if(!$user->excluded() && $user->isOldAuth())
+            {
+                $o_zoho_pass = new AuthByPassword();
+                $s_token = $o_zoho_pass->getToken($s_login,$s_password);
+            }
+            else
+            {
+                $user->isPasswordCorrect($s_password);
+                return \Redirect::to('/report/missed/'.$user->getToken());
+            }
         }
         catch(\Exception $e)
         {
@@ -58,10 +70,8 @@ class Auth extends Controller
         if($s_token)
         {
             try{
-                $user = new User();
-                $user->updateUser($s_login, $s_password, $s_token);
-                $user->getUserByLoginAndPass($request->post('email'),$request->post('password'));
-                $user->updateToken($s_token);
+                $user->updateUser($s_password, $s_token);
+                //$user->updateToken($s_token);
             }
             catch(\Exception $e)
             {

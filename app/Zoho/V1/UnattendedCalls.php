@@ -134,17 +134,21 @@ class UnattendedCalls extends ZohoV1
     {
         $users_agent = [];
         $from = self::FROM;
+        $o_agent = new Agent();
         do{
             $a_grouped_by_agents = $this->getAllCount($this->getOrgId(),'2010-02-14T00:00:00.0Z',$this->getTimeFormate(time()- 10000),$from,self::LIMIT);
             foreach($a_grouped_by_agents as $datum)
             {
                 $agent_id = $datum['agent']['id'];
+                $o_agent->getOne($agent_id);
                 $a_client_tmp = [
-                    // 'email' - TODO get email from Accounts/{user_id}
+                    'email' => $o_agent->getAgentMail(),
                     'first_name' => $datum['agent']['firstName'],
                     'last_name' => $datum['agent']['lastName'],
                     'photo' => $datum['agent']['photoURL'],
                     'role' => 'agent',
+                    'zoho_role' => $o_agent->getAgentRole(),
+                    'status' => $o_agent->getAgentStatus(),
                     'unattended_count' => $datum['count'],
                     'user_id' => $agent_id,
                 ];

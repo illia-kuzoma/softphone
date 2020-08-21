@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Exception;
 use Validator;
 
 class User extends Model
@@ -13,6 +14,7 @@ class User extends Model
     const ROLE_AGENT = 'agent';
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
+    const STATUS_ACTIVE = 'ACTIVE';
 
     public $table = "users";
     /**
@@ -37,7 +39,7 @@ class User extends Model
      * @param $email
      * @return Model|\Illuminate\Database\Query\Builder|object|null
      */
-    public function getUserData($email)
+    public function setUserData($email)
     {
         $getUserByEmail = \DB::table( $this->table)->where( 'email','=', $email  )->first();
         $this->user     = $getUserByEmail;
@@ -45,13 +47,11 @@ class User extends Model
 
     public function getUserByLoginAndPass($email, $pass)
     {
-        $this->getUserData($email);
-        if(!$this->user){
-            //throw new \Exception("User didn't exist!");
-
-        }
-        if($this->user->password != md5($pass)){
-            throw new \Exception("User password is wrong!");
+        $this->setUserData($email);
+        if($this->user){
+            if($this->user->password != md5($pass)){
+                throw new \Exception("User password is wrong!");
+            }
         }
     }
 
@@ -158,6 +158,7 @@ class User extends Model
      */
     public function validateBeforeInsert( $userData ): bool
     {
+        //print_r($userData);
         $validator = Validator::make(
             [
                 'id'      => $userData['user_id'],
@@ -166,6 +167,8 @@ class User extends Model
                 'last_name'  => $userData['last_name'],
                 /*'password'   => $userData['password'],*/
                 'role'       => $userData['role'],
+                'zoho_role'       => $userData['zoho_role']??'', // Актуально только для агентов
+                'status'       => $userData['status']??'', // Актуально только для агентов
                 /*'token'      => $userData['token'],*/
                 'photo'      => $userData['photo'],
                 //'team_id'      => $userData['team_id'],
@@ -179,6 +182,8 @@ class User extends Model
                 'last_name'  => 'required|max:20',
                 /*'password'   => 'max:32',*/
                 'role'       => 'max:32',
+                'zoho_role'       => 'max:50',
+                'status'       => 'max:50',
                 /*'token'      => 'max:32',*/
                 'photo'      => 'max:256',
                 //'team_id'      => '',
@@ -202,12 +207,12 @@ class User extends Model
         if(is_array($singleUserData))
         {
             $singleUserData['email'] = ($singleUserData['role'] == User::ROLE_AGENT && empty($singleUserData['email']))?
-                'rand'.(mt_rand(111,99999999)).User::ROLE_AGENT.'@ra'.mt_rand(55555,9999999999).'.nd':
+                $singleUserData['email']:
                 $singleUserData['email'];
             $singleUserData['date_login'] = $singleUserData['date_login']??date( 'Y-m-d H:i:s');
 
             if ( $this->validateBeforeInsert( $singleUserData ) ) {
-                DB::table( $this->table )->updateOrInsert(['id'      => $singleUserData['user_id']],
+                DB::table( $this->table )->updateOrInsert(['id' => $singleUserData['user_id']],
                     [
                         'id'      => $singleUserData['user_id'],
                         'email'      => $singleUserData['email'],
@@ -216,6 +221,8 @@ class User extends Model
 //                    'password'   => Hash::make($singleUserData['password']),
                         'password'   => $singleUserData['password']??'',
                         'role'       => $singleUserData['role']??'',
+                        'zoho_role'       => $singleUserData['zoho_role']??'',
+                        'status'       => $singleUserData['status']??'',
                         'token'      => $singleUserData['token']??'',
                         'photo'      => $singleUserData['photo']??'',
                         'team_id'      => $singleUserData['team_id']??null,
@@ -327,9 +334,67 @@ class User extends Model
     /**
      * Update or create user data.
      */
-    public function updateUser(string $s_login, string $s_password, string $s_token)
+    public function updateUser(string $s_password, string $s_token)
     {
-
+        if($this->user)
+        {
+            $s_pass_md5 = md5($s_password);
+            \DB::table( $this->table)->where( 'email', $this->user->email  )
+                ->update(['token'=>$s_token, 'date_login'=> Carbon::now(), 'password'=> $s_pass_md5]);
+            $this->user->token = $s_token;
+            $this->user->password = $s_pass_md5;
+        }
+        else{
+            // пользователь создается вовремя обновления данных с Зохо. Если вошли сюда то пользователя ещё нет в БД.
+            throw new Exception("User doesn't exist in DB" );
+        }
     }
 
+    public function isPasswordCorrect($pass)
+    {
+        if($this->user->password != md5($pass)){
+            return false;
+        }
+        return true;
+    }
+
+    public function isOldAuth()
+    {
+        return (strtotime($this->user->date_login) + 60) < time();
+    }
+
+    public function excluded()
+    {
+        if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com']))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks Access to log-in.
+     */
+    private function checkUserRights()
+    {
+        if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE && $this->user->zoho_role == 'Administrator') ||
+            $this->user->role == self::ROLE_ADMIN)
+        {
+            return;
+        }
+        throw new Exception("User doesn't have rights to enter." );
+    }
+
+    /**
+     * Checks user to continue work with system.
+     */
+    public function checkUser()
+    {
+        if(!$this->user )
+        {
+            // Users, Agents and other actors are create when we update database by requesting ZOHO.
+            throw new Exception("User doesn't exist in DB." );
+        }
+        return $this->checkUserRights();
+    }
 }

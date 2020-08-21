@@ -27,11 +27,11 @@ class AuthByPassword extends Auth
         }
     }
 
-    public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoCRM/crmapi'): ?string
+    public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoSupport/supportapi'): ?string
     {
         //$this->recheckUserName($username, $password);
 
-        $token_path = $this->config->getPathToToken($username);
+        /*$token_path = $this->config->getPathToToken($username);
         if(file_exists($token_path) && !$new){
             $token = file_get_contents($token_path);
             if($token){
@@ -41,7 +41,7 @@ class AuthByPassword extends Auth
             Log::put(sprintf("file_put_contents %s", $token_path));
             file_put_contents($token_path, '');
             chmod($token_path, 0777);
-        }
+        }*/
 
         $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
@@ -50,13 +50,14 @@ class AuthByPassword extends Auth
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         $result = curl_exec($ch);
-        //var_dump($result);
+        //var_dump($result);exit;
         if(($result) === false){
 
+            curl_close($ch);
             echo 'Ошибка curl: ' . curl_error($ch);
             throw new \Exception('Ошибка curl: ' . curl_error($ch), curl_errno());
         }else{
-            Log::put(sprintf("curl_exec %s", $result));
+            //Log::put(sprintf("curl_exec %s", $result));
             #file_put_contents(__DIR__."/../log/zohov1.txt", $result." ___________".date("Y-m-d H:i:s"), FILE_APPEND);
             /*This part of the code below will separate the Authtoken from the result.
             Remove this part if you just need only the result*/
@@ -67,11 +68,11 @@ class AuthByPassword extends Auth
             if($cmp == 0){
                 $token = trim($authToken['1']);
                 #echo "Created Authtoken is : " . $authToken['1'];
-                file_put_contents($token_path, $token);
+                //file_put_contents($token_path, $token);
+                curl_close($ch);
                 return $token;
             }
         }
-        curl_close($ch);
         return null;
     }
 

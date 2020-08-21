@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Zoho\Auth;
 use App\Zoho\Config;
 use App\Zoho\V1\ActiveTimers;
+use App\Zoho\V1\Agent;
 use App\Zoho\V1\agentAvailability;
 use Illuminate\Console\Command;
 
@@ -53,7 +54,12 @@ class ZohoV2Request extends Command
     {
         //102325000124362121(ok) 102325000124350224(ok) 102325000123555435(You are not authorized to access this resource)
        //
-
+        $a_agent_id = User::getAllAgentIDs();
+        foreach($a_agent_id as $agent_id)
+        {
+            print_r((new Agent())->getOne($agent_id));
+        }
+        exit;
         $from = 0;
         $limit = 100;
         $o = new ActiveTimers();
