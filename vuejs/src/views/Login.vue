@@ -110,10 +110,11 @@
             localStorage.serve_host = ''
         }
 
-        if(window.location.hostname === '127.0.0.1'){
-            localStorage.serve_host = 'http://softphone';
+        // Checking on which server send request by client host.
+        if(window.location.hostname === 'callcentrcl.wellnessliving.com'){
+          localStorage.serve_host = 'http://callcentr.wellnessliving.com';
         } else {
-            localStorage.serve_host = 'http://callcentr.wellnessliving.com';
+          localStorage.serve_host = 'http://softphone';
         }
 
         HttpService.methods.post(`/auth`,{
