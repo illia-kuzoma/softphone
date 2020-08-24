@@ -67,7 +67,8 @@ class Auth extends Controller
                 'SoftPhone\Auth@getAuth', ['message' => $e->getMessage()]
             );
         }
-        if($s_token)
+
+        if(!is_null($s_token))
         {
             try{
                 $user->updateUser($s_password, $s_token);

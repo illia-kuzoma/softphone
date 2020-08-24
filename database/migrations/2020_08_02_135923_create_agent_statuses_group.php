@@ -13,13 +13,14 @@ class CreateAgentStatusesGroup extends Migration
      */
     public function up()
     {
-        Schema::create('agent_statuses_groups', function (Blueprint $table) {
+        Schema::create('report_agent_statuses_groups', function (Blueprint $table) {
             $table->unsignedBigInteger('agent_id');
             $table->string('status_name', 100);
             $table->string('status_value', 100);
-            $table->timestamp('start_at', 0)->comment("Time enter in status.");
+            $table->timestamp('time_start', 0)->comment("Time enter in status.");
+            $table->timestamp('time_end', 0)->comment("Time leave out status.");
             $table->timestamps();
-            $table->unique(['agent_id', 'status_name', 'start_at']);
+            $table->unique(['agent_id', 'status_name', 'time_start'], 'report_agent_statuses_groups__uniq_key');
         });
     }
 
@@ -30,6 +31,6 @@ class CreateAgentStatusesGroup extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agent_statuses_groups');
+        Schema::dropIfExists('report_agent_statuses_groups');
     }
 }

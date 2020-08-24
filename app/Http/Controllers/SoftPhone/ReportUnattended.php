@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SoftPhone;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\Request;
 use App\Http\Controllers\Traits\Response;
 use App\Http\Controllers\Traits\UserAuth;
 use App\Models\Team;
@@ -12,6 +13,7 @@ class ReportUnattended extends Controller
 {
     use UserAuth;
     use Response;
+    use Request;
 
     private const DIAGRAM_DATA = 'diagrama';
     private const CALLS_DATA = 'calls';
@@ -89,11 +91,6 @@ class ReportUnattended extends Controller
         return json_encode($out);
     }
 
-    private function _getAgentIds()
-    {
-
-    }
-
     /**
      * @param $token
      * @param null $dateStart
@@ -108,30 +105,4 @@ class ReportUnattended extends Controller
     }
 
 
-    private function _getIdsAsArray($data)
-    {
-        $a_id = [];
-
-        if($data == '-' || !$data)
-        {
-
-        }
-        elseif(is_string($data))
-        {
-            $a_id = explode(',', $data);
-            if(count($a_id) > 1)
-            {
-                // Значит фильтруем по несольким юзерам
-            }
-            elseif(count($a_id) == 1){
-                $a_id = [(int)$a_id[0]];
-            }
-        }
-        elseif(is_int($data))
-            $a_id = [$data];
-        elseif(is_array($data))
-            return $data;
-
-        return $a_id;
-    }
 }

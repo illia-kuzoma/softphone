@@ -63,15 +63,23 @@ class AuthByPassword extends Auth
             Remove this part if you just need only the result*/
             $anArray = explode("\n", $result);
             $authToken = explode("=", $anArray['2']);
-            $cmp = strcmp($authToken['0'], "AUTHTOKEN");
-            #echo $anArray['2'] . "";
-            if($cmp == 0){
-                $token = trim($authToken['1']);
-                #echo "Created Authtoken is : " . $authToken['1'];
-                //file_put_contents($token_path, $token);
-                curl_close($ch);
-                return $token;
-            }
+             if(!empty($authToken['0']))
+             {
+                 $message = trim($authToken['1']);
+                 switch($authToken['0'])
+                 {
+                    case "AUTHTOKEN":
+                     {
+                         $token = $message;
+                     }break;
+                    case "CAUSE":
+                     {
+                         $token = '';
+                     }break;
+                 }
+             }
+            curl_close($ch);
+            return $token;
         }
         return null;
     }

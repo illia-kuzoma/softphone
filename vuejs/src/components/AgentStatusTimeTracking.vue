@@ -656,7 +656,7 @@
 
         this.$loading(true);
         HttpService.methods.get(
-          '/report/agent/status/'+
+          '/report/agent/status/page/'+
           startDate + '/' +
           period + '/' +
           department + '/' +
@@ -670,7 +670,7 @@
         .then(function (response) {
           // console.log(response)
           self.$loading(false);
-          let tableData = response.data.calls
+          let tableData = response.data.status
           self.setTableData(tableData);
           // self.setChartData(response.data.diagrama)
         })
@@ -691,12 +691,12 @@
         let department = this.s_department_id || '-';
         let team = this.s_team_id || '-';
         this.$loading(true);
-        HttpService.methods.get('/report/agent/status/'+
+        HttpService.methods.get('/report/agent/status/page/'+
           startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
         .then(function (response) {
           // console.log(response)
           self.$loading(false);
-          let tableData = response.data.calls
+          let tableData = response.data.status
           self.setTableData(tableData);
           // self.setChartData(response.data.diagrama)
           self.setTeamMultiDropdown(response.data.teams)

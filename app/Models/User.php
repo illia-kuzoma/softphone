@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use mysql_xdevapi\Exception;
 use Validator;
 
 class User extends Model
@@ -333,15 +333,23 @@ class User extends Model
 
     /**
      * Update or create user data.
+     *
+     * @param string $s_password
+     * @param string $s_token May be empty in a case token didn't change.
+     * @throws Exception
      */
-    public function updateUser(string $s_password, string $s_token)
+    public function updateUser(string $s_password, string $s_token = '')
     {
         if($this->user)
         {
             $s_pass_md5 = md5($s_password);
+            $a_update = ['date_login'=> Carbon::now(), 'password'=> $s_pass_md5];
+            if($s_token)
+            {
+                $this->user->token = $a_update['token'] = $s_token;
+            }
             \DB::table( $this->table)->where( 'email', $this->user->email  )
-                ->update(['token'=>$s_token, 'date_login'=> Carbon::now(), 'password'=> $s_pass_md5]);
-            $this->user->token = $s_token;
+                ->update($a_update);
             $this->user->password = $s_pass_md5;
         }
         else{
@@ -382,7 +390,9 @@ class User extends Model
         {
             return;
         }
-        throw new Exception("User doesn't have rights to enter." );
+        $message = sprintf("User %s doesn't have rights to enter.", $this->user->email);
+        \Log::notice($message);
+        throw new Exception($message);
     }
 
     /**
