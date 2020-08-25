@@ -385,7 +385,7 @@ class User extends Model
      */
     private function checkUserRights()
     {
-        if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE && $this->user->zoho_role == 'Administrator') ||
+        if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE && in_array($this->user->zoho_role,['Administrator', 'Team Lead'])) ||
             $this->user->role == self::ROLE_ADMIN)
         {
             return;
