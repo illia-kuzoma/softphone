@@ -30,3 +30,5 @@ RESULT=FALSE
 
 2020-08-22 10:49:02 : Error curl: Could not resolve host: desk.zoho.com
 
+2020-08-26 19:00:11 : Error curl: Could not resolve host: desk.zoho.com
+

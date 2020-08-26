@@ -21,8 +21,8 @@ class CreateAgentStatusList extends Migration
             $table->string('mail_status', 100)->default('');
             $table->string('presence_status', 100)->default('');
             $table->string('status', 100)->default('');
-            $table->timestamp('request_at', 0);
-            $table->timestamp('created_at', 0);
+            $table->timestamp('request_at', 0)->nullable();
+            $table->timestamp('created_at', 0)->nullable();
             $table->unique(['agent_id', 'created_at']);
         });
     }
