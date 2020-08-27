@@ -29,7 +29,7 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
     public function fillTable()
     {
         self::$out_arr = $this->getLast();
-        print_r(self::$out_arr);exit;
+        //print_r(self::$out_arr);exit;
         self::$time_start = time();
         //print_r(self::$out_arr);exit;
         \DB::table(AgentStatus::TABLE_NAME)->where('processed', false)
