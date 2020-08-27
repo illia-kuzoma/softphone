@@ -181,11 +181,11 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
         if(!empty($a_filter_by_agents))
             $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
 //echo $dateFrom . " " . $dateTo;exit;
-        /*$call_list_q->where('time_start', '>=', $dateFrom);
-        $call_list_q->where('time_start', '<=', $dateTo);*/
+        $call_list_q->where('time_start', '>=', $dateFrom);
+        $call_list_q->where('time_start', '<=', $dateTo);
         $call_list_q->orderBy( $sortField, $sortBy );
 
-       /* if($searchWord)
+        if($searchWord)
         {
             $call_list_q->where(function ($q) use ($searchWord)
             {
@@ -194,7 +194,7 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
                     ->orWhere('first_name', 'LIKE', '%'.$searchWord.'%')
                     ->orWhere('last_name', 'LIKE', '%'.$searchWord.'%');
             });
-        }*/
+        }
         $calls_cnt = $call_list_q->count();
         $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
         if($page > $pages_count){
