@@ -132,7 +132,7 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
     public function getLast(): array
     {
         $a_out = [];
-        $a_last_agent_status = \DB::select("select agent_id, status_name, status_value, time_start from ".self::TABLE_NAME." Where time_end='0000-00-00 00:00:00' ORDER BY agent_id;");
+        $a_last_agent_status = \DB::select("select agent_id, status_name, status_value, time_start from ".self::TABLE_NAME." Where time_end='0000-00-00 00:00:00' || time_end IS NULL ORDER BY agent_id;");
         if(count($a_last_agent_status))
         {
             foreach($a_last_agent_status as $status_data)
