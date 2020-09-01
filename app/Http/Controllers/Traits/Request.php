@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Traits;
 
 trait Request
 {
+    /**
+     * Receives keys from string request as array of keys.
+     *
+     * @param $data
+     * @return array
+     */
     private function _getIdsAsArray($data)
     {
         $a_id = [];
@@ -18,7 +24,7 @@ trait Request
             $a_id = explode(',', $data);
             if(count($a_id) > 1)
             {
-                // Значит фильтруем по несольким юзерам
+                // Значит фильтруем по несольким ключам (пользователи, комманды, отделы ...)
             }
             elseif(count($a_id) == 1){
                 $a_id = [(int)$a_id[0]];

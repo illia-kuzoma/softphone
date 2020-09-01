@@ -32,3 +32,53 @@ RESULT=FALSE
 
 2020-08-26 19:00:11 : Error curl: Could not resolve host: desk.zoho.com
 
+2020-08-29 19:20:12 : Error curl: Could not resolve host: desk.zoho.com
+
+2020-08-29 19:21:11 : Error curl: Could not resolve host: desk.zoho.com
+
+2020-08-29 19:22:12 : Error curl: Could not resolve host: desk.zoho.com
+
+2020-08-29 19:23:12 : Error curl: Could not resolve host: desk.zoho.com
+
+2020-08-30 10:08:02 : Error curl: Operation timed out after 300561 milliseconds with 0 out of 0 bytes received
+
+2020-08-30 11:27:23 : Error curl: OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 104
+
+2020-08-30 11:28:10 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:29:11 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:30:11 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:31:02 : Error curl: Failed to connect to desk.zoho.com port 443: No route to host
+
+2020-08-30 11:31:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:32:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:34:13 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:35:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:36:11 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:37:13 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:38:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:38:33 : Error curl: Failed to connect to desk.zoho.com port 443: No route to host
+
+2020-08-30 11:39:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:41:10 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:42:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:43:11 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:44:13 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:45:12 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+
+2020-08-30 11:46:11 : Error curl: Failed to connect to desk.zoho.com port 443: Connection timed out
+

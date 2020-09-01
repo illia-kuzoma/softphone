@@ -29,9 +29,8 @@ class User extends Model
      */
     public function checkToken()
     {
-        // TODO проверка токена полученого от клиента на соответствие храниимому.
         // TODO Проверка что время ханения токена не выйшло.
-        // Токен может передавтаься только в теле POST запроса.
+        // Токен может передавтаься только в теле POST запроса
         return true;
     }
 
@@ -45,6 +44,13 @@ class User extends Model
         $this->user     = $getUserByEmail;
     }
 
+    /**
+     * That function can be used for auth in system without auth in ZOHO.
+     *
+     * @param $email
+     * @param $pass
+     * @throws Exception
+     */
     public function getUserByLoginAndPass($email, $pass)
     {
         $this->setUserData($email);
@@ -55,7 +61,13 @@ class User extends Model
         }
     }
 
-    public function getUserByToken($token)
+    /**
+     * Finds and set user by token.
+     *
+     * @param $token
+     * @throws Exception
+     */
+    public function setUserByToken($token)
     {
         if(!$token || $token==='-')
         {
@@ -65,9 +77,11 @@ class User extends Model
         if(!$getUserByToken){
             throw new \Exception("User by token didn't exist!");
         }
-        $this->user     = $getUserByToken;
+        $this->user = $getUserByToken;
     }
+
     /**
+     * Converts user object data to array.
      * @return array
      */
     public function toArray()
@@ -247,7 +261,11 @@ class User extends Model
         }
     }
 
-
+    /**
+     * Returns agent keys.
+     *
+     * @return array
+     */
     public static function getAllAgentIDs(): array
     {
         return self::query()->where('role', '=', User::ROLE_AGENT)->pluck('id')->toArray();
@@ -279,10 +297,20 @@ class User extends Model
         return $res;
     }
 
+    /**
+     * Gets primary key name in table.
+     *
+     * @return string
+     */
     protected function _getIdKey(){
         return 'id';
     }
 
+    /**
+     * Gets primary key value.
+     *
+     * @return string
+     */
     protected function _getIdVal(){
         return (string)$this->{$this->_getIdKey()}; //
     }
@@ -299,6 +327,9 @@ class User extends Model
         $this->user->token = $s_token;
     }
 
+    /**
+     * @return mixed
+     */
     public function getToken()
     {
         return $this->user->token;
@@ -358,6 +389,12 @@ class User extends Model
         }
     }
 
+    /**
+     * Checks password.
+     *
+     * @param $pass
+     * @return bool
+     */
     public function isPasswordCorrect($pass)
     {
         if($this->user->password != md5($pass)){
@@ -366,11 +403,21 @@ class User extends Model
         return true;
     }
 
+    /**
+     * Checks that log-in was not long time ago. Use to relog-in.
+     *
+     * @return bool
+     */
     public function isOldAuth()
     {
         return (strtotime($this->user->date_login) + 60) < time();
     }
 
+    /**
+     * Check that current user has rights to enter without check on ZOHO side.
+     *
+     * @return bool
+     */
     public function excluded()
     {
         if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com']))
@@ -381,12 +428,13 @@ class User extends Model
     }
 
     /**
-     * Checks Access to log-in.
+     * Checks access to log-in.
+     * @throws Exception
      */
     private function checkUserRights()
     {
-        if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE && in_array($this->user->zoho_role,['Administrator', 'Team Lead'])) ||
-            $this->user->role == self::ROLE_ADMIN)
+        if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE &&
+            in_array($this->user->zoho_role,['Administrator', 'Team Lead'])) || $this->user->role == self::ROLE_ADMIN)
         {
             return;
         }
@@ -397,6 +445,8 @@ class User extends Model
 
     /**
      * Checks user to continue work with system.
+     *
+     * @throws Exception
      */
     public function checkUser()
     {

@@ -54,6 +54,11 @@ Route::get('/report/agent/status/page/{startDate?}/{period?}/{departments?}/{tea
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/page/{startDate?}/{period?}/{departments?}/{teams?}/{uid?}/{searchWord?}/{sortField?}/{sortBy?}/{page?}', static function () {
     return redirect('/');
 });
+// get total agent statuses in time
+Route::get('/report/agent/status/total/{token?}/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportAgentStatus@getTotal');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/total/{token?}/{startDate?}/{period?}/{uids?}', static function () {
+    return redirect('/');
+});
 // get agent statuses in time
 Route::get('/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', 'SoftPhone\ReportAgentStatus@getAll');
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', static function () {

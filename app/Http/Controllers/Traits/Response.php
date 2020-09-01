@@ -8,6 +8,12 @@ use App\Models\User;
 trait Response
 {
 
+    /**
+     * Merges common response data with unique ones.
+     *
+     * @param User $user
+     * @return array
+     */
     public function getResponse(User $user)
     {
         return array_merge(

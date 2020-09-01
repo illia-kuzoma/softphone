@@ -12,7 +12,7 @@ trait UserAuth
         // |\Illuminate\Http\RedirectResponse
         try{
             $user = new User();
-            $user->getUserByToken($token);
+            $user->setUserByToken($token);
             if(!$user->checkToken()){
                 return redirect()->action(
                     'SoftPhone\Auth@getAuth', ['message' => "Please enter to system."]

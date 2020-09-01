@@ -71,4 +71,26 @@ class ReportAgentStatus extends Controller
         ], $this->getAgentsArr());
         return json_encode($out);
     }
+
+    public function getTotal($token, $dateStart=null, $period=null, $uids=null): string
+    {
+        $o_statuses = new \App\Models\ReportAgentStatuses([]);
+        $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null);
+        exit;
+        $user = $this->getUser($token);
+        if($user instanceof User)
+        {
+            $a_agent_id = [];
+
+            $o_statuses = new \App\Models\ReportAgentStatuses($a_agent_id);
+
+            $out = array_merge($this->getResponse($user), [
+                self::STATUS_DATA => $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null),
+                self::DIAGRAM_DATA => [],
+            ]);
+
+            return json_encode($out);
+        }
+        return $user;
+    }
 }

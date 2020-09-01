@@ -29,7 +29,8 @@ class Config
           if(!in_array($file, ['.','..']))
           {
               $full_name = $dir . $file;
-              chmod($full_name, $mode);
+              //chmod($full_name, $mode);
+              exec('chmod 0777 '.$full_name) ;
           }
       }
   }
@@ -41,7 +42,6 @@ class Config
         {
             Log::put(sprintf("Mkdir %s", $dir));
             mkdir($dir,0777, true);
-            chmod($dir,0777);
         }
         #$this->changeFilesMod($dir, 0777);
         return $dir;
@@ -67,6 +67,7 @@ class Config
     protected function getZohoLogPath()
     {
         $dir = $this->getPathToFileLogs(self::logs_persistence_path);
+        $this->changeFilesMod($dir);
         return $dir;
     }
 

@@ -15,4 +15,10 @@ class ReportAgentStatuses extends ReportBase
     {
         return (new ReportAgentStatusesGroup($this->getAgentIdFilter()))->getList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
     }
+
+    public function getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page): array
+    {
+        return (new ReportAgentStatusesGroup($this->getAgentIdFilter()))->getTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
+    }
+
 }

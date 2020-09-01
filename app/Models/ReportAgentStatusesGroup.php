@@ -255,4 +255,60 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
         $s_duration = $hours."h " . $minutes."m " . $seconds."s ";
         return $s_duration;
     }
+
+    public function getTotalList($dateStart = '', $period = '',
+                                 $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
+                                 $page = 1): array
+    {
+        $searchWord = $this->getSearchWord($searchWord);
+        $sortField = $this->getSortField($sortField);
+        $sortBy = $this->getSortOrder($sortBy);
+        $page = $this->getPage($page);
+
+        [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
+        $dateFrom .= ' 00:00:00';
+        $dateTo .= ' 23:59:59';
+        $call_list_q = ReportAgentStatusesGroup::query()->select([
+            //'users.id as user_id',
+            $this->table.'.agent_id',
+            $this->table.'.status_name',
+            $this->table.'.status_value',
+            $this->table.'.time_start',
+            $this->table.'.time_end',
+            $this->table.'.created_at',
+            'users.first_name',
+            'users.last_name',
+            'users.photo',
+            'users.department_id',
+            'users.team_id'
+        ])->join('users', $this->table.'.agent_id', '=', 'users.id')
+            /* ->join('users', 'departments.id', '=', 'users.department_id')*/;
+
+        $a_filter_by_agents = $this->getAgentIdFilter();
+        if(!empty($a_filter_by_agents))
+            $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
+//echo $dateFrom . " " . $dateTo;exit;
+        $call_list_q->where('time_start', '>=', $dateFrom);
+        $call_list_q->where('time_start', '<=', $dateTo);
+        $call_list_q->orderBy( $sortField, $sortBy );
+
+        if($searchWord)
+        {
+            $call_list_q->where(function ($q) use ($searchWord)
+            {
+                return $q->where('status_name', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('status_value', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('first_name', 'LIKE', '%'.$searchWord.'%')
+                    ->orWhere('last_name', 'LIKE', '%'.$searchWord.'%');
+            });
+        }
+        $calls_cnt = $call_list_q->count();
+        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
+        if($page > $pages_count){
+            $page = $pages_count;
+        }
+        $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
+        $call_list = $call_list_q->get();
+        print_R($call_list);exit;
+    }
 }
