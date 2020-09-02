@@ -23,6 +23,7 @@ class ReportAgentStatus extends Controller
     private const DIAGRAM_DATA = 'diagrama';
     private const STATUS_DATA = 'status';
     private const TEAM_IDS = 'teams';
+    private const STATUS_TOTAL = 'total';
 
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
@@ -34,6 +35,7 @@ class ReportAgentStatus extends Controller
             $o_statuses = new ReportAgentStatuses($a_agent_id);
 
             $out = array_merge($this->getResponse($user), [
+                self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null),
                 self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, null,null,null,null),
                 self::DIAGRAM_DATA => [],
             ]);
@@ -73,22 +75,23 @@ class ReportAgentStatus extends Controller
         return json_encode($out);
     }
 
-    public function getTotal($token, $dateStart=null, $period=null, $uids=null): string
+    public function getTotalPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
-        $user = $this->getUser($token);
-        if($user instanceof User)
-        {
-            $a_agent_id = [];
+        $a_department_id = $this->_getIdsAsArray($departments);
+        $a_team_id = $this->_getIdsAsArray($teams);
+        $a_agent_id = $this->_getIdsAsArray($uid);
+        $o_user = new User();
+        // Получаю список агентов согласно департментам и командам.
+        $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
 
-            $o_statuses = new ReportAgentStatuses($a_agent_id);
+        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
+            $a_agent_id = $a_agent_id_by_teams;
 
-            $out = array_merge($this->getResponse($user), [
-                self::STATUS_DATA => $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null),
-                self::DIAGRAM_DATA => [],
-            ]);
+        $o_statuses = new ReportAgentStatuses($a_agent_id);
 
-            return json_encode($out);
-        }
-        return $user;
+        $out = array_merge([
+            self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
+        ], $this->getAgentsArr());
+        return json_encode($out);
     }
 }
