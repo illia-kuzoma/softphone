@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\Request;
 use App\Http\Controllers\Traits\Response;
 use App\Http\Controllers\Traits\UserAuth;
+use App\Models\ReportAgentStatuses;
 use App\Models\Team;
 use App\Models\User;
 
@@ -30,7 +31,7 @@ class ReportAgentStatus extends Controller
         {
             $a_agent_id = [];
 
-            $o_statuses = new \App\Models\ReportAgentStatuses($a_agent_id);
+            $o_statuses = new ReportAgentStatuses($a_agent_id);
 
             $out = array_merge($this->getResponse($user), [
                 self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, null,null,null,null),
@@ -62,7 +63,7 @@ class ReportAgentStatus extends Controller
         $o_team = new Team();
         $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
 
-        $o_statuses = new \App\Models\ReportAgentStatuses($a_agent_id);
+        $o_statuses = new ReportAgentStatuses($a_agent_id);
 
         $out = array_merge([
             self::DIAGRAM_DATA => [],
@@ -74,15 +75,12 @@ class ReportAgentStatus extends Controller
 
     public function getTotal($token, $dateStart=null, $period=null, $uids=null): string
     {
-        $o_statuses = new \App\Models\ReportAgentStatuses([]);
-        $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null);
-        exit;
         $user = $this->getUser($token);
         if($user instanceof User)
         {
             $a_agent_id = [];
 
-            $o_statuses = new \App\Models\ReportAgentStatuses($a_agent_id);
+            $o_statuses = new ReportAgentStatuses($a_agent_id);
 
             $out = array_merge($this->getResponse($user), [
                 self::STATUS_DATA => $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null),

@@ -244,18 +244,20 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
     public function calculateDuration(self $o_status)
     {
         $s_duration = '';
-        if($o_status->time_end < $o_status->time_start)
+        if(strtotime($o_status->time_end) < strtotime($o_status->time_start))
             return $s_duration;
 
         $i_duration = strtotime($o_status->time_end) - strtotime($o_status->time_start);
-
+        return $this->calculateDurationFromSeconds($i_duration);
+    }
+    public function calculateDurationFromSeconds(int $i_duration)
+    {
         $hours = floor($i_duration/3600);
         $minutes = floor(($i_duration-($hours*3600))/60);
         $seconds = floor($i_duration - ($hours*3600 + $minutes*60));
         $s_duration = $hours."h " . $minutes."m " . $seconds."s ";
         return $s_duration;
     }
-
     public function getTotalList($dateStart = '', $period = '',
                                  $searchWord = '', $sortField = 'time_start', $sortBy = 'desc',
                                  $page = 1): array
@@ -309,6 +311,33 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
-        print_R($call_list);exit;
+
+        return [
+            'data'        => $this->formatDataTotalList( $call_list ),
+            'pages_count' => $pages_count,
+            'page'        => $page
+        ];
+    }
+
+    public function formatDataTotalList($status_list)
+    {
+        $result = [];
+        foreach($status_list as $item){
+            $day = date('Y-m-d',strtotime($item->time_start));
+            if(in_array($item->time_end,['0000-00-00 00:00:00',null]))
+            {
+                $item->time_end = $day . ' 23:59:59';
+            }
+            $duration = strtotime($item->time_end) - strtotime($item->time_start);
+            $result[] = [
+                'day' => $day,
+                'uid'         => $this->_getIdVal($item),//$item->user_id,
+                'user_data'   => User::prepareUserData((array)$item->attributes),//( new User() )->getUserData( $item->agent_id ),
+                'name'    => $item->status_name,
+                'value'       =>  $item->status_value,
+                'duration' => $this->calculateDurationFromSeconds($duration)
+            ];
+        }
+        return $result;
     }
 }
