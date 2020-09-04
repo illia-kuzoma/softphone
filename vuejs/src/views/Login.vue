@@ -111,7 +111,10 @@
         }
 
         // Checking on which server send request by client host.
-        if(window.location.hostname === 'callcentrcl.wellnessliving.com'){
+        if(window.location.hostname === 'localhost'){
+          localStorage.serve_host = 'http://callcentr.wellnessliving.com';
+
+        } else if(window.location.hostname === 'callcentrcl.wellnessliving.com'){
           localStorage.serve_host = 'http://callcentr.wellnessliving.com';
         } else {
           localStorage.serve_host = 'http://softphone';
