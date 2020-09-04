@@ -72,6 +72,7 @@
                     > Update Data
                 </button>
             </div>
+
             <div class="controls-container multiselect-items">
                 <div>
                     <label class="typo__label">Select Department(s)</label>
@@ -149,7 +150,7 @@
                     </multiselect>
                 </div>
             </div>
-          <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
+            <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
                 <h2>MISSED CALLS</h2>
                 <line-chart
                     id="chartId"
@@ -173,7 +174,7 @@
                     :items="tableCallsData"
                     :items-per-page="20"
                     :page.sync="tablePage"
-                    :options.sync='options'
+                    :options.sync='optionsTable'
                     :hide-default-footer="true"
                     class="v-data-table elevation-1"
                     fixed-header
@@ -241,6 +242,81 @@
                 <h1>No Table Data For This Period</h1>
             </div>
 
+            <div class="table-container" v-if='tableTotalCallsData.length>0'>
+                <h1>Total Table </h1>
+                <v-data-table
+                    :headers="tableTotalCallsHeaders"
+                    :items="tableTotalCallsData"
+                    :items-per-page="20"
+                    :page.sync="tableTotalPage"
+                    :options.sync='optionsTableTotal'
+                    :hide-default-footer="true"
+                    class="v-data-table elevation-1"
+                    fixed-header
+                    @update:page="updateTotalPage"
+                    @update:sort-desc="updateTotalSortDesc"
+                    >
+                    <template v-slot:item.user_data="{ item }">
+                        <div class='user'>
+                            <img :src="item.user_data.photo_url" alt="">
+                            <p>{{ item.user_data.full_name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.department="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.department.name }}</p>
+                        </div>
+                    </template>
+                    <template v-slot:item.user_data.team="{ item }">
+                        <div class='user'>
+                            <p>{{ item.user_data.team.name }}</p>
+                        </div>
+                    </template>
+
+                    <template v-slot:item.business="{ item }">
+                        <div class='business'>
+                            <a
+                                target="_blank"
+                                v-on:click='goOutTo(item.business.business_link)'
+                                class='url'
+                                :href="item.business.business_link"
+                            >{{ item.business.business_name }}
+                            </a>
+                        </div>
+                    </template>
+
+                    <template v-slot:item.contact="{ item }">
+                        <div class='user'>
+                            <a
+                                target="_blank"
+                                v-on:click='goOutTo(item.contact.contact_link)'
+                                class='url'
+                                :href="item.contact.contact_link"
+                            >{{ item.contact.contact_name }}
+                            </a>
+                        </div>
+                    </template>
+
+                    <template v-slot:item.time_create="{ item }">
+                        <div class='table-date-cell' >{{getDate(item["time_create"])}}</div>
+                    </template>
+
+                </v-data-table>
+                <v-pagination
+                    v-if="tableTotalPageCount>1"
+                    v-model="tableTotalPage"
+                    :length="tableTotalPageCount"
+                    class="table-pagination"
+                    @input="changeTotalPage"
+                    :next-icon="nextIcon"
+                    :prev-icon="prevIcon"
+                ></v-pagination>
+            </div>
+
+            <div class="table-container" v-if='tableTotalCallsData.length==0'>
+                <h1>No Table Data For This Period</h1>
+            </div>
+
         </div>
     </div>
 </template>
@@ -267,11 +343,12 @@
       dateType:'date',
       chartData:[],
       userData:[],
-      tableCallsData:[],
       serverChartData:null,
-      options: {},
+
+      optionsTable: {},
+      tableCallsData:[],
       tableCallsHeaders: [
-        { text: 'Agent', value: 'user_data.full_name' },
+        { text: 'Agent', value: 'user_data' },
         { text: 'Status Name', value: 'name' },
         { text: 'Status Value', value: 'value' },
         { text: 'Status In', value: 'time_start' },
@@ -279,11 +356,31 @@
         { text: 'Status Duration', value: 'duration', sortable: false ,width: 150},
         // { text: 'Summary', value: 'duration', sortable: false,width: 120 },
       ],
-
       tablePage:null,
       tableSort:null,
       tablePageCount:null,
-      tableItemsPerPage:null,
+      // tableItemsPerPage:null,
+
+      optionsTableTotal: {},
+      tableTotalCallsData:[],
+      tableTotalCallsHeaders: [
+        { text: 'Day', value: 'day' },
+        { text: 'Agent Name', value: 'user_data' },
+        { text: 'Name', value: 'name' },
+        { text: 'Value', value: 'value' },
+        { text: 'Time', value: 'duration' },
+      ],
+      tableTotalPage:null,
+      tableTotalSort:null,
+      tableTotalPageCount:null,
+
+// duration: ""
+// name: "presence_status"
+// time_end: null
+// time_start: "2020-09-04 11:45:02"
+// user_data: Object
+// value: "ONLINE"
+
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
@@ -536,35 +633,45 @@
       },
       search(){
         // console.log();
-        this.getDataByOptions();
+        this.getDataByOptions({});
       },
       getAgentFromChart(element){
         if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
           this.selectedAgent = null;
           this.selectedAgentUid = this.s_agent_id || null;
-          this.getDataByOptions();
+          this.getDataByOptions({});
           return
         }
 
         if( element ){
           this.selectedAgent = this.serverChartData[element['index']];
           this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
-          this.getDataByOptions();
+          this.getDataByOptions({});
           return
         }
       },
       changePage(page){
-        this.options.page = page
-        this.getDataByOptions()
+        this.optionsTable.page = page
+        this.getDataByOptions({url:'status'})
+      },
+      changeTotalPage(page){
+        this.optionsTableTotal.page = page
+        this.getDataByOptions({url:'total'})
       },
       goOutTo(string){
         console.log('authrize and goto',string)
       },
       updatePage(){
-        this.getDataByOptions()
+        this.getDataByOptions({url:'status'})
+      },
+      updateTotalPage(){
+        this.getDataByOptions({url:'total'})
       },
       updateSortDesc(){
-        this.getDataByOptions()
+        this.getDataByOptions({url:'status'})
+      },
+      updateTotalSortDesc(){
+        this.getDataByOptions({url:'total'})
       },
       tokenIsCorrect(token){
         return !(!token || token === '-' || token === undefined);
@@ -582,7 +689,7 @@
           this.$loading(true);
           HttpService.methods.get('/report/agent/status/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
-            // console.log(response)
+            console.log('getReportData',response)
             self.$loading(false);
             if(response.data.error===true){
               localStorage.token = '';
@@ -591,10 +698,11 @@
             }
             // below 2 ways to set data to header
             self.$store.state.user = response.data.user;
-            self.userData = response.data.user
+            self.userData = response.data.user;
 
             // self.setChartData(response.data.diagrama);
             self.setTableData(response.data.status);
+            self.setTableTotalData(response.data.total);
             self.setAgentMultiDropdown(response.data.agents);
             self.setDepartmentMultiDropdown(response.data.departments);
             self.datePickerSetDefaultPeriod(self.period)
@@ -608,78 +716,180 @@
           })
         }
       },
-      getDataByOptions(){
-
+      getDataByOptions(options){
         let self = this;
 
-        self.generateSelectedAgentIdString();
-        self.generateSelectedDepartmentIdString();
-        self.generateSelectedTeamIdString();
+        this.generateSelectedAgentIdString();
+        this.generateSelectedDepartmentIdString();
+        this.generateSelectedTeamIdString();
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
         // }
 
+        let url = '/report/agent/status/page/';
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
         let department = this.s_department_id || '-';
         let team = this.s_team_id || '-';
         let uid = this.selectedAgentUid || this.s_agent_id || '-';
         let searchWord = this.searchText || '-';
-        let page = this.options.page || '-';
-        var sortField = this.options.sortBy[0] || '-';
 
-        if(this.options.sortBy[0] === 'user_data'){
+        let page =  '-';
+        let sortField =  '-';
+        let sortBy = '-';
+
+
+        if(options.url === 'status'){
+          url = '/report/agent/status/page/';
+          page = this.optionsTable.page;
+          sortField = this.optionsTable.page;
+          sortBy = this.optionsTable.page;
+        }
+
+        if(options.url === 'total'){
+          url = '/report/agent/status/total/page/';
+          page = this.optionsTableTotal.page;
+          sortField = this.optionsTableTotal.page;
+          sortBy = this.optionsTableTotal.page;
+        }
+
+        if(this.optionsTable.sortBy[0] === 'user_data'){
           sortField = 'first_name'
         }
-        if(this.options.sortBy[0] === 'business'){
+        if(this.optionsTable.sortBy[0] === 'business'){
           sortField = 'business_name'
         }
-        if(this.options.sortBy[0] === 'contact'){
+        if(this.optionsTable.sortBy[0] === 'contact'){
           sortField = 'contact'
         }
-        if(this.options.sortBy[0] === 'user_data.department'){
+        if(this.optionsTable.sortBy[0] === 'user_data.department'){
           sortField = 'department_name'
         }
-        if(this.options.sortBy[0] === 'user_data.team'){
+        if(this.optionsTable.sortBy[0] === 'user_data.team'){
           sortField = 'team_name'
         }
-
-        var sortBy = this.options.sortDesc[0] || '-';
-        if(this.options.sortDesc[0] === false){
+        if(this.optionsTable.sortDesc[0] === false){
           sortBy = 'asc'
         }
+        if(this.optionsTable.sortDesc[0] === true){
+          sortBy = 'desc'
+        }
 
-        if(this.options.sortDesc[0] === true){
+        if(this.optionsTableTotal.sortBy[0] === 'day'){
+          sortField = 'day'
+        }
+        if(this.optionsTableTotal.sortBy[0] === 'user_data'){
+          sortField = 'first_name'
+        }
+        if(this.optionsTable.sortBy[0] === 'name'){
+          sortField = 'name'
+        }
+        if(this.optionsTableTotal.sortBy[0] === 'value'){
+          sortField = 'value'
+        }
+        if(this.optionsTableTotal.sortBy[0] === 'duration'){
+          sortField = 'duration'
+        }
+        if(this.optionsTableTotal.sortDesc[0] === false){
+          sortBy = 'asc'
+        }
+        if(this.optionsTableTotal.sortDesc[0] === true){
           sortBy = 'desc'
         }
 
         this.$loading(true);
-        HttpService.methods.get(
-          '/report/agent/status/page/'+
-          startDate + '/' +
-          period + '/' +
-          department + '/' +
-          team + '/' +
-          uid + '/' +
-          searchWord + '/' +
-          sortField + '/' +
-          sortBy + '/' +
-          page
-        )
-        .then(function (response) {
-          // console.log(response)
-          self.$loading(false);
-          let tableData = response.data.status
-          self.setTableData(tableData);
-          // self.setChartData(response.data.diagrama)
-        })
-        .catch(function (error) {
-          self.errorHappen(error)
-        })
+
+        if(Object.keys(options).length === 0){
+          HttpService.methods.get(
+            '/report/agent/status/page/'+
+            startDate + '/' +
+            period + '/' +
+            department + '/' +
+            team + '/' +
+            uid + '/' +
+            searchWord + '/' +
+            sortField + '/' +
+            sortBy + '/' +
+            page
+          )
+          .then(function (response) {
+            self.$loading(false);
+
+              console.log('getDataByOptions status', options);
+              // console.log(tableData);
+              let tableData = response.data.status;
+              self.setTableData(tableData);
+
+            // self.setChartData(response.data.diagrama)
+          })
+          .catch(function (error) {
+            self.errorHappen(error)
+          })
+
+          HttpService.methods.get(
+            '/report/agent/status/total/page/'+
+            startDate + '/' +
+            period + '/' +
+            department + '/' +
+            team + '/' +
+            uid + '/' +
+            searchWord + '/' +
+            sortField + '/' +
+            sortBy + '/' +
+            page
+          )
+          .then(function (response) {
+            self.$loading(false);
+
+              console.log('getDataByOptions total', options);
+              let tableTotalData = response.data.total;
+              self.setTableTotalData(tableTotalData);
+            // self.setChartData(response.data.diagrama)
+          })
+          .catch(function (error) {
+            self.errorHappen(error)
+          })
+
+        } else {
+
+          HttpService.methods.get(
+            // '/report/agent/status/page/'+
+            url +
+            startDate + '/' +
+            period + '/' +
+            department + '/' +
+            team + '/' +
+            uid + '/' +
+            searchWord + '/' +
+            sortField + '/' +
+            sortBy + '/' +
+            page
+          )
+          .then(function (response) {
+            self.$loading(false);
+
+            if(response.data.status){
+              console.log('getDataByOptions status', options);
+              // console.log(tableData);
+              let tableData = response.data.status;
+              self.setTableData(tableData);
+            }
+
+            if(response.data.total){
+              console.log('getDataByOptions total', options);
+              let tableTotalData = response.data.total;
+              self.setTableTotalData(tableTotalData);
+            }
+            // self.setChartData(response.data.diagrama)
+          })
+          .catch(function (error) {
+            self.errorHappen(error)
+          })
+        }
       },
       getDataByDate(startDate,period){
-        var self = this
+        let self = this
         self.generateSelectedAgentIdString();
         self.generateSelectedDepartmentIdString();
         self.generateSelectedTeamIdString();
@@ -694,10 +904,14 @@
         HttpService.methods.get('/report/agent/status/page/'+
           startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
         .then(function (response) {
-          // console.log(response)
+          console.log('getDataByDate',response)
           self.$loading(false);
-          let tableData = response.data.status
+          let tableData = response.data.status;
+          let tableTotalData = response.data.total;
+          // console.log(tableData);
+          // console.log(tableTotalData);
           self.setTableData(tableData);
+  self.setTableTotalData(tableTotalData);
           // self.setChartData(response.data.diagrama)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
@@ -706,18 +920,18 @@
           self.errorHappen(error);
         })
       },
-      getTableData(){
-        var self = this;
-        HttpService.methods.get('/report/agent/status')
-        .then(function (response) {
-          // console.log(response)
-          let tableData = response.data.calls
-          self.setTableData(tableData);
-        })
-        .catch(function (error) {
-          self.errorHappen(error);
-        })
-      },
+      // getTableData(){
+      //   var self = this;
+      //   HttpService.methods.get('/report/agent/status')
+      //   .then(function (response) {
+      //     console.log(response)
+      //     let tableData = response.data.calls
+      //     self.setTableData(tableData);
+      //   })
+      //   .catch(function (error) {
+      //     self.errorHappen(error);
+      //   })
+      // },
       // setChartData(data){
       //   var obj = {};
       //   this.serverChartData = data
@@ -731,10 +945,20 @@
       //   this.chartData = obj
       // },
       setTableData(data){
-        // console.log(data)
+        console.log('setTableData',data)
         this.tableCallsData=data.data;
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
+        // console.log(this.tableCallsData)
+        // console.log(this.tablePage)
+        // console.log(this.tablePageCount)
+      },
+            // },
+      setTableTotalData(data){
+        console.log('setTableData Total',data)
+        this.tableTotalCallsData=data.data;
+        this.tableTotalPage = parseInt(data.page);
+        this.tableTotalPageCount = data.pages_count;
         // console.log(this.tableCallsData)
         // console.log(this.tablePage)
         // console.log(this.tablePageCount)
