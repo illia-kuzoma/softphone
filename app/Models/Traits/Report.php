@@ -116,7 +116,7 @@ trait Report
     public function getSortField($field)
     {
         if($this->checkSortField($field)){
-            $field = self::FIELD_TIME_CREATE;
+            $field = static::getDefaultOrderField();
         }
         return $field;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ReportAgentTotalStatus;
 use App\Models\User;
 use App\Zoho\Auth;
 use App\Zoho\Config;
@@ -54,6 +55,8 @@ class ZohoV2Request extends Command
     {
         //102325000124362121(ok) 102325000124350224(ok) 102325000123555435(You are not authorized to access this resource)
        //
+        (new ReportAgentTotalStatus())->fillTable();
+        exit;
         $a_agent_id = User::getAllAgentIDs();
         foreach($a_agent_id as $agent_id)
         {

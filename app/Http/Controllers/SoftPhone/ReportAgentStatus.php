@@ -35,7 +35,7 @@ class ReportAgentStatus extends Controller
             $o_statuses = new ReportAgentStatuses($a_agent_id);
 
             $out = array_merge($this->getResponse($user), [
-                self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, null,null,null,null),
+                self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, null,'day',null,null),
                 self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, null,null,null,null),
                 self::DIAGRAM_DATA => [],
             ]);

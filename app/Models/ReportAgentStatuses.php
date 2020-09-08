@@ -18,7 +18,7 @@ class ReportAgentStatuses extends ReportBase
 
     public function getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page): array
     {
-        return (new ReportAgentStatusesGroup($this->getAgentIdFilter()))->getTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
+        return (new ReportAgentTotalStatus($this->getAgentIdFilter()))->getList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
     }
 
 }
