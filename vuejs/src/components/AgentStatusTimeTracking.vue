@@ -727,7 +727,7 @@
         //   return
         // }
 
-        let url = '/report/agent/status/page/';
+        let url = '/report/agent/status/';
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
         let department = this.s_department_id || '-';
@@ -739,7 +739,7 @@
         let sortField =  '-';
         let sortBy = '-';
 
-
+//console.log("sort field = "+this.optionsTableTotal.sortBy[0]);
         if(options.url === 'status'){
           url = '/report/agent/status/page/';
           page = this.optionsTable.page;
@@ -747,12 +747,14 @@
           sortBy = this.optionsTable.page;
         }
 
+        //console.log("sortField1 = "+sortField);
         if(options.url === 'total'){
           url = '/report/agent/status/total/page/';
           page = this.optionsTableTotal.page;
           sortField = this.optionsTableTotal.page;
           sortBy = this.optionsTableTotal.page;
         }
+        //console.log("sortField2 = "+sortField);
 
         if(this.optionsTable.sortBy[0] === 'user_data'){
           sortField = 'first_name'
@@ -782,7 +784,7 @@
         if(this.optionsTableTotal.sortBy[0] === 'user_data'){
           sortField = 'first_name'
         }
-        if(this.optionsTable.sortBy[0] === 'name'){
+        if(this.optionsTableTotal.sortBy[0] === 'name'){
           sortField = 'name'
         }
         if(this.optionsTableTotal.sortBy[0] === 'value'){
@@ -797,12 +799,15 @@
         if(this.optionsTableTotal.sortDesc[0] === true){
           sortBy = 'desc'
         }
+        console.log("sortField3 = "+sortField);
 
         this.$loading(true);
+        console.log(options);
+
 
         if(Object.keys(options).length === 0){
           HttpService.methods.get(
-            '/report/agent/status/page/'+
+            '/report/agent/status/'+
             startDate + '/' +
             period + '/' +
             department + '/' +
@@ -907,14 +912,23 @@
           console.log('getDataByDate',response)
           self.$loading(false);
           let tableData = response.data.status;
-          let tableTotalData = response.data.total;
           // console.log(tableData);
           // console.log(tableTotalData);
           self.setTableData(tableData);
-  self.setTableTotalData(tableTotalData);
           // self.setChartData(response.data.diagrama)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
+        })
+        .catch(function (error) {
+          self.errorHappen(error);
+        });
+        HttpService.methods.get('/report/agent/status/total/page/'+
+          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
+        .then(function (response) {
+          console.log('getDataByDate',response)
+          self.$loading(false);
+          let tableTotalData = response.data.total;
+          self.setTableTotalData(tableTotalData);
         })
         .catch(function (error) {
           self.errorHappen(error);
