@@ -31,7 +31,7 @@ class ReportUnattended extends Controller
             if($refresh) // Подтянуть данные с Зохо.
                 $unattendedCalls->loadFromRemoteServer();
 
-            $out = array_merge($this->getResponse($user), [
+            $out = array_merge($this->getResponse($user, $a_agent_id), [
                 self::CALLS_DATA => $unattendedCalls->getCallList($dateStart, $period, null,null,null,null),
                 self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             ]);
@@ -87,7 +87,7 @@ class ReportUnattended extends Controller
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
             self::TEAM_IDS => $a_team
-        ], $this->getAgentsArr());
+        ], $this->getAgentsArr($a_agent_id));
         return json_encode($out);
     }
 

@@ -129,6 +129,6 @@ class AgentStatus extends Model
 
     public function deleteProcessed()
     {
-        \DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
+        //\DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
     }
 }

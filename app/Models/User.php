@@ -420,7 +420,7 @@ class User extends Model
      */
     public function excluded()
     {
-        if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com']))
+        if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com','paul.s@wellnessliving.com']))
         {
             return true;
         }

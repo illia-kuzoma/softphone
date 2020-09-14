@@ -15,6 +15,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
 {
     const TABLE_NAME = "report_agent_total_statuses";
     private static $out_arr = [];
+    private static $a_to_processed = [];
 
     public $table = "";
 
@@ -30,11 +31,16 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         $this->deleteTheseAreContinue();
         \DB::table(ReportAgentStatusesGroup::TABLE_NAME)->
         where('is_processed', '=',false)->
+        /*where('agent_id', '=',102325000022393189)->*/
+        where('time_start' ,'>', '2020-09-01')->
         orderBy('time_start')->orderBy('agent_id')->
-        chunk(100, function ($statuses, $index) {
+        chunk(1000, function ($statuses, $index) {
             foreach ($statuses as $status_data) {
-                if(1 || 102325000072297101 == $this->_getIdVal($status_data))
+                if(1 /*|| 102325000022393189 == $this->_getIdVal($status_data)
+                    && strtotime($status_data->time_start) > strtotime('2020-09-01')*/)
                 {
+                    $time_start = $status_data->time_start;
+                    $not_has_continue_statuses_in_that_day = true;
                     $is_end_date = !in_array($status_data->time_end,['0000-00-00 00:00:00',null]);
                     if(!$is_end_date)
                     {
@@ -56,53 +62,82 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                         do{
                             $daytime_end = $day_start.' 23:59:59';
                             $duration = strtotime($daytime_end) - strtotime($status_data->time_start);
-                            //echo '>>'.$duration . "= ".$status_data->time_end . " ".$status_data->time_start." ".$status_data->status_name . " " .$status_data->status_value."\n";
+                            //echo '>>'.$duration . "= ".$status_data->time_end . " ".$status_data->time_start."->".$day_start."  ".$status_data->status_name . " " .$status_data->status_value."\n";
 
                             //self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value] = $duration;
 
                             // Тут проверка на $is_end_date не нужна, мерям по дням. Если днь окончен то и дата окончания известна.
-                            $this->add([
+                            /*$this->add([
                                 'day' => $day_start,
                                 'agent_id' => $this->_getIdVal($status_data),
                                 'name' => $status_data->status_name,
                                 'value' => $status_data->status_value,
                                 'duration' => $duration,
                                 'is_continue' => false,
-                            ]);
+                            ]);*/
+                            if(!isset(self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'])){
+                                self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] = 0;
+                                self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = !$is_end_date;
+                            }
+                            elseif(!self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] && !$is_end_date)
+                            {
+                                $not_has_continue_statuses_in_that_day = false;
+                                self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = true;
+                            }
+                            self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] += $duration;
 
                             $status_data->time_start = date('Y-m-d', strtotime($status_data->time_start." +1 day")).' 00:00:00';
                             $day_start = date('Y-m-d', strtotime($status_data->time_start));
 
-                        }while($day_start < $day_end);
+                        }while(strtotime($day_start) < strtotime($day_end));
                     }
                     $day_start = date('Y-m-d', strtotime($status_data->time_start));
                     $duration = strtotime($status_data->time_end) - strtotime($status_data->time_start);
+                    //echo '>>'.$duration . "= ".$status_data->time_end . " ".$status_data->time_start."->".$day_start."  ".$status_data->status_name . " " .$status_data->status_value."\n";
+
                     /* if(!isset($result[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value])){
                          self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value] = $duration;
                      }
                      self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value] += $duration;*/
 
-                     if(date('Y-m-d') == $day_start) // Если сегодня и день изменений события это тот же день
+                     $is_current_day = date('Y-m-d') == $day_start;
+                     if($is_current_day) // Если сегодня и день изменений события это тот же день
                      {
-                         $this->add([
+                         /*$this->add([
                              'day' => $day_start,
                              'agent_id' => $this->_getIdVal($status_data),
                              'name' => $status_data->status_name,
                              'value' => $status_data->status_value,
                              'duration' => $duration,
                              'is_continue' => true, // так как всё ещё может изменится, день не завершён.
-                         ]);
+                         ]);*/
+                         if(!isset(self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'])){
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] = 0;
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = true;
+                         }
+                         elseif(!self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'])
+                         {
+                             $not_has_continue_statuses_in_that_day = false;
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = true;
+                         }
+                         self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] += $duration;
                      }
                      else
                      {
+                        // echo $day_start." ".$duration . "= ".$status_data->time_end . " ".$status_data->time_start." ".$status_data->status_name . " " .$status_data->status_value."\n";
                          //echo $day_start." ".$duration."\n";
-                         //echo $day_start." ".$duration . "= ".$status_data->time_end . " ".$status_data->time_start." ".$status_data->status_name . " " .$status_data->status_value."\n";
                          // Всегда диапазон не сегодняшнего дня, который начался и кончился в тот же день.
-                         if(!isset($result[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value])){
-                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value] = 0;
+                         if(!isset(self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'])){
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] = 0;
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = !$is_end_date;
                          }
-                         self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value] += $duration;
-
+                         elseif(!self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] && !$is_end_date)
+                         {
+                             $not_has_continue_statuses_in_that_day = false;
+                             self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['is_continue'] = true;
+                         }
+                         self::$out_arr[$day_start][$this->_getIdVal($status_data)][$status_data->status_name][$status_data->status_value]['duration'] += $duration;
+                         //print_r(self::$out_arr);
                         /* $this->add([
                              'day' => $day_start,
                              'agent_id' => $this->_getIdVal($status_data),
@@ -122,23 +157,25 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                         where('status_value', '=', $status_data->status_value)->
                         where('time_start', '<', $status_data->time_start)->max('time_start');
                     }*/
-                    if($is_end_date)
-                    {
-                        \DB::table(ReportAgentStatusesGroup::TABLE_NAME)
-                            ->where('agent_id', $status_data->agent_id)
-                            ->where('status_name', $status_data->status_name)
-                            ->where('time_start', $status_data->time_start)
-                            ->update(['is_processed' => true]);
+                    //echo '$is_end_date='.$is_end_date.'$is_current_day='.$is_current_day.' $not_has_continue_statuses_in_that_day='.$not_has_continue_statuses_in_that_day. "\n";
+                    if(1 && $is_end_date && !$is_current_day && $not_has_continue_statuses_in_that_day){
+                        self::$a_to_processed[] = [
+                            'agent_id' => $status_data->agent_id,
+                            'status_name' => $status_data->status_name,
+                            'status_value' => $status_data->status_value,
+                            'time_start' => $time_start,
+                        ];
                     }
                 }
             }
             //return false;
-            if(empty($statuses)/* || self::$time_start + 900 < time()*/)
+           /* if(empty($statuses))
             {
                 return false;
-            }
+            }*/
         });
-        //print_r(self::$out_arr);exit();
+
+        $i_c = 0;
         foreach(self::$out_arr as $day=>$agents){
 
             foreach($agents as $agent=>$status_names){
@@ -146,18 +183,32 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                 foreach($status_names as $status_name=>$status_values){
 
                     foreach($status_values as $status_value=>$duration){
-                        $this->add([
+                        $data = [
                             'day' => $day,
                             'agent_id' => $agent,
                             'name' => $status_name,
                             'value' => $status_value,
-                            'duration' => $duration,
-                            'is_continue' => false,
-                        ]);
+                            'duration' => $duration['duration'],
+                            'is_continue' => $duration['is_continue'],
+                        ];
+                        $i_c++;
+                        //print_r($data);continue;
+                        $this->add($data);
                     }
                 }
             }
         }
+//echo 'count self::$a_to_processed'.count(self::$a_to_processed)."\n";
+        foreach(self::$a_to_processed as $item)
+        {
+            \DB::table(ReportAgentStatusesGroup::TABLE_NAME)
+                ->where('agent_id', $item['agent_id'])
+                ->where('status_name', $item['status_name'])
+                ->where('status_value', $item['status_value'])
+                ->where('time_start', $item['time_start'])
+                ->update(['is_processed' => true]);
+        }
+        //echo 'count $i_c='.$i_c."\n";
         //print_r(self::$out_arr);
         self::$out_arr = [];
     }
@@ -182,8 +233,13 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
     }
     public function add($data){
 
-        $sql ='insert into report_agent_total_statuses (day, agent_id, name, value, duration, is_continue, created_at) values ("'.$data['day'].'", '.$data['agent_id'].', "'.$data['name'].'", "'.$data['value'].'", '.$data['duration'].', '.($data['is_continue']?'true':'false').', "'.date("Y-m-d H:i:s").'") 
-        ON DUPLICATE KEY UPDATE duration=if(is_continue,duration+'.$data['duration'].',duration);';
+        /*$sql ='insert into report_agent_total_statuses (day, agent_id, name, value, duration, is_continue, created_at) values ("'.$data['day'].'", '.$data['agent_id'].', "'.$data['name'].'", "'.$data['value'].'", '.$data['duration'].', '.($data['is_continue']?'true':'false').', "'.date("Y-m-d H:i:s").'")
+        ON DUPLICATE KEY UPDATE duration=if(is_continue,duration+'.$data['duration'].',duration);';*/
+        $sql ='insert into report_agent_total_statuses (day, agent_id, name, value, duration, is_continue, created_at) values ("'
+            .$data['day'].'", '.$data['agent_id'].', "'.$data['name'].'", "'.$data['value'].'", '
+            .$data['duration'].', '.($data['is_continue']?'true':'false').
+            ', "'.date("Y-m-d H:i:s").'") ON DUPLICATE KEY UPDATE duration=duration'; // TODO Может вместо Игнора сделать замену старого на новое!!! Нужно посмотреть. проверить!
+       //         ON DUPLICATE KEY UPDATE duration='.$data['duration'].';
         //echo( self::$i++).' '.$sql."\n";
         \DB::insert($sql);
 /*
@@ -269,6 +325,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
+        //print_r($call_list);exit;
         return [
             'data'        => $this->formatDataCallList( $call_list ),
             'pages_count' => $pages_count,

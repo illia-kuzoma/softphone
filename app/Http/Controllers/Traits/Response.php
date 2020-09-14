@@ -14,21 +14,21 @@ trait Response
      * @param User $user
      * @return array
      */
-    public function getResponse(User $user)
+    public function getResponse(User $user, array $a_agent_id = [])
     {
         return array_merge(
             [
                 'user' => $user->toArray(),
                 'token' => $user->getToken(),
                 'departments' => (new \App\Models\Department())->getAllArr()
-            ],$this->getAgentsArr()
+            ],$this->getAgentsArr($a_agent_id)
         );
     }
 
-    public function getAgentsArr()
+    public function getAgentsArr($a_agent_id = [])
     {
         return [
-            'agents' => User::getAllAgentIDFullName(),
+            'agents' => User::getAllAgentIDFullName($a_agent_id),
         ];
     }
 }
