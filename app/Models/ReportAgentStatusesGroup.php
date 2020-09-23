@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Glob\DateTime;
+
 /**
  * @property integer $agent_id
  * @property string $status_name
@@ -57,7 +59,7 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
                                 'status_name' => $status_name,
                                 'status_value' => $field_value,
                                 'time_start' => $status_data->request_at,
-                                'created_at' => date("Y-m-d H:i:s")
+                                'created_at' => (new DateTime())->getDateTime()//date("Y-m-d H:i:s")
                             ]);
                             self::$out_arr[$status_data->agent_id][$status_name][] = $default_structure;
                         }
@@ -83,7 +85,7 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
                                         'status_name' => $status_name,
                                         'status_value' => $field_value,
                                         'time_start' => $status_data->request_at,
-                                        'created_at' => date("Y-m-d H:i:s")
+                                        'created_at' => (new DateTime())->getDateTime() //date("Y-m-d H:i:s")
                                     ]);
 
                                     \DB::commit();

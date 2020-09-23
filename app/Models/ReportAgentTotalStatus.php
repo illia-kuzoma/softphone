@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Glob\DateTime;
+
 /**
  * @property string $day
  * @property integer $agent_id
@@ -44,7 +46,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                     $is_end_date = !in_array($status_data->time_end,['0000-00-00 00:00:00',null]);
                     if(!$is_end_date)
                     {
-                        $status_data->time_end = date('Y-m-d H:i:s');//$day_start . ' 23:59:59';
+                        $status_data->time_end = (new DateTime())->getDateTime(); //date('Y-m-d H:i:s');//$day_start . ' 23:59:59';
                     }
 
                     $i_datetime_start = strtotime($status_data->time_start);
@@ -233,12 +235,13 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
     }
     public function add($data){
 
+        $date_time = (new DateTime())->getDateTime(); // date("Y-m-d H:i:s")
         /*$sql ='insert into report_agent_total_statuses (day, agent_id, name, value, duration, is_continue, created_at) values ("'.$data['day'].'", '.$data['agent_id'].', "'.$data['name'].'", "'.$data['value'].'", '.$data['duration'].', '.($data['is_continue']?'true':'false').', "'.date("Y-m-d H:i:s").'")
         ON DUPLICATE KEY UPDATE duration=if(is_continue,duration+'.$data['duration'].',duration);';*/
         $sql ='insert into report_agent_total_statuses (day, agent_id, name, value, duration, is_continue, created_at) values ("'
             .$data['day'].'", '.$data['agent_id'].', "'.$data['name'].'", "'.$data['value'].'", '
             .$data['duration'].', '.($data['is_continue']?'true':'false').
-            ', "'.date("Y-m-d H:i:s").'") ON DUPLICATE KEY UPDATE duration=duration'; // TODO Может вместо Игнора сделать замену старого на новое!!! Нужно посмотреть. проверить!
+            ', "'.$date_time.'") ON DUPLICATE KEY UPDATE duration=duration'; // TODO Может вместо Игнора сделать замену старого на новое!!! Нужно посмотреть. проверить!
        //         ON DUPLICATE KEY UPDATE duration='.$data['duration'].';
         //echo( self::$i++).' '.$sql."\n";
         \DB::insert($sql);

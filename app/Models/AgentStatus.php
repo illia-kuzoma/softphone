@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Glob\DateTime;
 use App\Zoho\V1\agentAvailability;
 use Illuminate\Database\Eloquent\Model;
 
@@ -51,7 +52,7 @@ class AgentStatus extends Model
                     'presence_status'   => $singleCallData['presence_status'],
                     'status'   => $singleCallData['status'],
                     'request_at'   => $singleCallData['request_at'],
-                    'created_at'   => date( 'Y-m-d H:i:s'),
+                    'created_at'   => (new DateTime())->getDateTime() //date( 'Y-m-d H:i:s'),
                 ]
             );
         }
