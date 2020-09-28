@@ -29,6 +29,13 @@ class AgentStatus extends Model
      */
     protected $fillable = ['agent_id', 'chat_status', 'phone_mode', 'phone_status', 'mail_status', 'presence_status', 'status', 'request_at', 'created_at'];
 
+    private static $is_in_process = false;
+
+    public function tableIsFilling()
+    {
+
+    }
+
     public function __construct()
     {
         $this->table = self::TABLE_NAME;
@@ -114,18 +121,24 @@ class AgentStatus extends Model
     }
 
 
+    /**
+     * Accordingly cron work I stark this function twice per execution.
+     * Totally twice a minute.
+     * @throws \Exception
+     */
     public function fillTable()
     {
-        //echo date("Y-m-d H:i:s")."\n";
-        $o_av = new agentAvailability();
-        $a_agent_status = $o_av->getAllAgentsStatuses();
-
-        //echo date("Y-m-d H:i:s")."\n";
-        //print_r($a_agent_status);
-
-        //echo date("Y-m-d H:i:s")."\n";
-        $this->insert($a_agent_status);
-        //echo date("Y-m-d H:i:s")."\n";
+        if(!self::$is_in_process)
+        {
+            self::$is_in_process = true;
+            $o_av = new agentAvailability();
+            $a_agent_status = $o_av->getAllAgentsStatuses();
+            $this->insert($a_agent_status);
+            sleep(29);
+            $a_agent_status = $o_av->getAllAgentsStatuses();
+            $this->insert($a_agent_status);
+            self::$is_in_process = false;
+        }
     }
 
     public function deleteProcessed()
