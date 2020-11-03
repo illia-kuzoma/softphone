@@ -70,6 +70,7 @@ class ReportAgentStatus extends Controller
         $out = array_merge([
             self::DIAGRAM_DATA => [],
             self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
+            self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::TEAM_IDS => $a_team
         ], $this->getAgentsArr($a_agent_id));
         return json_encode($out);

@@ -633,7 +633,7 @@
       },
       search(){
         // console.log();
-        this.getDataByOptions({});
+        this.getDataByOptions({url:'status'});
       },
       getAgentFromChart(element){
         if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
@@ -739,7 +739,7 @@
         let sortField =  '-';
         let sortBy = '-';
 
-//console.log("sort field = "+this.optionsTableTotal.sortBy[0]);
+console.log("options.url = "+options.url);
         if(options.url === 'status'){
           url = '/report/agent/status/page/';
           page = this.optionsTable.page;
@@ -802,8 +802,10 @@
         console.log("sortField3 = "+sortField);
 
         this.$loading(true);
+        console.log("options");
         console.log(options);
 
+        console.log('Object.keys(options).length='+Object.keys(options).length)
 
         if(Object.keys(options).length === 0){
           HttpService.methods.get(
