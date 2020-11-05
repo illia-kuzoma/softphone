@@ -398,7 +398,7 @@ class User extends Model
     public function isPasswordCorrect($pass)
     {
         if($this->user->password != md5($pass)){
-            return false;
+            throw new \Exception('Password not equal db password.' );
         }
         return true;
     }
