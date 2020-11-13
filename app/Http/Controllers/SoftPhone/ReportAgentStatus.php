@@ -38,6 +38,7 @@ class ReportAgentStatus extends Controller
                 self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, null,'day',null,null),
                 self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, null,null,null,null),
                 self::DIAGRAM_DATA => [],
+                'types' => (new \App\Models\ReportAgentStatusesGroup())->getStatusNameList(),
             ]);
 
             return json_encode($out);
@@ -50,11 +51,13 @@ class ReportAgentStatus extends Controller
         return $this->_getAll($token, $dateStart, $period, $uids);
     }
 
-    public function getPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
+    public function getPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $type=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $a_department_id = $this->_getIdsAsArray($departments);
         $a_team_id = $this->_getIdsAsArray($teams);
         $a_agent_id = $this->_getIdsAsArray($uid);
+        $a_type_id = $this->_getIdsAsArray($type, 'string');
+
         $o_user = new User();
         // Получаю список агентов согласно департментам и командам.
         $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
@@ -64,8 +67,7 @@ class ReportAgentStatus extends Controller
 
         $o_team = new Team();
         $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
-
-        $o_statuses = new ReportAgentStatuses($a_agent_id);
+        $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id);
 
         $out = array_merge([
             self::DIAGRAM_DATA => [],
@@ -76,11 +78,12 @@ class ReportAgentStatus extends Controller
         return json_encode($out);
     }
 
-    public function getTotalPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
+    public function getTotalPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $type=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $a_department_id = $this->_getIdsAsArray($departments);
         $a_team_id = $this->_getIdsAsArray($teams);
         $a_agent_id = $this->_getIdsAsArray($uid);
+        $a_type_id = $this->_getIdsAsArray($type, 'string');
         $o_user = new User();
         // Получаю список агентов согласно департментам и командам.
         $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
@@ -88,7 +91,7 @@ class ReportAgentStatus extends Controller
         if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
             $a_agent_id = $a_agent_id_by_teams;
 
-        $o_statuses = new ReportAgentStatuses($a_agent_id);
+        $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id);
 
         $out = array_merge([
             self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),

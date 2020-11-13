@@ -303,12 +303,20 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         ])->join('users', $this->table.'.agent_id', '=', 'users.id')
             /* ->join('users', 'departments.id', '=', 'users.department_id')*/;
 
+        // Исключаю записи в которых поле name имеет указанное в функции except.
+        $this->except($call_list_q, 'name');
+
         $a_filter_by_agents = $this->getAgentIdFilter();
         if(!empty($a_filter_by_agents))
             $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
-//echo $dateFrom . " " . $dateTo;exit;
+
+        $a_filter_by_types = $this->getTypeNameFilter();
+        if(!empty($a_filter_by_types))
+            $call_list_q->whereIn($this->table.'.name', $a_filter_by_types);
+
         $call_list_q->where('day', '>=', $dateFrom);
         $call_list_q->where('day', '<=', $dateTo);
+
         $call_list_q->orderBy( $sortField, $sortBy );
 
         if($searchWord)

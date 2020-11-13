@@ -149,6 +149,31 @@
                                 </template>
                     </multiselect>
                 </div>
+                <div>
+                    <label class="typo__label">Select type(s)</label>
+                    <multiselect
+                        @close="setTypes"
+                        v-model="type_multiple_selected_value"
+                        :options="type_multiple_options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Pick some"
+                        label="name"
+                        track-by="value"
+                        :preselect-first="true">
+                        <template
+                            slot="selection"
+                            slot-scope="{ values, search, isOpen }">
+                                    <span
+                                        class="multiselect__single"
+                                        v-if="values.length && !isOpen">
+                                        {{ values.length }} options selected
+                                    </span>
+                        </template>
+                    </multiselect>
+                </div>
             </div>
             <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
                 <h2>MISSED CALLS</h2>
@@ -349,7 +374,7 @@
       tableCallsData:[],
       tableCallsHeaders: [
         { text: 'Agent', value: 'user_data' },
-        { text: 'Status Name', value: 'name' },
+        { text: 'Status Type', value: 'name' },
         { text: 'Status Value', value: 'value' },
         { text: 'Status In', value: 'time_start' },
         { text: 'Status Out', value: 'time_end' ,width: 200},
@@ -391,11 +416,14 @@
       department_multiple_selected_value:null,
       team_multiple_options:[],
       team_multiple_selected_value:null,
+      type_multiple_options:[],
+      type_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
       s_department_id:'',
       s_team_id:'',
+      s_type_id:'',
       period:'week',
       // Use moment.js instead of the default
       /*momentFormat: {
@@ -458,6 +486,10 @@
         return time+" "+date
       },
       setUsers(){
+        this.selectedAgentUid = null;
+        this.setDate(this.period);
+      },
+      setTypes(){
         this.selectedAgentUid = null;
         this.setDate(this.period);
       },
@@ -705,6 +737,7 @@
             self.setTableTotalData(response.data.total);
             self.setAgentMultiDropdown(response.data.agents);
             self.setDepartmentMultiDropdown(response.data.departments);
+            self.setTypeMultiDropdown(response.data.types);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
@@ -722,6 +755,7 @@
         this.generateSelectedAgentIdString();
         this.generateSelectedDepartmentIdString();
         this.generateSelectedTeamIdString();
+        this.generateSelectedTypeIdString();
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
@@ -734,6 +768,7 @@
         let team = this.s_team_id || '-';
         let uid = this.selectedAgentUid || this.s_agent_id || '-';
         let searchWord = this.searchText || '-';
+        let type = this.s_type_id || '-';
 
         let page =  '-';
         let sortField =  '-';
@@ -815,6 +850,7 @@ console.log("options.url = "+options.url);
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -841,6 +877,7 @@ console.log("options.url = "+options.url);
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -868,6 +905,7 @@ console.log("options.url = "+options.url);
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -900,16 +938,25 @@ console.log("options.url = "+options.url);
         self.generateSelectedAgentIdString();
         self.generateSelectedDepartmentIdString();
         self.generateSelectedTeamIdString();
-        var ss_agent_id = '';
+        this.generateSelectedTypeIdString();
+        /*var ss_agent_id = '';
         if(self.s_agent_id !== '')
         {
           ss_agent_id = "/" + self.s_agent_id
+        }*/
+
+        var ss_type_name = '';
+        if(self.s_type_id !== '')
+        {
+          ss_type_name = "/" + self.s_type_id
         }
         let department = this.s_department_id || '-';
         let team = this.s_team_id || '-';
+        let agent = this.s_agent_id || '-';
+        //let type = this.s_type_id || '-';
         this.$loading(true);
         HttpService.methods.get('/report/agent/status/page/'+
-          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
+          startDate + '/' + period + '/' + department  + '/' + team + "/" + agent + ss_type_name)
         .then(function (response) {
           console.log('getDataByDate',response)
           self.$loading(false);
@@ -925,7 +972,7 @@ console.log("options.url = "+options.url);
           self.errorHappen(error);
         });
         HttpService.methods.get('/report/agent/status/total/page/'+
-          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
+          startDate + '/' + period + '/' + department  + '/' + team  + "/" + agent + ss_type_name)
         .then(function (response) {
           console.log('getDataByDate',response)
           self.$loading(false);
@@ -990,6 +1037,10 @@ console.log("options.url = "+options.url);
       setTeamMultiDropdown(data){
         console.log(data);
         this.team_multiple_options = data;
+      },
+      setTypeMultiDropdown(data){
+        console.log(data);
+        this.type_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
@@ -1058,6 +1109,27 @@ console.log("options.url = "+options.url);
           }
         }
         this.s_team_id = s_team_id;
+      },
+      generateSelectedTypeIdString()
+      {
+        console.log('generateSelectedTypeIdString');
+        let s_type_id = '';
+        if(this.type_multiple_selected_value !== null)
+        {
+          let selected_types_array = this.type_multiple_selected_value;
+          let selected_types_array_len = selected_types_array.length;
+          console.log(selected_types_array_len);
+          if(selected_types_array_len)
+          {
+            for (let i = 0; i < selected_types_array_len; i++){
+              s_type_id += selected_types_array[i].value;
+              if(i+1 !==  selected_types_array_len){
+                s_type_id +=",";
+              }
+            }
+          }
+        }
+        this.s_type_id = s_type_id;
       },
       dateSelected(){
         console.log('dateSelected +');

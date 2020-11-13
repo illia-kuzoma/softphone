@@ -180,12 +180,20 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
         ])->join('users', $this->table.'.agent_id', '=', 'users.id')
             /* ->join('users', 'departments.id', '=', 'users.department_id')*/;
 
+        // Исключаю записи в которых поле status_name имеет указанное в функции except.
+        $this->except($call_list_q, 'status_name');
+
         $a_filter_by_agents = $this->getAgentIdFilter();
         if(!empty($a_filter_by_agents))
             $call_list_q->whereIn($this->table.'.agent_id', $a_filter_by_agents);
-//echo $dateFrom . " " . $dateTo;exit;
+
+        $a_filter_by_types = $this->getTypeNameFilter();
+        if(!empty($a_filter_by_types))
+            $call_list_q->whereIn($this->table.'.status_name', $a_filter_by_types);
+
         $call_list_q->where('time_start', '>=', $dateFrom);
         $call_list_q->where('time_start', '<=', $dateTo);
+
         $call_list_q->orderBy( $sortField, $sortBy );
 
         if($searchWord)
@@ -259,5 +267,24 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
         $seconds = floor($i_duration - ($hours*3600 + $minutes*60));
         $s_duration = $hours."h " . $minutes."m " . $seconds."s ";
         return $s_duration;
+    }
+
+    public function getStatusNameList()
+    {
+        $res = [];
+        $query = self::query();
+        $query->select(['status_name']);
+        $this->except($query, 'status_name');
+        $data = $query->groupBy('status_name')->get()->toArray();
+        /**
+         * @var $datum self
+         */
+        foreach($data as $name){
+            $res[] = [
+                "value" => $name['status_name'],
+                "name" => $name['status_name'],
+            ];
+        }
+        return $res;
     }
 }
