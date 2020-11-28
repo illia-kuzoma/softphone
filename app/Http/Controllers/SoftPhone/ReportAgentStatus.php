@@ -70,7 +70,7 @@ class ReportAgentStatus extends Controller
         $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id);
 
         $out = array_merge([
-            //self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period),
+            self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period),
             self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::TEAM_IDS => $a_team
