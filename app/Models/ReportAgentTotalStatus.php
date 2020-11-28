@@ -349,7 +349,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
-        //print_r($call_list);exit;
+        print_r($call_list->toArray());exit;
         return $call_list;
     }
 
@@ -383,32 +383,42 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
     {
         $status_list = $this->getStatusListData($dateStart, $period,'', 'first_name', 'asc', $page, $page_count);
 
-        print_r($status_list->toArray());exit;
+        //print_r($status_list->toArray());exit;
         $result = $result_tmp = [];
         if ( ! empty( $status_list ) ) {
             foreach ( $status_list as $item ) {
                 if(in_array($item->name, ['status', 'phone_status']))
                 {
-                    $result_tmp[$item->name][$this->_getIdVal($item)] = [
-                        'uid' => $this->_getIdVal($item),
-                        'first_name' => $item->first_name,
-                        'last_name' => $item->last_name,
-                        'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
-                        'y' => ReportAgentStatusesGroup::calculateDurationFromSeconds($item->duration)
-                    ];
+                    if(!isset($result_tmp[$item->name][$this->_getIdVal($item)]))
+                    {
+                        $result_tmp[$item->name][$this->_getIdVal($item)] = [
+                            'uid' => $this->_getIdVal($item),
+                            'first_name' => $item->first_name,
+                            'last_name' => $item->last_name,
+                            'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
+                            'y' => $item->duration
+                        ];
+                    }
+                    else
+                    {
+                        $result_tmp[$item->name][$this->_getIdVal($item)]['y'] += $item->duration;
+                    }
                 }
             }
         }
 
-        print_r($result_tmp);exit;
         foreach($result_tmp as $k=>$item )
         {
+            foreach($item as &$user){
+                $user['y'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
+            }
             $result[] = [
                 'name' => $k,
                 'data' => $item
             ];
         }
 
+        print_r($result);exit;
         return $result;
     }
 }
