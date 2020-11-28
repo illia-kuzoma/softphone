@@ -382,6 +382,8 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
     public function getGraphList($dateStart, $period): array
     {
         $status_list = $this->getStatusListData($dateStart, $period,'', 'first_name', 'asc', $page, $page_count);
+
+        print_r($status_list->toArray());exit;
         $result = $result_tmp = [];
         if ( ! empty( $status_list ) ) {
             foreach ( $status_list as $item ) {
