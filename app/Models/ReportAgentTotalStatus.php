@@ -349,6 +349,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
+        print_r($call_list->toArray());exit;
         //print_r($call_list);exit;
         return $call_list;
     }
