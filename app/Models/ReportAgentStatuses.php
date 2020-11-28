@@ -21,6 +21,10 @@ class ReportAgentStatuses extends ReportBase
         return (new ReportAgentTotalStatus($this->getAgentIdFilter(),$this->getTypeNameFilter()))->getList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
     }
 
+    public function getDiagramList($dateStart = null, $period = null): array
+    {
+        return (new ReportAgentTotalStatus($this->getAgentIdFilter(),$this->getTypeNameFilter()))->getGraphList($dateStart, $period);
+    }
 
     /**
      * Исключенный статус.

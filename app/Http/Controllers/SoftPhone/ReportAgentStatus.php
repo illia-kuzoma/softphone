@@ -37,7 +37,7 @@ class ReportAgentStatus extends Controller
             $out = array_merge($this->getResponse($user, $a_agent_id), [
                 self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, null,'day',null,null),
                 self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, null,null,null,null),
-                self::DIAGRAM_DATA => [],
+                self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period),
                 'types' => (new \App\Models\ReportAgentStatusesGroup())->getStatusNameList(),
             ]);
 
@@ -70,7 +70,7 @@ class ReportAgentStatus extends Controller
         $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id);
 
         $out = array_merge([
-            self::DIAGRAM_DATA => [],
+            //self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period),
             self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::TEAM_IDS => $a_team

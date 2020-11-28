@@ -279,6 +279,19 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                                  $searchWord = '', $sortField = 'day', $sortBy = 'desc',
                                  $page = 1): array
     {
+        $pages_count = 1;
+        $call_list = $this->getStatusListData($dateStart, $period, $searchWord, $sortField, $sortBy, $page,$pages_count);
+        return [
+            'data'        => $this->formatDataCallList( $call_list ),
+            'pages_count' => $pages_count,
+            'page'        => $page
+        ];
+    }
+
+    private function getStatusListData($dateStart = '', $period = '',
+                                       $searchWord = '', $sortField = 'day', $sortBy = 'desc',
+                                       &$page, &$pages_count)
+    {
         $searchWord = $this->getSearchWord($searchWord);
         $sortField = $this->getSortField($sortField);
         $sortBy = $this->getSortOrder($sortBy);
@@ -337,11 +350,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
         //print_r($call_list);exit;
-        return [
-            'data'        => $this->formatDataCallList( $call_list ),
-            'pages_count' => $pages_count,
-            'page'        => $page
-        ];
+        return $call_list;
     }
 
     public function formatDataCallList($status_list)
@@ -359,5 +368,43 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             ];
         }
         return $result;
+    }
+
+    /**
+     * Add 2 charts, one for Status Type = Status, one for Status Type = Phone Status
+     *  X Axis is Agent, and then Status Value
+     *  Y axis is total time spent
+     *
+     * @param $dateStart
+     * @param $period
+     * @return array
+     */
+    public function getGraphList($dateStart, $period): array
+    {
+        $status_list = $this->getStatusListData($dateStart, $period,'', 'first_name', 'asc', $page, $page_count);
+        $result = $result_tmp = [];
+        if ( ! empty( $status_list ) ) {
+            foreach ( $status_list as $item ) {
+                if(in_array($item->name, ['status', 'phone_status']))
+                {
+                    $result_tmp[$item->name][$item->agent_id] = [
+                        'uid' => $this->_getIdVal($item),
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name,
+                        'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
+                        'y' => ReportAgentStatusesGroup::calculateDurationFromSeconds($item->duration)
+                    ];
+                }
+            }
+        }
+
+        foreach($result_tmp as $k=>$item )
+        {
+            $result[] = [
+                'name' => $k,
+                'data' => $item
+            ];
+        }
+        return array_values($result);
     }
 }
