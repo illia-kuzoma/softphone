@@ -349,8 +349,8 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
-        print_r($call_list->toArray());
-        echo"_____________";
+        /*print_r($call_list->toArray());
+        echo"_____________";*/
         return $call_list;
     }
 
@@ -382,7 +382,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
      */
     public function getGraphList($dateStart, $period): array
     {
-        $status_list = $this->getStatusListData($dateStart, $period,'', 'first_name', 'asc', $page, $page_count);
+        $status_list = $this->getStatusListData($dateStart, $period,'', 'day', 'asc', $page, $page_count);
 
         //print_r($status_list->toArray());exit;
         $result = $result_tmp = [];
@@ -413,13 +413,15 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             foreach($item as &$user){
                 $user['y'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
             }
+            usort($item, function($a, $b){
+                return ($a['x'] <=> $b['x']);
+            });
             $result[] = [
                 'name' => $k,
                 'data' => $item
             ];
         }
 
-        print_r($result);exit;
         return $result;
     }
 }
