@@ -387,7 +387,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             foreach ( $status_list as $item ) {
                 if(in_array($item->name, ['status', 'phone_status']))
                 {
-                    $result_tmp[$item->name][$item->agent_id] = [
+                    $result_tmp[$item->name][$this->_getIdVal($item)] = [
                         'uid' => $this->_getIdVal($item),
                         'first_name' => $item->first_name,
                         'last_name' => $item->last_name,
@@ -405,6 +405,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                 'data' => $item
             ];
         }
-        return array_values($result);
+
+        return $result;
     }
 }
