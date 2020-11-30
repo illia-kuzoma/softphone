@@ -61,7 +61,7 @@ class AuthByPassword extends Auth
             chmod($token_path, 0777);
         }*/
 
-        $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
+        $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . urlencode($password);
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
         //echo $param."\n";
         curl_setopt($ch, CURLOPT_POST, true);
