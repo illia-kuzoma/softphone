@@ -410,12 +410,16 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
 
         foreach($result_tmp as $k=>$item )
         {
-            foreach($item as &$user){
-                $user['y'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
-            }
             usort($item, function($a, $b){
                 return ($a['x'] <=> $b['x']);
             });
+        }
+
+        foreach($result_tmp as $k=>$item )
+        {
+            foreach($item as &$user){
+                $user['y'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
+            }
             $result[] = [
                 'name' => $k,
                 'data' => $item
