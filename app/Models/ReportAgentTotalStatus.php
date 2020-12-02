@@ -414,6 +414,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                 return ($a['x'] <=> $b['x']);
             });
         }
+        unset($item);
 
         foreach($result_tmp as $k=>$item )
         {
@@ -421,9 +422,10 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                 $user['total_time'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
                 $user['y'] = ceil($user['y']/60);
             }
+            unset($user);
             $result[] = [
                 'name' => $k,
-                'data' => $item
+                'data' => array_values($item)
             ];
         }
 
