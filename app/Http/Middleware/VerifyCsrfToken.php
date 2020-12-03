@@ -22,5 +22,8 @@ class VerifyCsrfToken extends Middleware
 
         'http://softphone/auth*',
         'http://callcentr.wellnessliving.com/auth',
+
+        'http://softphone/request/filter*',
+        'http://callcentr.wellnessliving.com/request/filter',
     ];
 }

@@ -64,4 +64,10 @@ Route::get('/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', 'Soft
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', static function () {
     return redirect('/');
 });
+Route::get('/request/filter/all', 'SoftPhone\RequestFilter@list');
+Route::get('/request/filter', 'SoftPhone\RequestFilter@get');
+Route::post('/request/filter', 'SoftPhone\RequestFilter@save');
+Route::delete('/request/filter', 'SoftPhone\RequestFilter@delete');
+Route::put('/request/filter', 'SoftPhone\RequestFilter@save');
+
 return redirect('/');
