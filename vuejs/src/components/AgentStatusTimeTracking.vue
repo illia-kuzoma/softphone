@@ -175,23 +175,72 @@
                     </multiselect>
                 </div>
             </div>
-            <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
-                <h2>MISSED CALLS</h2>
-                <line-chart
-                    id="chartId"
-                    v-if='chartData'
-                    :chartObject='chartData'
-                    :is-resizable="true"
-                    :use-css-transforms="true"
-                    @clicked="getAgentFromChart"
-                    @close="ffFff"
-                    class="chart">
-                </line-chart>
+
+            <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
+              <h2>Statuses</h2>
+
+              <line-chart
+                  id="chartId"
+                  v-if='chartDataStatuses'
+                  :chartObject='chartDataStatuses'
+                  :is-resizable="true"
+                  :use-css-transforms="true"
+                  @clicked="getAgentFromChartStatuses"
+                  class="chart">
+              </line-chart>
+              <div 
+                v-if="selectedUserChartStatuses"
+                class="user-container" >
+                <div class="user-info">
+                  <div class="close"
+                      v-on:click="selectedUserChartStatuses=null"
+                    >
+                    &times;
+                  </div>
+                  <!-- {{selectedUserChartStatuses}} -->
+                  <p>User: {{selectedUserChartStatuses.x}}</p>
+                  <p>Total Time: {{selectedUserChartStatuses.total_time}}</p>
+                </div>
+              </div>
+                  <!-- @close="ffFff" -->
             </div>
 
-            <div class="table-container" v-if='Object.keys(chartData).length === 0'>
-                <h1>No Chart Data For This Period</h1>
-            </div> -->
+            <div class="table-container" v-if='Object.keys(chartDataStatuses).length === 0'>
+              <h1>No Chart Data For This Period</h1>
+            </div>
+
+            <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
+              <h2>Phone Statuses</h2>
+
+              <line-chart
+                  id="chartId"
+                  v-if='chartDataPhoneStatuses'
+                  :chartObject='chartDataPhoneStatuses'
+                  :is-resizable="true"
+                  :use-css-transforms="true"
+                  @clicked="getAgentFromChartPhoneStatuses"
+                  class="chart">
+              </line-chart>
+              <div 
+                v-if="selectedUserChartPhoneStatuses"
+                class="user-container" >
+                <div class="user-info">
+                  <div class="close"
+                      v-on:click="selectedUserChartPhoneStatuses=null"
+                    >
+                    &times;
+                  </div>
+                  <!-- {{selectedUserChartPhoneStatuses}} -->
+                  <p>User: {{selectedUserChartPhoneStatuses.x}}</p>
+                  <p>Total Time: {{selectedUserChartPhoneStatuses.total_time}}</p>
+                </div>
+              </div>
+                  <!-- @close="ffFff" -->
+            </div>
+
+            <div class="table-container" v-if='Object.keys(chartDataPhoneStatuses).length === 0'>
+              <h1>No Chart Data For This Period</h1>
+            </div>
 
             <div class="table-container" v-if='tableCallsData.length>0'>
                 <v-data-table
@@ -349,7 +398,7 @@
 <script>
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  // import LineChart from '@/components/Bar.vue'
+  import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
@@ -359,16 +408,24 @@
     name: 'AgentStatus',
     components: {
       DatePicker,
-      // LineChart,
+      LineChart,
       Multiselect,
     },
     data: () => ({
       // firstLoad:true,
       selectedDate:null,
+      // selectedUser:null,
       dateType:'date',
-      chartData:[],
       userData:[],
-      serverChartData:null,
+
+      chartDataStatuses:[],
+      chartDataPhoneStatuses:[],
+      // serverChartData:null,
+      serverChartDataStatuses:null,
+      serverChartPhoneStatuses:null,
+
+      selectedUserChartStatuses:null,
+      selectedUserChartPhoneStatuses:null,
 
       optionsTable: {},
       tableCallsData:[],
@@ -398,13 +455,6 @@
       tableTotalPage:null,
       tableTotalSort:null,
       tableTotalPageCount:null,
-
-// duration: ""
-// name: "presence_status"
-// time_end: null
-// time_start: "2020-09-04 11:45:02"
-// user_data: Object
-// value: "ONLINE"
 
       searchText:null,
       selectedAgent:null,
@@ -667,21 +717,6 @@
         // console.log();
         this.getDataByOptions({url:'status'});
       },
-      getAgentFromChart(element){
-        if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
-          this.selectedAgent = null;
-          this.selectedAgentUid = this.s_agent_id || null;
-          this.getDataByOptions({});
-          return
-        }
-
-        if( element ){
-          this.selectedAgent = this.serverChartData[element['index']];
-          this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
-          this.getDataByOptions({});
-          return
-        }
-      },
       changePage(page){
         this.optionsTable.page = page
         this.getDataByOptions({url:'status'})
@@ -732,7 +767,7 @@
             self.$store.state.user = response.data.user;
             self.userData = response.data.user;
 
-            // self.setChartData(response.data.diagrama);
+            self.setChartData(response.data.diagrama);
             self.setTableData(response.data.status);
             self.setTableTotalData(response.data.total);
             self.setAgentMultiDropdown(response.data.agents);
@@ -774,7 +809,7 @@
         let sortField =  '-';
         let sortBy = '-';
 
-console.log("options.url = "+options.url);
+        // console.log("options.url = "+options.url);
         if(options.url === 'status'){
           url = '/report/agent/status/page/';
           page = this.optionsTable.page;
@@ -995,18 +1030,49 @@ console.log("options.url = "+options.url);
       //     self.errorHappen(error);
       //   })
       // },
-      // setChartData(data){
-      //   var obj = {};
-      //   this.serverChartData = data
+      setChartData(data){
+        console.log('setChartData',data)
 
-      //   for (var i = 0; i < data.length; i++) {
-      //     var name = data[i].full_name;
-      //     var count = data[i].calls_count;
-      //     obj[name] = count;
-      //   }
+        data.map(chart=>{
+            console.log(chart)
+            if(chart.name=='status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartDataStatuses = data
 
-      //   this.chartData = obj
-      // },
+                for (let i = 0; i < data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataStatuses = obj;
+                console.log('this.chartData',this.chartDataStatuses)   
+                // chartDataStatuses
+                // chartDataPhoneStatuses 
+            }
+            if(chart.name=='phone_status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartPhoneStatuses = data
+
+                for (let i = 0; i < data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataPhoneStatuses = obj;
+                console.log('this.chartData',this.chartDataPhoneStatuses)            
+            }
+        })
+      },
+      getAgentFromChartStatuses(element){
+        this.selectedUserChartStatuses=this.serverChartDataStatuses[element.index]
+      },
+      getAgentFromChartPhoneStatuses(element){
+        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses[element.index]
+      },
       setTableData(data){
         console.log('setTableData',data)
         this.tableCallsData=data.data;
@@ -1267,6 +1333,7 @@ console.log("options.url = "+options.url);
             }
         }
         .chart-container{
+            position:relative;
             width: 100%;
             background-color: white;
             padding:24px;
@@ -1285,6 +1352,34 @@ console.log("options.url = "+options.url);
             }
             #chartId{
                 height: 280px;
+            }
+            .user-container{
+                border: 1px solid #FAFBFE;
+                position: absolute;
+                content: '';
+                background-color: #FAFBFE;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.75);
+                .user-info{
+                  position:relative;
+                  p{
+                    padding-bottom:0;
+                    margin-bottom:0;
+                  }
+                  .close{
+                     font-size:20px;
+                     position: absolute;
+                     cursor:pointer;
+                     font-weight:bold;
+                     content: '';
+                     top: -21px;
+                     right: -12px;
+                  }
+                }
             }
         }
         .table-container{
