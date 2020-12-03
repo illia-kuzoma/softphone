@@ -23,7 +23,7 @@ class RequestFilter extends Controller
 
     //private function parseFields
 
-    public function list(Request $request)
+    public function list(Request $request): string
     {
         $functionality = $request->get('page');
         $this->checkFunctionality($functionality);
