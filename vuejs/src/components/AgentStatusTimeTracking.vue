@@ -149,24 +149,98 @@
                                 </template>
                     </multiselect>
                 </div>
-            </div>
-            <!--   <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
-                <h2>MISSED CALLS</h2>
-                <line-chart
-                    id="chartId"
-                    v-if='chartData'
-                    :chartObject='chartData'
-                    :is-resizable="true"
-                    :use-css-transforms="true"
-                    @clicked="getAgentFromChart"
-                    @close="ffFff"
-                    class="chart">
-                </line-chart>
+                <div>
+                    <label class="typo__label">Select type(s)</label>
+                    <multiselect
+                        @close="setTypes"
+                        v-model="type_multiple_selected_value"
+                        :options="type_multiple_options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Pick some"
+                        label="name"
+                        track-by="value"
+                        :preselect-first="true">
+                        <template
+                            slot="selection"
+                            slot-scope="{ values, search, isOpen }">
+                                    <span
+                                        class="multiselect__single"
+                                        v-if="values.length && !isOpen">
+                                        {{ values.length }} options selected
+                                    </span>
+                        </template>
+                    </multiselect>
+                </div>
             </div>
 
-            <div class="table-container" v-if='Object.keys(chartData).length === 0'>
-                <h1>No Chart Data For This Period</h1>
-            </div> -->
+            <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
+              <h2>Statuses</h2>
+
+              <line-chart
+                  id="chartId"
+                  v-if='chartDataStatuses'
+                  :chartObject='chartDataStatuses'
+                  :is-resizable="true"
+                  :use-css-transforms="true"
+                  @clicked="getAgentFromChartStatuses"
+                  class="chart">
+              </line-chart>
+              <div 
+                v-if="selectedUserChartStatuses"
+                class="user-container" >
+                <div class="user-info">
+                  <div class="close"
+                      v-on:click="selectedUserChartStatuses=null"
+                    >
+                    &times;
+                  </div>
+                  <!-- {{selectedUserChartStatuses}} -->
+                  <p>User: {{selectedUserChartStatuses.x}}</p>
+                  <p>Total Time: {{selectedUserChartStatuses.total_time}}</p>
+                </div>
+              </div>
+                  <!-- @close="ffFff" -->
+            </div>
+
+            <div class="table-container" v-if='Object.keys(chartDataStatuses).length === 0'>
+              <h1>No Chart Data For This Period</h1>
+            </div>
+
+            <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
+              <h2>Phone Statuses</h2>
+
+              <line-chart
+                  id="chartId"
+                  v-if='chartDataPhoneStatuses'
+                  :chartObject='chartDataPhoneStatuses'
+                  :is-resizable="true"
+                  :use-css-transforms="true"
+                  @clicked="getAgentFromChartPhoneStatuses"
+                  class="chart">
+              </line-chart>
+              <div 
+                v-if="selectedUserChartPhoneStatuses"
+                class="user-container" >
+                <div class="user-info">
+                  <div class="close"
+                      v-on:click="selectedUserChartPhoneStatuses=null"
+                    >
+                    &times;
+                  </div>
+                  <!-- {{selectedUserChartPhoneStatuses}} -->
+                  <p>User: {{selectedUserChartPhoneStatuses.x}}</p>
+                  <p>Total Time: {{selectedUserChartPhoneStatuses.total_time}}</p>
+                </div>
+              </div>
+                  <!-- @close="ffFff" -->
+            </div>
+
+            <div class="table-container" v-if='Object.keys(chartDataPhoneStatuses).length === 0'>
+              <h1>No Chart Data For This Period</h1>
+            </div>
 
             <div class="table-container" v-if='tableCallsData.length>0'>
                 <v-data-table
@@ -324,7 +398,7 @@
 <script>
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  // import LineChart from '@/components/Bar.vue'
+  import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
@@ -334,22 +408,30 @@
     name: 'AgentStatus',
     components: {
       DatePicker,
-      // LineChart,
+      LineChart,
       Multiselect,
     },
     data: () => ({
       // firstLoad:true,
       selectedDate:null,
+      // selectedUser:null,
       dateType:'date',
-      chartData:[],
       userData:[],
-      serverChartData:null,
+
+      chartDataStatuses:[],
+      chartDataPhoneStatuses:[],
+      // serverChartData:null,
+      serverChartDataStatuses:null,
+      serverChartPhoneStatuses:null,
+
+      selectedUserChartStatuses:null,
+      selectedUserChartPhoneStatuses:null,
 
       optionsTable: {},
       tableCallsData:[],
       tableCallsHeaders: [
         { text: 'Agent', value: 'user_data' },
-        { text: 'Status Name', value: 'name' },
+        { text: 'Status Type', value: 'name' },
         { text: 'Status Value', value: 'value' },
         { text: 'Status In', value: 'time_start' },
         { text: 'Status Out', value: 'time_end' ,width: 200},
@@ -374,13 +456,6 @@
       tableTotalSort:null,
       tableTotalPageCount:null,
 
-// duration: ""
-// name: "presence_status"
-// time_end: null
-// time_start: "2020-09-04 11:45:02"
-// user_data: Object
-// value: "ONLINE"
-
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
@@ -391,11 +466,14 @@
       department_multiple_selected_value:null,
       team_multiple_options:[],
       team_multiple_selected_value:null,
+      type_multiple_options:[],
+      type_multiple_selected_value:null,
       nextIcon: '>',
       prevIcon: '<',
       s_agent_id: '',
       s_department_id:'',
       s_team_id:'',
+      s_type_id:'',
       period:'week',
       // Use moment.js instead of the default
       /*momentFormat: {
@@ -458,6 +536,10 @@
         return time+" "+date
       },
       setUsers(){
+        this.selectedAgentUid = null;
+        this.setDate(this.period);
+      },
+      setTypes(){
         this.selectedAgentUid = null;
         this.setDate(this.period);
       },
@@ -633,22 +715,7 @@
       },
       search(){
         // console.log();
-        this.getDataByOptions({});
-      },
-      getAgentFromChart(element){
-        if(this.selectedAgentUid === this.serverChartData[element['index']]['uid']){
-          this.selectedAgent = null;
-          this.selectedAgentUid = this.s_agent_id || null;
-          this.getDataByOptions({});
-          return
-        }
-
-        if( element ){
-          this.selectedAgent = this.serverChartData[element['index']];
-          this.selectedAgentUid = this.serverChartData[element['index']]['uid'];
-          this.getDataByOptions({});
-          return
-        }
+        this.getDataByOptions({url:'status'});
       },
       changePage(page){
         this.optionsTable.page = page
@@ -700,11 +767,12 @@
             self.$store.state.user = response.data.user;
             self.userData = response.data.user;
 
-            // self.setChartData(response.data.diagrama);
+            self.setChartData(response.data.diagrama);
             self.setTableData(response.data.status);
             self.setTableTotalData(response.data.total);
             self.setAgentMultiDropdown(response.data.agents);
             self.setDepartmentMultiDropdown(response.data.departments);
+            self.setTypeMultiDropdown(response.data.types);
             self.datePickerSetDefaultPeriod(self.period)
           })
           .catch(function (error) {
@@ -722,24 +790,26 @@
         this.generateSelectedAgentIdString();
         this.generateSelectedDepartmentIdString();
         this.generateSelectedTeamIdString();
+        this.generateSelectedTypeIdString();
         // if(this.firstLoad){
         //   this.firstLoad = false
         //   return
         // }
 
-        let url = '/report/agent/status/page/';
+        let url = '/report/agent/status/';
         let startDate = this.selectedDate || '-' ;
         let period = this.period || '-' ;
         let department = this.s_department_id || '-';
         let team = this.s_team_id || '-';
         let uid = this.selectedAgentUid || this.s_agent_id || '-';
         let searchWord = this.searchText || '-';
+        let type = this.s_type_id || '-';
 
         let page =  '-';
         let sortField =  '-';
         let sortBy = '-';
 
-
+        // console.log("options.url = "+options.url);
         if(options.url === 'status'){
           url = '/report/agent/status/page/';
           page = this.optionsTable.page;
@@ -747,12 +817,14 @@
           sortBy = this.optionsTable.page;
         }
 
+        //console.log("sortField1 = "+sortField);
         if(options.url === 'total'){
           url = '/report/agent/status/total/page/';
           page = this.optionsTableTotal.page;
           sortField = this.optionsTableTotal.page;
           sortBy = this.optionsTableTotal.page;
         }
+        //console.log("sortField2 = "+sortField);
 
         if(this.optionsTable.sortBy[0] === 'user_data'){
           sortField = 'first_name'
@@ -782,7 +854,7 @@
         if(this.optionsTableTotal.sortBy[0] === 'user_data'){
           sortField = 'first_name'
         }
-        if(this.optionsTable.sortBy[0] === 'name'){
+        if(this.optionsTableTotal.sortBy[0] === 'name'){
           sortField = 'name'
         }
         if(this.optionsTableTotal.sortBy[0] === 'value'){
@@ -797,17 +869,23 @@
         if(this.optionsTableTotal.sortDesc[0] === true){
           sortBy = 'desc'
         }
+        console.log("sortField3 = "+sortField);
 
         this.$loading(true);
+        console.log("options");
+        console.log(options);
+
+        console.log('Object.keys(options).length='+Object.keys(options).length)
 
         if(Object.keys(options).length === 0){
           HttpService.methods.get(
-            '/report/agent/status/page/'+
+            '/report/agent/status/'+
             startDate + '/' +
             period + '/' +
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -834,6 +912,7 @@
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -861,6 +940,7 @@
             department + '/' +
             team + '/' +
             uid + '/' +
+            type + '/' +
             searchWord + '/' +
             sortField + '/' +
             sortBy + '/' +
@@ -893,28 +973,46 @@
         self.generateSelectedAgentIdString();
         self.generateSelectedDepartmentIdString();
         self.generateSelectedTeamIdString();
-        var ss_agent_id = '';
+        this.generateSelectedTypeIdString();
+        /*var ss_agent_id = '';
         if(self.s_agent_id !== '')
         {
           ss_agent_id = "/" + self.s_agent_id
+        }*/
+
+        var ss_type_name = '';
+        if(self.s_type_id !== '')
+        {
+          ss_type_name = "/" + self.s_type_id
         }
         let department = this.s_department_id || '-';
         let team = this.s_team_id || '-';
+        let agent = this.s_agent_id || '-';
+        //let type = this.s_type_id || '-';
         this.$loading(true);
         HttpService.methods.get('/report/agent/status/page/'+
-          startDate + '/' + period + '/' + department  + '/' + team + ss_agent_id)
+          startDate + '/' + period + '/' + department  + '/' + team + "/" + agent + ss_type_name)
         .then(function (response) {
           console.log('getDataByDate',response)
           self.$loading(false);
           let tableData = response.data.status;
-          let tableTotalData = response.data.total;
           // console.log(tableData);
           // console.log(tableTotalData);
           self.setTableData(tableData);
-  self.setTableTotalData(tableTotalData);
           // self.setChartData(response.data.diagrama)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
+        })
+        .catch(function (error) {
+          self.errorHappen(error);
+        });
+        HttpService.methods.get('/report/agent/status/total/page/'+
+          startDate + '/' + period + '/' + department  + '/' + team  + "/" + agent + ss_type_name)
+        .then(function (response) {
+          console.log('getDataByDate',response)
+          self.$loading(false);
+          let tableTotalData = response.data.total;
+          self.setTableTotalData(tableTotalData);
         })
         .catch(function (error) {
           self.errorHappen(error);
@@ -932,18 +1030,49 @@
       //     self.errorHappen(error);
       //   })
       // },
-      // setChartData(data){
-      //   var obj = {};
-      //   this.serverChartData = data
+      setChartData(data){
+        console.log('setChartData',data)
 
-      //   for (var i = 0; i < data.length; i++) {
-      //     var name = data[i].full_name;
-      //     var count = data[i].calls_count;
-      //     obj[name] = count;
-      //   }
+        data.map(chart=>{
+            console.log(chart)
+            if(chart.name=='status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartDataStatuses = data
 
-      //   this.chartData = obj
-      // },
+                for (let i = 0; i < data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataStatuses = obj;
+                console.log('this.chartData',this.chartDataStatuses)   
+                // chartDataStatuses
+                // chartDataPhoneStatuses 
+            }
+            if(chart.name=='phone_status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartPhoneStatuses = data
+
+                for (let i = 0; i < data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataPhoneStatuses = obj;
+                console.log('this.chartData',this.chartDataPhoneStatuses)            
+            }
+        })
+      },
+      getAgentFromChartStatuses(element){
+        this.selectedUserChartStatuses=this.serverChartDataStatuses[element.index]
+      },
+      getAgentFromChartPhoneStatuses(element){
+        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses[element.index]
+      },
       setTableData(data){
         console.log('setTableData',data)
         this.tableCallsData=data.data;
@@ -974,6 +1103,10 @@
       setTeamMultiDropdown(data){
         console.log(data);
         this.team_multiple_options = data;
+      },
+      setTypeMultiDropdown(data){
+        console.log(data);
+        this.type_multiple_options = data;
       },
       generateSelectedAgentIdString () {
         console.log('generateSelectedAgentIdString');
@@ -1042,6 +1175,27 @@
           }
         }
         this.s_team_id = s_team_id;
+      },
+      generateSelectedTypeIdString()
+      {
+        console.log('generateSelectedTypeIdString');
+        let s_type_id = '';
+        if(this.type_multiple_selected_value !== null)
+        {
+          let selected_types_array = this.type_multiple_selected_value;
+          let selected_types_array_len = selected_types_array.length;
+          console.log(selected_types_array_len);
+          if(selected_types_array_len)
+          {
+            for (let i = 0; i < selected_types_array_len; i++){
+              s_type_id += selected_types_array[i].value;
+              if(i+1 !==  selected_types_array_len){
+                s_type_id +=",";
+              }
+            }
+          }
+        }
+        this.s_type_id = s_type_id;
       },
       dateSelected(){
         console.log('dateSelected +');
@@ -1179,6 +1333,7 @@
             }
         }
         .chart-container{
+            position:relative;
             width: 100%;
             background-color: white;
             padding:24px;
@@ -1197,6 +1352,34 @@
             }
             #chartId{
                 height: 280px;
+            }
+            .user-container{
+                border: 1px solid #FAFBFE;
+                position: absolute;
+                content: '';
+                background-color: #FAFBFE;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.75);
+                .user-info{
+                  position:relative;
+                  p{
+                    padding-bottom:0;
+                    margin-bottom:0;
+                  }
+                  .close{
+                     font-size:20px;
+                     position: absolute;
+                     cursor:pointer;
+                     font-weight:bold;
+                     content: '';
+                     top: -21px;
+                     right: -12px;
+                  }
+                }
             }
         }
         .table-container{
