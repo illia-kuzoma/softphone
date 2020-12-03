@@ -398,7 +398,7 @@ class User extends Model
     public function isPasswordCorrect($pass)
     {
         if($this->user->password != md5($pass)){
-            return false;
+            throw new \Exception('Password not equal db password.' );
         }
         return true;
     }
@@ -420,7 +420,7 @@ class User extends Model
      */
     public function excluded()
     {
-        if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com']))
+        if(in_array($this->user->email, ['Len@wellnessliving.com','Sasha@wellnessliving.com','paul.s@wellnessliving.com']))
         {
             return true;
         }

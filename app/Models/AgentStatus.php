@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Glob\DateTime;
 use App\Zoho\V1\agentAvailability;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +29,13 @@ class AgentStatus extends Model
      */
     protected $fillable = ['agent_id', 'chat_status', 'phone_mode', 'phone_status', 'mail_status', 'presence_status', 'status', 'request_at', 'created_at'];
 
+    private static $is_in_process = false;
+
+    public function tableIsFilling()
+    {
+
+    }
+
     public function __construct()
     {
         $this->table = self::TABLE_NAME;
@@ -51,7 +59,7 @@ class AgentStatus extends Model
                     'presence_status'   => $singleCallData['presence_status'],
                     'status'   => $singleCallData['status'],
                     'request_at'   => $singleCallData['request_at'],
-                    'created_at'   => date( 'Y-m-d H:i:s'),
+                    'created_at'   => (new DateTime())->getDateTime() //date( 'Y-m-d H:i:s'),
                 ]
             );
         }
@@ -113,22 +121,28 @@ class AgentStatus extends Model
     }
 
 
+    /**
+     * Accordingly cron work I stark this function twice per execution.
+     * Totally twice a minute.
+     * @throws \Exception
+     */
     public function fillTable()
     {
-        //echo date("Y-m-d H:i:s")."\n";
-        $o_av = new agentAvailability();
-        $a_agent_status = $o_av->getAllAgentsStatuses();
-
-        //echo date("Y-m-d H:i:s")."\n";
-        //print_r($a_agent_status);
-
-        //echo date("Y-m-d H:i:s")."\n";
-        $this->insert($a_agent_status);
-        //echo date("Y-m-d H:i:s")."\n";
+        if(!self::$is_in_process)
+        {
+            self::$is_in_process = true;
+            $o_av = new agentAvailability();
+            $a_agent_status = $o_av->getAllAgentsStatuses();
+            $this->insert($a_agent_status);
+            sleep(29);
+            $a_agent_status = $o_av->getAllAgentsStatuses();
+            $this->insert($a_agent_status);
+            self::$is_in_process = false;
+        }
     }
 
     public function deleteProcessed()
     {
-        \DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
+        //\DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
     }
 }

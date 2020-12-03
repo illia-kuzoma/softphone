@@ -10,15 +10,37 @@ trait Report
      * @var array
      */
     private $a_agent_id_filter = [];
+    /**
+     * @var array
+     */
+    private $a_type_name_filter = [];
+
+    /**
+     * @return array
+     */
+    public function getTypeNameFilter(): array
+    {
+        return $this->a_type_name_filter;
+    }
+
+    /**
+     * @param array $a_type_name_filter
+     */
+    public function setTypeNameFilter(array $a_type_name_filter): void
+    {
+        $this->a_type_name_filter = $a_type_name_filter;
+    }
 
     /**
      * ReportUnattended constructor.
      * @param array $a_agent_id_filter
+     * @param array $a_type_name_filter
      */
-    public function __construct(array $a_agent_id_filter = [])
+    public function __construct(array $a_agent_id_filter = [], array $a_type_name_filter = [])
     {
         $this->table = static::TABLE_NAME;
         $this->a_agent_id_filter = $a_agent_id_filter;
+        $this->a_type_name_filter = $a_type_name_filter;
     }
 
     /**
@@ -116,7 +138,7 @@ trait Report
     public function getSortField($field)
     {
         if($this->checkSortField($field)){
-            $field = self::FIELD_TIME_CREATE;
+            $field = static::getDefaultOrderField();
         }
         return $field;
     }

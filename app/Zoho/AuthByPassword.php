@@ -27,6 +27,24 @@ class AuthByPassword extends Auth
         }
     }
 
+    private $cause = [];
+
+    /**
+     * @return array
+     */
+    public function getCause(): string
+    {
+        return $this->cause['CAUSE'];
+    }
+
+    /**
+     * @param array $cause
+     */
+    public function setCause(array $cause): void
+    {
+        $this->cause = $cause;
+    }
+
     public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoSupport/supportapi'): ?string
     {
         //$this->recheckUserName($username, $password);
@@ -43,14 +61,13 @@ class AuthByPassword extends Auth
             chmod($token_path, 0777);
         }*/
 
-        $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . $password;
+        $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . urlencode($password);
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
         //echo $param."\n";
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         $result = curl_exec($ch);
-        //var_dump($result);exit;
         if(($result) === false){
 
             curl_close($ch);
@@ -70,16 +87,28 @@ class AuthByPassword extends Auth
                  {
                     case "AUTHTOKEN":
                      {
-                         $token = $message;
+                         $s_token = $message;
                      }break;
                     case "CAUSE":
                      {
-                         $token = '';
+                         $s_token = '';
+                         $this->setCause(['CAUSE'=>$authToken['1']]);
+                         if(!$s_token){ // Токен не был олучен от Зохо.
+                             // анализирую причину.
+                             switch($this->getCause()){
+                                 case'EXCEEDED_MAXIMUM_ALLOWED_AUTHTOKENS':
+                                     // в этом случае токен в порядке, а значит переданный от клиента пароль и имейл есть в зохо.
+                                     // А значит можно смело обновлять пароль в БД, даже если переданный от клиента не совпадает с тем что в БД.
+                                     break;
+                                 default: // вывожу сообщение от Зохо
+                                     throw new \Exception($this->getCause());
+                             }
+                         }
                      }break;
                  }
              }
             curl_close($ch);
-            return $token;
+            return $s_token;
         }
         return null;
     }

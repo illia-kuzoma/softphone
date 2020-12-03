@@ -4,6 +4,8 @@
 namespace App\Zoho\V1;
 
 
+use App\Models\Glob\DateTime;
+
 class agentAvailability extends ZohoV1
 {
 
@@ -37,7 +39,7 @@ class agentAvailability extends ZohoV1
         $a_agent_status = [];
         do
         {
-            $request_time = date('Y-m-d H:i:s');
+            $request_time = (new DateTime())->getDateTime();//date('Y-m-d H:i:s');
             $a_data = $this->getAll($from, $limit);
             //echo count($a_data['data'])." -- ";
             foreach($a_data['data'] as $item){

@@ -20,4 +20,10 @@ class ReportBase extends Model
     const PRIORITY_LOW = 'low';
     const PRIORITY_MEDIUM = 'medium';
     const PRIORITY_HIGH = 'high';
+
+    protected function getDefaultOrderField()
+    {
+        return self::FIELD_TIME_CREATE;
+    }
+
 }
