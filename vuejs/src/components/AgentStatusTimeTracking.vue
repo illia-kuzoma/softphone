@@ -899,7 +899,7 @@
               let tableData = response.data.status;
               self.setTableData(tableData);
 
-            // self.setChartData(response.data.diagrama)
+              self.setChartData(response.data.diagrama)
           })
           .catch(function (error) {
             self.errorHappen(error)
@@ -924,7 +924,7 @@
               console.log('getDataByOptions total', options);
               let tableTotalData = response.data.total;
               self.setTableTotalData(tableTotalData);
-            // self.setChartData(response.data.diagrama)
+              self.setChartData(response.data.diagrama)
           })
           .catch(function (error) {
             self.errorHappen(error)
@@ -961,7 +961,7 @@
               let tableTotalData = response.data.total;
               self.setTableTotalData(tableTotalData);
             }
-            // self.setChartData(response.data.diagrama)
+            self.setChartData(response.data.diagrama)
           })
           .catch(function (error) {
             self.errorHappen(error)
@@ -999,7 +999,7 @@
           // console.log(tableData);
           // console.log(tableTotalData);
           self.setTableData(tableData);
-          // self.setChartData(response.data.diagrama)
+          self.setChartData(response.data.diagrama)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
         })
@@ -1082,7 +1082,6 @@
         // console.log(this.tablePage)
         // console.log(this.tablePageCount)
       },
-            // },
       setTableTotalData(data){
         console.log('setTableData Total',data)
         this.tableTotalCallsData=data.data;
