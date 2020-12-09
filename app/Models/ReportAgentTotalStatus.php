@@ -279,6 +279,11 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                                  $searchWord = '', $sortField = 'day', $sortBy = 'desc',
                                  $page = 1): array
     {
+        $searchWord = $this->getSearchWord($searchWord);
+        $sortField = $this->getSortField($sortField);
+        $sortBy = $this->getSortOrder($sortBy);
+        $page = $this->getPage($page);
+
         $pages_count = 1;
         $call_list = $this->getStatusListData($dateStart, $period, $searchWord, $sortField, $sortBy, $page,$pages_count);
         return [
@@ -292,11 +297,6 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                                        $searchWord = '', $sortField = 'day', $sortBy = 'desc',
                                        &$page, &$pages_count)
     {
-        $searchWord = $this->getSearchWord($searchWord);
-        $sortField = $this->getSortField($sortField);
-        $sortBy = $this->getSortOrder($sortBy);
-        $page = $this->getPage($page);
-
         [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
         $dateFrom .= ' 00:00:00';
         $dateTo .= ' 23:59:59';
@@ -342,12 +342,15 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                     ->orWhere('last_name', 'LIKE', '%'.$searchWord.'%');
             });
         }
-        $calls_cnt = $call_list_q->count();
-        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
-        if($page > $pages_count){
-            $page = $pages_count;
+        if($page)
+        {
+            $calls_cnt = $call_list_q->count();
+            $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
+            if($page > $pages_count){
+                $page = $pages_count;
+            }
+            $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         }
-        $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
         /*print_r($call_list->toArray());
         echo"_____________";*/
@@ -382,6 +385,8 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
      */
     public function getGraphList($dateStart, $period): array
     {
+        $page = 0;
+        $page_count = 0;
         $a_statuses = ['status', 'phone_status']; // statuses for selection.
         $status_list = $this->getStatusListData($dateStart, $period,'', 'day', 'asc', $page, $page_count);
 
@@ -391,9 +396,10 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             foreach ( $status_list as $item ) {
                 if(in_array($item->name, $a_statuses))
                 {
-                    if(!isset($result_tmp[$item->name][$this->_getIdVal($item).' '.$item->value]))
+                    $key = $this->_getIdVal($item).' '.$item->value;
+                    if(!isset($result_tmp[$item->name][$key]))
                     {
-                        $result_tmp[$item->name][$this->_getIdVal($item).' '.$item->value]= [
+                        $result_tmp[$item->name][$key]= [
                             'uid' => $this->_getIdVal($item),
                             'first_name' => $item->first_name,
                             'last_name' => $item->last_name,
@@ -403,20 +409,20 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                     }
                     else
                     {
-                        $result_tmp[$item->name][$this->_getIdVal($item).' '.$item->value]['y'] += $item->duration;
+                        $result_tmp[$item->name][$key]['y'] += $item->duration;
                     }
                 }
             }
         }
 
-        foreach($result_tmp as $k=>$item )
+        foreach($result_tmp as $k=>&$item )
         {
             usort($item, function($a, $b){
                 return ($a['x'] <=> $b['x']);
             });
         }
         unset($item);
-
+//print_r(json_encode($result_tmp));exit;
         $a_status_values = \DB::table(ReportAgentStatusesGroup::TABLE_NAME)->select([
             'status_name',  'status_value'
         ])->whereIn('status_name', $a_statuses)->groupBy(['status_value','status_name'])->get()->toArray();
