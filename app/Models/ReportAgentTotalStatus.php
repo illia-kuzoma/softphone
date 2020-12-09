@@ -382,13 +382,14 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
      */
     public function getGraphList($dateStart, $period): array
     {
+        $a_statuses = ['status', 'phone_status']; // statuses for selection.
         $status_list = $this->getStatusListData($dateStart, $period,'', 'day', 'asc', $page, $page_count);
 
         //print_r($status_list->toArray());exit;
         $result = $result_tmp = [];
         if ( ! empty( $status_list ) ) {
             foreach ( $status_list as $item ) {
-                if(in_array($item->name, ['status', 'phone_status']))
+                if(in_array($item->name, $a_statuses))
                 {
                     if(!isset($result_tmp[$item->name][$this->_getIdVal($item).' '.$item->value]))
                     {
@@ -416,6 +417,14 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         unset($item);
 
+        $a_status_values = \DB::table(ReportAgentStatusesGroup::TABLE_NAME)->select([
+            'status_name',  'status_value'
+        ])->whereIn('status_name', $a_statuses)->groupBy(['status_value','status_name'])->get()->toArray();
+        $a_status_name_value = [];
+        foreach($a_status_values as $item){
+            $a_status_name_value[$item->status_name][] = $item->status_value;
+        }
+
         foreach($result_tmp as $k=>$item )
         {
             foreach($item as &$user){
@@ -425,7 +434,8 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             unset($user);
             $result[] = [
                 'name' => $k,
-                'data' => array_values($item)
+                'data' => array_values($item),
+                'filter_values' => $a_status_name_value[$k]
             ];
         }
 
