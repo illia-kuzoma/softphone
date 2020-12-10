@@ -35,7 +35,9 @@ class RequestFilter extends Controller
             'text_team_id as team_id',
             'text_period as period',
             'text_status_type as status_type',
-            'text_user_id as user_id'
+            'text_user_id as user_id',
+            's_chart_status as chart_status',
+            's_chart_phone_status as chart_phone_status'
         ])->
         where('text_functionality','=', $functionality)->get()->toArray();
 
@@ -78,6 +80,8 @@ class RequestFilter extends Controller
             $text_team_id = $request->post('team_id');
             $text_user_id = $request->post('user_id');
             $text_status_types = $request->post('status_type');
+            $s_chart_status = $request->post('chart_status');
+            $s_chart_phone_status = $request->post('chart_phone_status');
 
             $o_filter = new \App\Models\RequestFilter;
             $o_filter->text_name = $name;
@@ -88,6 +92,8 @@ class RequestFilter extends Controller
             $o_filter->text_team_id = $text_team_id;
             $o_filter->text_user_id = $text_user_id;
             $o_filter->text_status_type = $text_status_types;
+            $o_filter->s_chart_status = $s_chart_status;
+            $o_filter->s_chart_phone_status = $s_chart_phone_status;
 
             $o_filter->save();
         }

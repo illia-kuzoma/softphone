@@ -408,7 +408,8 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                             'first_name' => $item->first_name,
                             'last_name' => $item->last_name,
                             'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
-                            'y' => $item->duration
+                            'y' => $item->duration,
+                            'status_value' => $item->value
                         ];
                     }
                     else
