@@ -327,6 +327,10 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         if(!empty($a_filter_by_types))
             $call_list_q->whereIn($this->table.'.name', $a_filter_by_types);
 
+        $a_filter_by_values = $this->getTypeValueFilter();
+        if(!empty($a_filter_by_values))
+            $call_list_q->whereIn($this->table.'.value', $a_filter_by_values);
+
         $call_list_q->where('day', '>=', $dateFrom);
         $call_list_q->where('day', '<=', $dateTo);
 

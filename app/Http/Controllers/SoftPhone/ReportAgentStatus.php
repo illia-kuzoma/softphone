@@ -78,6 +78,29 @@ class ReportAgentStatus extends Controller
         return json_encode($out);
     }
 
+    public function getChart($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $type=null, $value=null): string
+    {
+        $a_department_id = $this->_getIdsAsArray($departments);
+        $a_team_id = $this->_getIdsAsArray($teams);
+        $a_agent_id = $this->_getIdsAsArray($uid);
+        $a_type_id = $this->_getIdsAsArray($type, 'string');
+        $a_value_id = $this->_getIdsAsArray($value, 'string');
+
+        $o_user = new User();
+        // Получаю список агентов согласно департментам и командам.
+        $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
+
+        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
+            $a_agent_id = $a_agent_id_by_teams;
+
+        $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id, $a_value_id);
+
+        $out = [
+            self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period)
+        ];
+        return json_encode($out);
+    }
+
     public function getTotalPage($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $type=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
     {
         $a_department_id = $this->_getIdsAsArray($departments);

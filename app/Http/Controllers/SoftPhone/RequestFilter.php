@@ -34,7 +34,8 @@ class RequestFilter extends Controller
             'text_department_id as department_id',
             'text_team_id as team_id',
             'text_period as period',
-            'text_status_type as status_type'
+            'text_status_type as status_type',
+            'text_user_id as user_id'
         ])->
         where('text_functionality','=', $functionality)->get()->toArray();
 

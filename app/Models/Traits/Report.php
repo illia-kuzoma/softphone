@@ -10,10 +10,16 @@ trait Report
      * @var array
      */
     private $a_agent_id_filter = [];
+
     /**
      * @var array
      */
     private $a_type_name_filter = [];
+
+    /**
+     * @var array
+     */
+    private $a_type_value_filter = [];
 
     /**
      * @return array
@@ -32,15 +38,32 @@ trait Report
     }
 
     /**
+     * @return array
+     */
+    public function getTypeValueFilter(): array
+    {
+        return $this->a_type_value_filter;
+    }
+
+    /**
+     * @param array $a_type_value_filter
+     */
+    public function setTypeValueFilter(array $a_type_value_filter): void
+    {
+        $this->a_type_value_filter = $a_type_value_filter;
+    }
+
+    /**
      * ReportUnattended constructor.
      * @param array $a_agent_id_filter
      * @param array $a_type_name_filter
      */
-    public function __construct(array $a_agent_id_filter = [], array $a_type_name_filter = [])
+    public function __construct(array $a_agent_id_filter = [], array $a_type_name_filter = [], array $a_type_value_filter = [])
     {
         $this->table = static::TABLE_NAME;
         $this->a_agent_id_filter = $a_agent_id_filter;
         $this->a_type_name_filter = $a_type_name_filter;
+        $this->a_type_value_filter= $a_type_value_filter;
     }
 
     /**
