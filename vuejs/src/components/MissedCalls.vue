@@ -72,7 +72,8 @@
                     > Update Data
                 </button>
             </div>
-            <div class="controls-container multiselect-items">
+            <div class="controls-container" style='justify-content: space-between;'>
+              <div class="multiselect-items" style='display: flex;'>
                 <div>
                     <label class="typo__label">Select Department(s)</label>
                     <multiselect
@@ -148,6 +149,62 @@
                                 </template>
                     </multiselect>
                 </div>
+                <div class='filter-selector'>
+                    <label class="typo__label">Select filter</label>
+                    <multiselect
+                        @close="setFilter"
+                        v-model="selectedFilter"
+                        :options="filtersList"
+                        :multiple="false"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Pick some"
+                        label="name"
+                        track-by="value"
+                        :preselect-first="true">
+                            <template
+                                slot="selection"
+                                slot-scope="{ values, search, isOpen }">
+                                    <span
+                                        class="multiselect__single"
+                                        v-if="values.length && !isOpen">
+                                        {{ values.length }} options selected
+                                    </span>
+                                </template>
+                    </multiselect>
+                    <p 
+                      v-if='selectedFilter != null '
+
+                      v-on:click="deleteFilter(selectedFilter)">
+                      &#10006;
+                    </p>
+                </div>
+                
+              </div>
+
+              <div>
+                <div class="filters multiselect-items" >
+                    <label class="typo__label">Add filter</label>
+                    <input
+                      type="text"
+                      placeholder="New filter name"
+                      class='mx-input multiselect__tags'
+                      v-model="newFilterName"
+                      style="padding:0 5px; width 150px">
+                    <div class='filters-options'>
+                      <button 
+                        v-if="newFilterName != ''" 
+                        class="button button-li date-item color-grey"
+                        v-on:click="newFilterName = ''">Cancel</button>
+                      <button 
+                        v-if="newFilterName != ''" 
+                        class="button button-li date-item color-grey"
+                        v-on:click="addNewFilter(newFilterName)">Add</button>
+                    </div>
+                </div>
+              </div>
+
             </div>
             <div class="chart-container" v-if="Object.keys(chartData).length !== 0">
                 <h2>MISSED CALLS</h2>
@@ -300,6 +357,9 @@
       s_department_id:'',
       s_team_id:'',
       period:'week',
+      newFilterName:'',
+      filtersList:[],
+      selectedFilter:null,
       // Use moment.js instead of the default
       /*momentFormat: {
         // Date to String
@@ -800,8 +860,7 @@
         }
         this.s_department_id = s_department_id;
       },
-      generateSelectedTeamIdString()
-      {
+      generateSelectedTeamIdString(){
         console.log('generateSelectedTeamIdString');
         let s_team_id = '';
         if(this.team_multiple_selected_value !== null)
@@ -821,21 +880,141 @@
         }
         this.s_team_id = s_team_id;
       },
-      dateSelected()
-      {
+      dateSelected(){
         console.log('dateSelected +');
         console.log(this.selectedDate);
         this.getDataByDate(this.selectedDate,this.period)
           //this.setDate(this.period);
          // this.selectedDate= this.selectedDate + " | " + this.period
       },
-      updateData()
-      {
+      updateData(){
         this.getReportData(true)
+      },
+      addNewFilter(newName){
+        var self = this;
+    
+        HttpService.methods.post('/request/filter',{
+            name:newName,
+            page:1,
+            day:this.selectedDate,
+            period:this.period,
+            department_id:this.s_department_id,
+            team_id:this.s_team_id,
+            user_id:this.s_agent_id,
+            status_type:'',
+        })
+        .then(function (response) {
+          console.log('addNewFilter__________________',response);
+          self.getFilters();
+          self.newFilterName='';
+          // self.filtersList = response.data ;
+          self.selectedFilter = null;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+      getFilters(){
+        var self = this;
+        HttpService.methods.get('/request/filter/all?page=1')
+        .then(function (response) {
+          self.filtersList = response.data ;
+          console.log('getFilters__________________',self.filtersList)
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+      deleteFilter(selectedFilter){
+          var self = this;
+          console.log(selectedFilter.id)
+          HttpService.methods.delete(`/request/filter/${selectedFilter.id}`)
+          .then(function (response) {
+            console.log('deleteFilter__________________',response)
+            self.getFilters();
+            self.selectedFilter=null;
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+      },
+      setFilter(e){
+        console.log('setFilter__________________',e)
+
+        if (e==null){
+          this.agent_multiple_selected_value=null;
+          this.department_multiple_selected_value=null;
+          this.team_multiple_selected_value=null;
+          this.type_multiple_selected_value=null;
+          this.setUsers();
+          return
+        } 
+        
+        this.selectedDate = e.day;
+        this.period = e.period;
+        console.log(this.selectedDate);
+        console.log(this.period);
+
+        if(e.department_id){
+          // console.log('--------------e.department_id--------------',e.department_id)
+          this.department_multiple_selected_value = [];
+          e.department_id.map(depID=>{
+            this.department_multiple_options.map(departament=> {
+              if(departament.value == depID){
+                this.department_multiple_selected_value.push(departament)
+              }
+            })
+          });
+        }
+
+        if(e.team_id){
+          // console.log('--------------e.user_id--------------',e.team_id)
+          this.team_multiple_selected_value = [];
+            e.team_id.map(teamID=>{
+              // console.log(teamID)
+              this.team_multiple_options.map(team=> {
+              if(team.value == teamID){
+                // console.log('__',team,teamID)
+                this.team_multiple_selected_value.push(team)
+              }
+            })
+          });
+        }
+
+        if(e.status_type){
+          // console.log('--------------e.status_type--------------',e.status_type)
+          // console.log(this.type_multiple_options)
+          this.type_multiple_selected_value = [];
+          e.status_type.map(statusID=>{
+            this.type_multiple_options.map(type=> {
+              if(type.value == statusID){
+                this.type_multiple_selected_value.push(type)
+              }
+            })
+          });
+        }
+      
+        if(e.user_id){
+          console.log('--------------e.user_id--------------',e.user_id)
+          console.log(this.agent_multiple_options)
+
+          this.agent_multiple_selected_value = [];
+          e.user_id.map(userID=>{
+            this.agent_multiple_options.map(user=> {
+              if(user.value == userID){
+                this.agent_multiple_selected_value.push(user)
+              }
+            })
+          });
+        }
+
+        this.setUsers();
+        // this.getDataByOptions();
       }
     },
     created: function(){
       this.getChartData();
+      this.getFilters();
     },
     mounted () {
     }
@@ -855,7 +1034,6 @@
             margin-right: 5px;
         }
     }
-
     button{
         border-radius:2px;
         padding: 0 16px;
@@ -869,7 +1047,6 @@
         color: #ffffff;
         height: 36px;
     }
-
     #Missed-Calls{
         width: 100%;
         background-color: #FAFBFE;
@@ -877,7 +1054,6 @@
         .missed-calls{
             // padding: 0 30px;
         }
-
         .header-container{
             padding-bottom: 25px;
             h1{
@@ -931,7 +1107,6 @@
             }
             .mx-datepicker{
                 width:234px
-
             }
             .date-container {
                 & /deep/ .mx-icon-calendar {
@@ -1012,10 +1187,29 @@
         .fade-enter-active {
             transition: opacity 1s
         }
-
         .fade-enter,
         .fade-leave-active {
             opacity: 0
+        }
+        .filter-selector{
+          position:relative;
+          p{
+            position:absolute;
+            bottom:0px;
+            right:0px;
+            cursor: pointer;
+          }
+        }
+        .filters{
+          position:relative;
+          .filters-options{
+            position:absolute;
+            bottom:-36px;
+            left:0px;
+            width:100%;
+            display: flex;
+            justify-content: space-between;
+          }
         }
     }
 </style>
