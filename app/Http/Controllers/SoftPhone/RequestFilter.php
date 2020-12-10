@@ -92,8 +92,10 @@ class RequestFilter extends Controller
             $o_filter->text_team_id = $text_team_id;
             $o_filter->text_user_id = $text_user_id;
             $o_filter->text_status_type = $text_status_types;
-            $o_filter->s_chart_status = $s_chart_status;
-            $o_filter->s_chart_phone_status = $s_chart_phone_status;
+            if($s_chart_status)
+                $o_filter->s_chart_status = $s_chart_status;
+            if($s_chart_phone_status)
+                $o_filter->s_chart_phone_status = $s_chart_phone_status;
 
             $o_filter->save();
         }
