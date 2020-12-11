@@ -234,7 +234,35 @@
             </div>
 
             <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
-              <h2>Statuses</h2>
+              <div style='display:flex; align-items:center'>
+                <h2>Statuses</h2>
+                <multiselect
+                    style="width: 300px ; margin-left: 30px"
+                    :multiple="false"
+                    @close="setChartFilter(serverChartDataStatuses,serverChartDataValue,'chartDataStatuses')"
+                    v-if='serverChartDataStatuses'
+                    v-model="serverChartDataValue"
+                    :options="serverChartDataStatuses.filter_values"
+                    >
+                   <!--  :close-on-select="false"
+                      :clear-on-select="false"
+                      :preserve-search="true"
+                      placeholder="Pick some"
+                      label="name"
+                      track-by="value"
+                      :preselect-first="true" -->
+                          <!-- <template
+                              slot="selection"
+                              slot-scope="{ values }">
+                                  <span
+                                      class="multiselect__single"
+                                      v-if="values.length && !isOpen"
+                                      >
+                                      {{ values.length }} options selected
+                                  </span>
+                        </template> -->
+                </multiselect>
+              </div>
 
               <line-chart
                   id="chartId"
@@ -267,7 +295,41 @@
             </div>
 
             <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
-              <h2>Phone Statuses</h2>
+              <div style='display:flex; align-items:center'>
+                <h2>Phone Statuses</h2> 
+                <multiselect 
+                    style="width: 300px ; margin-left: 30px"
+                    :multiple="false"
+                    @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
+                    v-if='serverChartPhoneStatuses'
+                    v-model="serverChartPhoneDataValue"
+                    :options="serverChartPhoneStatuses.filter_values"
+                    >
+                </multiselect> 
+                <!-- <multiselect
+                    style="width: 300px ; margin-left: 30px"
+                    @close="setFilter"
+                    v-model="selectedFilter"
+                    :options="filtersList"
+                    :multiple="false"
+                    :close-on-select="false"
+                    :clear-on-select="false"
+                    :preserve-search="true"
+                    placeholder="Pick some"
+                    label="name"
+                    track-by="value"
+                    :preselect-first="true">
+                        <template
+                            slot="selection"
+                            slot-scope="{ values, search, isOpen }">
+                                <span
+                                    class="multiselect__single"
+                                    v-if="values.length && !isOpen">
+                                    {{ values.length }} options selected
+                                </span>
+                            </template>
+                </multiselect> -->
+              </div>
 
               <line-chart
                   id="chartId"
@@ -535,6 +597,9 @@
       newFilterName:'',
       filtersList:[],
       selectedFilter:null,
+
+      serverChartDataValue:'OFFLINE',
+      serverChartPhoneDataValue:'OFFLINE',
       // Use moment.js instead of the default
       /*momentFormat: {
         // Date to String
@@ -1091,54 +1156,18 @@
       //     self.errorHappen(error);
       //   })
       // },
-      setChartData(data){
-        console.log('setChartData',data)
-        if (data.length==0){
-          this.chartDataStatuses = [];
-          this.chartDataPhoneStatuses = [];
-        }
-        data.map(chart=>{
-            console.log(chart)
-            if(chart.name=='status'){
-                let data = chart.data;
-                let obj = {};
-                this.serverChartDataStatuses = data
-
-                for (let i = 0; i < data.length; i++) {
-                  let name = data[i].x;
-                  let count = data[i].y;
-                  obj[name] = count;
-                }
-
-                this.chartDataStatuses = obj;
-                console.log('this.chartData',this.chartDataStatuses)   
-                // chartDataStatuses
-                // chartDataPhoneStatuses 
-            }
-            if(chart.name=='phone_status'){
-                let data = chart.data;
-                let obj = {};
-                this.serverChartPhoneStatuses = data
-
-                for (let i = 0; i < data.length; i++) {
-                  let name = data[i].x;
-                  let count = data[i].y;
-                  obj[name] = count;
-                }
-
-                this.chartDataPhoneStatuses = obj;
-                console.log('this.chartData',this.chartDataPhoneStatuses)            
-            }
-        })
-      },
       getAgentFromChartStatuses(element){
-        this.selectedUserChartStatuses=this.serverChartDataStatuses[element.index]
+        // console.log(element)
+        this.selectedUserChartStatuses=this.serverChartDataStatuses.data.[element.index]
+        // console.log(this.serverChartDataStatuses)
       },
       getAgentFromChartPhoneStatuses(element){
-        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses[element.index]
+        // console.log(element)
+        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses.data.[element.index]
+        // console.log(this.serverChartPhoneStatuses)
       },
       setTableData(data){
-        console.log('setTableData',data)
+        // console.log('setTableData',data)
         this.tableCallsData=data.data;
         this.tablePage = parseInt(data.page);
         this.tablePageCount = data.pages_count;
@@ -1147,7 +1176,7 @@
         // console.log(this.tablePageCount)
       },
       setTableTotalData(data){
-        console.log('setTableData Total',data)
+        // console.log('setTableData Total',data)
         this.tableTotalCallsData=data.data;
         this.tableTotalPage = parseInt(data.page);
         this.tableTotalPageCount = data.pages_count;
@@ -1164,21 +1193,21 @@
         this.department_multiple_options = data;
       },
       setTeamMultiDropdown(data){
-        console.log(data);
+        // console.log(data);
         this.team_multiple_options = data;
       },
       setTypeMultiDropdown(data){
-        console.log(data);
+        // console.log(data);
         this.type_multiple_options = data;
       },
       generateSelectedAgentIdString () {
-        console.log('generateSelectedAgentIdString');
+        // console.log('generateSelectedAgentIdString');
         let s_agent_id = '';
         if(this.agent_multiple_selected_value !== null)
         {
           let selected_agents_array = this.agent_multiple_selected_value;
           let selected_agents_array_len = selected_agents_array.length;
-          console.log(selected_agents_array_len);
+          // console.log(selected_agents_array_len);
           if(selected_agents_array_len)
           {
             for (let i = 0; i < selected_agents_array_len; i++){
@@ -1199,13 +1228,13 @@
       },
       generateSelectedDepartmentIdString()
       {
-        console.log('generateSelectedDepartmentIdString');
+        // console.log('generateSelectedDepartmentIdString');
         let s_department_id = '';
         if(this.department_multiple_selected_value !== null)
         {
           let selected_departments_array = this.department_multiple_selected_value;
           let selected_departments_array_len = selected_departments_array.length;
-          console.log(selected_departments_array_len);
+          // console.log(selected_departments_array_len);
           if(selected_departments_array_len)
           {
             for (let i = 0; i < selected_departments_array_len; i++){
@@ -1220,13 +1249,13 @@
       },
       generateSelectedTeamIdString()
       {
-        console.log('generateSelectedTeamIdString');
+        // console.log('generateSelectedTeamIdString');
         let s_team_id = '';
         if(this.team_multiple_selected_value !== null)
         {
           let selected_teams_array = this.team_multiple_selected_value;
           let selected_teams_array_len = selected_teams_array.length;
-          console.log(selected_teams_array_len);
+          // console.log(selected_teams_array_len);
           if(selected_teams_array_len)
           {
             for (let i = 0; i < selected_teams_array_len; i++){
@@ -1241,13 +1270,13 @@
       },
       generateSelectedTypeIdString()
       {
-        console.log('generateSelectedTypeIdString');
+        // console.log('generateSelectedTypeIdString');
         let s_type_id = '';
         if(this.type_multiple_selected_value !== null)
         {
           let selected_types_array = this.type_multiple_selected_value;
           let selected_types_array_len = selected_types_array.length;
-          console.log(selected_types_array_len);
+          // console.log(selected_types_array_len);
           if(selected_types_array_len)
           {
             for (let i = 0; i < selected_types_array_len; i++){
@@ -1261,8 +1290,8 @@
         this.s_type_id = s_type_id;
       },
       dateSelected(){
-        console.log('dateSelected +');
-        console.log(this.selectedDate);
+        // console.log('dateSelected +');
+        // console.log(this.selectedDate);
         this.getDataByDate(this.selectedDate,this.period)
           //this.setDate(this.period);
          // this.selectedDate= this.selectedDate + " | " + this.period
@@ -1278,14 +1307,16 @@
       },
       addNewFilter(newName){
         // console.log({
-        //     name:newName,
-        //     page:2,
-        //     day:this.selectedDate,
-        //     period:this.period,
-        //     department_id:this.s_department_id,
-        //     team_id:this.s_team_id,
-        //     user_id:this.s_agent_id,
-        //     status_type:this.s_type_id
+        //   name:newName,
+        //   page:2,
+        //   day:this.selectedDate,
+        //   period:this.period,
+        //   department_id:this.s_department_id,
+        //   team_id:this.s_team_id,
+        //   user_id:this.s_agent_id,
+        //   status_type:this.s_type_id,
+        //   chart_status:this.serverChartDataValue,
+        //   chart_phone_status:this.serverChartPhoneDataValue,
         // })
 
         var self = this;
@@ -1297,10 +1328,12 @@
             department_id:this.s_department_id,
             team_id:this.s_team_id,
             user_id:this.s_agent_id,
-            status_type:this.s_type_id
+            status_type:this.s_type_id,
+            chart_status:this.serverChartDataValue,
+            chart_phone_status:this.serverChartPhoneDataValue
         })
-        .then(function (response) {
-          console.log('addNewFilter__________________',response);
+        .then(function () {
+        // .then(function (response) {
           self.getFilters();
           self.newFilterName='';
           // self.filtersList = response.data ;
@@ -1316,7 +1349,6 @@
         HttpService.methods.get('/request/filter/all?page=2')
           .then(function (response) {
             self.filtersList = response.data ;
-            console.log('getFilters__________________',self.filtersList)
           })
           .catch(function (error) {
             console.log(error);
@@ -1324,10 +1356,10 @@
       },
       deleteFilter(selectedFilter){
           var self = this;
-          console.log(selectedFilter.id)
+          // console.log(selectedFilter.id)
           HttpService.methods.delete(`/request/filter/${selectedFilter.id}`)
-            .then(function (response) {
-              console.log('deleteFilter__________________',response)
+            .then(function () {
+            // .then(function (response) {
               self.getFilters();
               self.selectedFilter=null;
             })
@@ -1336,7 +1368,7 @@
             })
       },
       setFilter(e){
-        console.log('setFilter__________________',e)
+        // console.log('setFilter__________________',e)
 
         if (e==null){
           this.agent_multiple_selected_value=null;
@@ -1349,8 +1381,10 @@
         
         this.selectedDate = e.day;
         this.period = e.period;
-        console.log(this.selectedDate);
-        console.log(this.period);
+        this.serverChartDataValue = e.chart_status;
+        this.serverChartPhoneDataValue = e.chart_phone_status;
+        // console.log(this.selectedDate);
+        // console.log(this.period);
 
         if(e.department_id){
           // console.log('--------------e.department_id--------------',e.department_id)
@@ -1392,8 +1426,8 @@
         }
       
         if(e.user_id){
-          console.log('--------------e.user_id--------------',e.user_id)
-          console.log(this.agent_multiple_options)
+          // console.log('--------------e.user_id--------------',e.user_id)
+          // console.log(this.agent_multiple_options)
 
           this.agent_multiple_selected_value = [];
           e.user_id.map(userID=>{
@@ -1407,12 +1441,102 @@
 
         this.setUsers();
         // this.getDataByOptions();
-      }
+      },
+      setChartFilter(object,filtervalue,arr){
+        // console.log('------------------------------------------',object,filtervalue,arr)
+
+        if(filtervalue==null){
+          return
+        }
+        
+        // console.log(object,filtervalue,arr)
+        
+        var positiveArr = object.data.filter(function(objElem) {
+          return objElem.status_value == filtervalue;
+        });
+
+        if (arr == 'chartDataStatuses'){
+            let obj = {};
+            for (let i = 0; i < positiveArr.length; i++) {
+              let name = positiveArr[i].x;
+              let count = positiveArr[i].y;
+              obj[name] = count;
+            }
+
+            this.chartDataStatuses = obj;
+            // console.log('this.chartData',this.chartDataStatuses)   
+        }
+
+        if (arr == 'chartDataPhoneStatuses'){
+            let obj = {};
+            for (let i = 0; i < positiveArr.length; i++) {
+              let name = positiveArr[i].x;
+              let count = positiveArr[i].y;
+              obj[name] = count;
+            }
+
+            this.chartDataPhoneStatuses = obj;
+            // console.log('this.chartData',this.chartDataPhoneStatuses)   
+        }
+
+        // console.log(positiveArr)
+      },
+      setChartData(data){
+        // console.log('setChartData',data)
+        if (data.length==0){
+          this.chartDataStatuses = [];
+          this.chartDataPhoneStatuses = [];
+        }
+        data.map(chart=>{
+            // console.log(chart)
+            if(chart.name=='status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartDataStatuses = chart
+                // this.serverChartDataStatuses = data
+                // console.log('========1===========',this.serverChartDataStatuses)
+                for (let i = 0; i < data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataStatuses = obj;
+                // console.log('this.chartData',this.chartDataStatuses)   
+                // chartDataStatuses
+                // chartDataPhoneStatuses 
+            }
+            if(chart.name=='phone_status'){
+                let data = chart.data;
+                let obj = {};
+                this.serverChartPhoneStatuses = chart
+                // this.serverChartPhoneStatuses = data
+                // console.log('========2===========',this.serverChartPhoneStatuses)
+
+                for (let i = 0; i < chart.data.length; i++) {
+                  let name = data[i].x;
+                  let count = data[i].y;
+                  obj[name] = count;
+                }
+
+                this.chartDataPhoneStatuses = obj;
+                // console.log('this.chartData',this.chartDataPhoneStatuses)            
+            }
+        })
+      },
     },
-    created: function(){
-      this.setUsers();
-      this.getReportData();
-      this.getFilters();
+    created: async function(){
+      await this.setUsers();
+      await this.getReportData();
+      await this.getFilters();
+
+      let self = this;
+      setTimeout(async function () {
+          self.serverChartDataValue='OFFLINE';
+          self.serverChartPhoneDataValue='OFFLINE';
+          await self.setChartFilter(self.serverChartDataStatuses,'OFFLINE','chartDataStatuses');
+          await self.setChartFilter(self.serverChartPhoneStatuses,'OFFLINE','chartDataPhoneStatuses');
+      }, 3000);
     },
     mounted () {
     }
@@ -1545,7 +1669,6 @@
                 line-height: normal;
                 letter-spacing: normal;
                 color: #6c757d;
-                padding-bottom:20px;
             }
             #chartId{
                 height: 280px;

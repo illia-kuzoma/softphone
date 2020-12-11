@@ -903,8 +903,9 @@
             user_id:this.s_agent_id,
             status_type:'',
         })
-        .then(function (response) {
-          console.log('addNewFilter__________________',response);
+        .then(function () {
+        // .then(function (response) {
+          // console.log('addNewFilter__________________',response);
           self.getFilters();
           self.newFilterName='';
           // self.filtersList = response.data ;
@@ -919,7 +920,7 @@
         HttpService.methods.get('/request/filter/all?page=1')
         .then(function (response) {
           self.filtersList = response.data ;
-          console.log('getFilters__________________',self.filtersList)
+          // console.log('getFilters__________________',self.filtersList)
         })
         .catch(function (error) {
           console.log(error);
@@ -929,8 +930,9 @@
           var self = this;
           console.log(selectedFilter.id)
           HttpService.methods.delete(`/request/filter/${selectedFilter.id}`)
-          .then(function (response) {
-            console.log('deleteFilter__________________',response)
+          .then(function () {
+          // .then(function (response) {
+            // console.log('deleteFilter__________________',response)
             self.getFilters();
             self.selectedFilter=null;
           })
