@@ -41,7 +41,7 @@ class RequestFilter extends Controller
         ])->
         where('text_functionality','=', $functionality)->get()->toArray();
 
-        $a_comma_separated = ['department_id', 'team_id', 'user_id', 'status_type'];
+        $a_comma_separated = ['department_id', 'team_id', 'user_id', 'status_type', 'chart_status', 'chart_phone_status'];
         foreach($a_filter as &$item)
         {
 
@@ -80,8 +80,11 @@ class RequestFilter extends Controller
             $text_team_id = $request->post('team_id');
             $text_user_id = $request->post('user_id');
             $text_status_types = $request->post('status_type');
+            $this->_checkStatusType($text_status_types);
             $s_chart_status = $request->post('chart_status');
+            $this->_checkChartStatus($s_chart_status);
             $s_chart_phone_status = $request->post('chart_phone_status');
+            $this->_checkChartPhoneStatus($s_chart_phone_status);
 
             $o_filter = new \App\Models\RequestFilter;
             $o_filter->text_name = $name;
@@ -141,5 +144,57 @@ class RequestFilter extends Controller
         $url.=$model->day.'/'.$model->text_period.'/'.(empty($model->text_department_id)?'-':$model->text_department_id).'/'.($model->text_team_id?$model->text_team_id:'-'). ($model->text_user_id?'/'.$model->text_user_id:$type?'-':'').$type;
         return \Redirect::to($url);
         //print_r($model->attributesToArray());exit;
+    }
+
+    private function _checkStatusType(?string $text_status_types)
+    {
+        if($text_status_types)
+        {
+            $a_status_type = explode(',', $text_status_types);
+            foreach($a_status_type as $text_status_type)
+            {
+                if(!in_array(trim($text_status_type), [
+                    'chat_status', 'mail_status', 'phone_status', 'status'
+                ]))
+                {
+                    throw new \Exception('Status type parameter missmatch.');
+                }
+            }
+        }
+    }
+
+    private function _checkChartStatus(?string $s_chart_status)
+    {
+        if($s_chart_status)
+        {
+
+            $a_chart_status = explode(',', $s_chart_status);
+            foreach($a_chart_status as $text_status)
+            {
+                if(!in_array(trim($text_status), [
+                    'OFFLINE', 'ONLINE'
+                ]))
+                {
+                    throw new \Exception('Status parameter missmatch.');
+                }
+            }
+        }
+    }
+
+    private function _checkChartPhoneStatus(?string $s_chart_phone_status)
+    {
+        if($s_chart_phone_status)
+        {
+            $a_chart_phone_status = explode(',', $s_chart_phone_status);
+            foreach($a_chart_phone_status as $text_status)
+            {
+                if(!in_array(trim($text_status), [
+                    'OFFLINE', 'ONLINE', 'BUSY', 'ONCALL'
+                ]))
+                {
+                    throw new \Exception('Status phone parameter missmatch.');
+                }
+            }
+        }
     }
 }
