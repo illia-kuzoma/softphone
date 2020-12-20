@@ -394,20 +394,22 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         $a_statuses = ['status', 'phone_status']; // statuses for selection.
         $status_list = $this->getStatusListData($dateStart, $period,'', 'day', 'asc', $page, $page_count);
 
-        //print_r($status_list->toArray());exit;
+        $a_user_name = [];
         $result = $result_tmp = [];
         if ( ! empty( $status_list ) ) {
             foreach ( $status_list as $item ) {
                 if(in_array($item->name, $a_statuses))
                 {
+                    $a_user_name[$this->_getIdVal($item)] = $item->first_name.' '.$item->last_name;
                     $key = $this->_getIdVal($item).' '.$item->value;
                     if(!isset($result_tmp[$item->name][$key]))
                     {
+                        $x = $item->first_name . ' ' . $item->last_name.', '. $item->value;
                         $result_tmp[$item->name][$key]= [
                             'uid' => $this->_getIdVal($item),
                             'first_name' => $item->first_name,
                             'last_name' => $item->last_name,
-                            'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
+                            'x' => $x,
                             'y' => $item->duration,
                             'status_value' => $item->value
                         ];
@@ -420,14 +422,14 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             }
         }
 
-        foreach($result_tmp as $k=>&$item )
+        foreach($result_tmp as $s_status_name=>&$item )
         {
             usort($item, function($a, $b){
                 return ($a['x'] <=> $b['x']);
             });
         }
         unset($item);
-//print_r(json_encode($result_tmp));exit;
+
         $a_status_values = \DB::table(ReportAgentStatusesGroup::TABLE_NAME)->select([
             'status_name',  'status_value'
         ])->whereIn('status_name', $a_statuses)->groupBy(['status_value','status_name'])->get()->toArray();
@@ -436,17 +438,45 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             $a_status_name_value[$item->status_name][] = $item->status_value;
         }
 
-        foreach($result_tmp as $k=>$item )
+        $a_user_stat = [];
+
+        foreach($result_tmp as $s_status_name=>$item )
         {
-            foreach($item as &$user){
-                $user['total_time'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
-                $user['y'] = ceil($user['y']/60);
+            foreach($item as &$a_user)
+            {
+                $minutes = ceil($a_user['y']/60);
+                foreach($a_status_name_value as $_status_name=>$status_value)
+                {
+                    if($s_status_name == $_status_name)
+                    {
+                        $a_user_stat[$a_user['uid']] = array_fill_keys(array_values($status_value), 0);
+                    }
+                }
+                $a_user_stat[$a_user['uid']][$a_user['status_value']] = $minutes;
+                $a_user['total_time'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($a_user['y']);
+                $a_user['y'] = $minutes;
             }
-            unset($user);
+
+            $i = 0;
+            $a_chart = [];
+            $a_hours = [];
+            foreach($a_user_stat as $uid_key=>$_stat)
+            {
+                foreach($_stat as $_status_val=>$_duration)
+                {
+                    $a_hours[$_status_val]['name'] = $_status_val;
+                    $a_hours[$_status_val]['data'][$i] = $_duration;
+                }
+                $a_chart['names'][$i++]=$a_user_name[$uid_key];
+            }
+            $a_chart['hours'] = array_values($a_hours);
+            unset($a_user);
+
             $result[] = [
-                'name' => $k,
+                'name' => $s_status_name,
                 'data' => array_values($item),
-                'filter_values' => $a_status_name_value[$k]
+                'filter_values' => $a_status_name_value[$s_status_name],
+                'chart' => $a_chart,
             ];
         }
 
