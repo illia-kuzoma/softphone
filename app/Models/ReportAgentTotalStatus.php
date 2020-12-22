@@ -438,16 +438,15 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
             $a_status_name_value[$item->status_name][] = $item->status_value;
         }
 
-        $a_user_stat = [];
-
         foreach($result_tmp as $s_status_name=>$item )
         {
+            $a_user_stat = [];
             foreach($item as &$a_user)
             {
                 $minutes = ceil($a_user['y']/60);
                 foreach($a_status_name_value as $_status_name=>$status_value)
                 {
-                    if($s_status_name == $_status_name)
+                    if($s_status_name == $_status_name && !isset($a_user_stat[$a_user['uid']]))
                     {
                         $a_user_stat[$a_user['uid']] = array_fill_keys(array_values($status_value), 0);
                     }
@@ -478,7 +477,7 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                 'filter_values' => $a_status_name_value[$s_status_name],
                 'chart' => $a_chart,
             ];
-        }
+        };
 
         return $result;
     }
