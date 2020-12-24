@@ -5,11 +5,12 @@ import store from './store'
 import vuetify from './plugins/vuetify';
 import Vuex from 'vuex'
 import VueLoading from "vuejs-loading-plugin";
+import VueApexCharts from 'vue-apexcharts'
 
 Vue.config.productionTip = false
 
 Vue.use(Vuex)
-
+Vue.use(VueApexCharts)
 Vue.use(VueLoading, {
     //dark: true, // default false
     text: 'Loading ...', // default 'Loading'
