@@ -245,7 +245,16 @@
                     >
                 </multiselect>
               </div> -->
-                <div ref="statusesChartRef" class="chart" @click="chartHandler('Statuses',value)"></div>
+                    <!-- @click="chartHandler('Statuses',1)" -->
+                 <!--  <button 
+                          class="button button-li date-item color-grey"
+                          v-on:click="test()">test</button> -->
+                <h2>Statuses</h2>
+                <div
+
+                  ref="statusesChartRef"
+                  class="chart"
+                ></div>
             </div>
 
             <!-- <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
@@ -301,11 +310,13 @@
                 </multiselect> 
                 
               </div> -->
-              <div ref="phoneStatusesChartRef" class="chart" @click="chartHandler('Phone Statuses',value)"></div>
-                <div>
-
-                </div>
-                
+              
+              <!-- @click="chartHandler('Phone Statuses',1)" -->
+              <h2>Phone Statuses</h2> 
+              <div 
+                ref="phoneStatusesChartRef"
+                class="chart"
+              ></div>
             </div>
 
             <div class="table-container" v-if='Object.keys(chartDataStatuses).length === 0'>
@@ -511,92 +522,21 @@
 <script>
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  // import LineChart from '@/components/Bar.vue'
-  // import StackedChart from '@/components/StackedChart.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
   import router from '../router'
-  // import ApexCharts from 'vue-apexcharts'
-  // import VueApexCharts from 'vue-apexcharts'
-  // import VueApexCharts from 'vue-apexcharts'
-  import ApexChard from "apexcharts/dist/apexcharts.js";
-  import ApexChard2 from "apexcharts/dist/apexcharts.js";
+  import ApexChart from "apexcharts/dist/apexcharts.js";
+  import ApexChart2 from "apexcharts/dist/apexcharts.js";
 
   export default {
     name: 'AgentStatus',
     components: {
       DatePicker,
-      // LineChart,
       Multiselect,
-      // VueApexCharts
-      // stackedchart: StackedChart,
-      // apexcharts: VueApexCharts
     },
     data: () => ({
-      chart1:{
-        series: [
-        // 1,2
-        ],
-        settings : {
-          id: 'democharts',
-          chart: {
-            type: 'bar',
-            height: 350,
-            stacked: true,
-            // stackType: '100%'
-          },
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              legend: {
-                position: 'bottom',
-                offsetX: -10,
-                offsetY: 0
-              }
-            }
-          }],
-          xaxis: {
-            categories: [
-            // {
-            //   name:'OFFLINE',
-            //   data:[1,2]
-            // },
-            // {
-            //   name:'ONLINE',
-            //   data:[3,4]
-            // },
-            ],
-          },
-          fill: {
-            opacity: 1
-          },
-          legend: {
-            position: 'right',
-            offsetX: 0,
-            offsetY: 50
-          },
-          events: {}
-        },
-      },
-
-
-
-                 
-
-
-      //   hours: [
-      //     {
-      //       name: 'offline',
-      //       data: [44, 55, 41, 67, 22, 43, 21, 49]
-      //     }, {
-      //       name: 'online',
-      //       data: [13, 23, 20, 8, 13, 27, 33, 12]
-      //     },
-      //   ],
-
-      // },  
-      // firstLoad:true,
+ 
       selectedDate:null,
       // selectedUser:null,
       dateType:'date',
@@ -625,7 +565,6 @@
       tablePage:null,
       tableSort:null,
       tablePageCount:null,
-      // tableItemsPerPage:null,
 
       optionsTableTotal: {},
       tableTotalCallsData:[],
@@ -643,7 +582,7 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
-      //multiple_value: null,
+
       agent_multiple_options:[],
       agent_multiple_selected_value:null,
       department_multiple_options:[],
@@ -663,125 +602,14 @@
       filtersList:[],
       selectedFilter:null,
 
-      serverChartDataValue:'',
-      serverChartPhoneDataValue:'',
-phoneStatusesChartOptions:{},
-statusesChartOptions:{},
-statusesChart:null,
-phoneStatusesChart:null,
-
-      // serverChartDataValue:'OFFLINE',
-      // serverChartPhoneDataValue:'OFFLINE',
-
-
-      // Use moment.js instead of the default
-      /*momentFormat: {
-        // Date to String
-        stringify: (date) => {
-          console.log(parent.parent.period);
-          console.log(date);
-          //console.log("period = "+ this.getPeriod());
-          console.log(moment(date));
-          console.log(moment(date).format('YYYY') );
-          console.log(moment(date).format('MMMM') );
-          console.log(moment(date).format('DD') );
-          console.log(moment(date).format('dddd') );
-          return date ? moment(date).format('MM/dd/YYY') : new Date()
-        },
-        // String to Date
-        parse: (value) => {
-          console.log("parse");
-          console.log(value);
-          let arr = value.split(' | ');
-          console.log(arr[0]);
-          console.log(arr[1]);
-          let period = arr[1];
-          let date = arr[0];
-          console.log(date);
-          let format =  'MM/dd/YYY';
-          if(period === 'year')
-          {
-            format = "YYYY"
-          }
-          else if(period === 'month')
-          {
-            format = "MMMM/YYYY"
-          }
-          else if(period === 'week')
-          {
-            format = "w ddd YYYY"
-          }
-          else if(period === 'day')
-          {
-            format = "MMMM"
-          }
-
-          console.log(date);
-          console.log(format);
-          console.log(moment(date, format).toDate());
-          return date ? moment(date, format).toDate() : null
-        }
-      },
-      date_o:null*/
-      // horizonalLinePlugin : {
-      //   id: 'horizontalLine',
-      //   afterDraw: function(chartInstance) {
-
-      //     var yValue;
-      //     var yScale = chartInstance.scales["y-axis-0"];
-      //     var canvas = chartInstance.chart;
-      //     var ctx = canvas.ctx;
-      //     var index;
-      //     var line;
-      //     var style;
-
-      //     if (chartInstance.options.horizontalLine) {
-
-      //       for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
-      //         line = chartInstance.options.horizontalLine[index];
-
-      //         if (!line.style) {
-      //           style = "#080808";
-      //         } else {
-      //           style = line.style;
-      //         }
-
-      //         if (line.y) {
-      //           yValue = yScale.getPixelForValue(line.y);
-      //         } else {
-      //           yValue = 0;
-      //         }
-      //         ctx.lineWidth = 3;
-
-      //         if (yValue) {
-      //           window.chart = chartInstance;
-      //           ctx.beginPath();
-      //           ctx.moveTo(0, yValue);
-      //           ctx.lineTo(canvas.width, yValue);
-      //           ctx.strokeStyle = style;
-      //           ctx.stroke();
-      //         }
-
-      //         if (line.text) {
-      //           ctx.fillStyle = style;
-      //           ctx.fillText(line.text, 0, yValue + ctx.lineWidth);
-      //         }
-      //       }
-      //       return;
-      //     }
-      //   }
-      // }
-
-
-          // charts:{
-          //   chart1:{
-
-          //   },
-          //   chart2:{
-
-          //   }
-          // },
-
+      // serverChartDataValue:'',
+      // serverChartPhoneDataValue:'',
+      serverChartDataValue:[],
+      serverChartPhoneDataValue:[],
+      phoneStatusesChartOptions:{},
+      statusesChartOptions:{},
+      statusesChart:null,
+      phoneStatusesChart:null,
 
     }),
     methods: {
@@ -807,8 +635,6 @@ phoneStatusesChart:null,
         this.setDate(this.period);
       },
       setDate(range){
-
-        // console.log(localStorage.serve_host);
 
         this.period=range;
         this.searchText = '';
@@ -1452,6 +1278,7 @@ phoneStatusesChart:null,
         //   chart_status:this.serverChartDataValue,
         //   chart_phone_status:this.serverChartPhoneDataValue,
         // })
+        this.getLegendsData();
 
         var self = this;
         HttpService.methods.post('/request/filter',{
@@ -1502,9 +1329,10 @@ phoneStatusesChart:null,
             })
       },
       setFilter(e){
-        // console.log('setFilter__________________',e)
-
         if (e==null){
+          this.statusesChart.resetSeries();
+          this.phoneStatusesChart.resetSeries();
+
           this.agent_multiple_selected_value=null;
           this.department_multiple_selected_value=null;
           this.team_multiple_selected_value=null;
@@ -1576,24 +1404,6 @@ phoneStatusesChart:null,
         this.setUsers();
         // this.getDataByOptions();
       },
-
-
-      // markerClickHandler(event, chartContext, config) {
-      //   console.log(event, chartContext, config);
-      // },
-      // selectionHandler(event, chartContext, config) {
-      //   console.log(event, chartContext, config);
-      // },
-      // dataPointSelectionHandler(event, chartContext, config) {
-      //   console.log(event, chartContext, config);
-      // },
-      // clickHandler(event, chartContext, config) {
-      //   console.log(event, chartContext, config);
-      // },
-      // mouseMoveHandler(event, chartContext, config) {
-      //   console.log(event, chartContext, config);
-      // },
-
       setChartFilter(object,filtervalue,arr){
         console.log(object,filtervalue,arr)
         if(filtervalue==null){
@@ -1626,46 +1436,16 @@ phoneStatusesChart:null,
             this.chartDataPhoneStatuses = obj;
         }
       },
-      updateSeriesLine() {
-        // this.chart1.series = chart.chart.hours;
-                  // this.chart1.settings.xaxis.categories = chart.chart.names;
-
-        // this.$refs.chart1.updateSeries([{
-        //   data: this.chart1.series,
-        // }], false, true);
-      },
-      legendClickHandler(event, chartContext, config) {
-        // найти конфиг легенды и как вызывать изменения для фильтровы
-        // console.log('this.chartSettings1.series[chartContext].name', this.chartSettings1.series[chartContext].name);
-        // console.log('========clicked===========',this.serverChartDataStatuses.settings.names[chartContext].name)
-        // console.log('========1.7===========',this.serverChartDataStatuses.settings)
-        //  console.log('========1.9===========',this.serverChartDataStatuses)
-        // setChartFilter(serverChartDataStatuses,serverChartDataValue,'chartDataStatuses')  console.log('event', event);
-
-        console.log('chartContext', chartContext);
-        console.log('config', config);
-        // console.log('this.chart1.settings.names[chartContext].name', this.chart1.settings.names[chartContext].name);
-
-        // this.$refs.chart1.showSeries(this.chart1.settings.names[chartContext].name)
-
-          console.log(this.chart1.series[chartContext].name)
-
-            // this.$refs.chart1.toggleSeries('Football')
-            // this.$refs.chart1.resetSeries()
-
-
-
-        // this.$refs.chart1.toggleDataPointSelection(1,3)
-
-      },
       async setChartData(data){
+        // console.log(this.statusesChart)
+        // console.log(this.phoneStatusesChart)
 
         if (data.length==0){
           this.chartDataStatuses = [];
           this.chartDataPhoneStatuses = [];
         }
         data.map(chart=>{
-            // console.log(chart)
+            console.log('___chart___',chart)
             if(chart.name=='status'){
                 let data = chart.data;
                 let obj = {};
@@ -1676,15 +1456,50 @@ phoneStatusesChart:null,
                     height: 350,
                     type: "bar",
                     stacked: true,
+                    animations: {
+                        enabled: false,
+                        // easing: 'easeinout',
+                        // speed: 800,
+                        // animateGradually: {
+                        //     enabled: true,
+                        //     delay: 150
+                        // },
+                        dynamicAnimation: {
+                          enabled: false,
+                            //     speed: 350
+                        }
+                    },
+                    events: {
+                      // animationEnd: undefined,
+                      // beforeMount: undefined,
+                      // mounted: undefined,
+                      // updated: undefined,
+                      // click: undefined,
+                      // mouseMove: undefined,
+                      // legendClick: function (chartContext, options) {
+                      //   console.log('legendClick',chartContext, options)
+                      // },
+                      // selection: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
+                      // markerClick: undefined,
+                      // dataPointSelection: undefined,
+                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseLeave: undefined,
+                      // beforeZoom: undefined,
+                      // beforeResetZoom: undefined,
+                      // zoomed: undefined,
+                      // scrolled: undefined,
+                      // scrolled: undefined,
+                    },
                   },
                   dataLabels: {
-                    enabled: true
+                    enabled: false
                   },
-                  stroke: {
-                    curve: "smooth"
-                  },
-                  series: chart.chart.hours
-                  ,
+                  // stroke: {
+                  //   curve: "smooth"
+                  // },
+                  series: chart.chart.hours,
                   xaxis: {
                     categories: chart.chart.names
                   },
@@ -1697,16 +1512,19 @@ phoneStatusesChart:null,
                           offsetY: 0
                         }
                       }
-                    }],
-                    fill: {
-                      opacity: 1
+                  }],
+                  fill: {
+                    opacity: 1
+                  },
+                  legend: {
+                    position: 'right',
+                    offsetX: 0,
+                    offsetY: 50,
+                      // formatter: function(seriesName, opts) {
+                      //     return [seriesName, " - ", opts.w.globals.series[opts.seriesIndex]]
+                      // }
                     },
-                    legend: {
-                      position: 'right',
-                      offsetX: 0,
-                      offsetY: 50
-                    },
-                
+
                 };
 
                 this.statusesChartOptions = options;
@@ -1731,6 +1549,42 @@ phoneStatusesChart:null,
                     height: 350,
                     type: "bar",
                     stacked: true,
+                    animations: {
+                      enabled: false,
+                      // easing: 'easeinout',
+                      // speed: 800,
+                      // animateGradually: {
+                      //     enabled: true,
+                      //     delay: 150
+                      // },
+                      dynamicAnimation: {
+                          enabled: false,
+                      //     speed: 350
+                      }
+                    },
+                    events: {
+                      // animationEnd: undefined,
+                      // beforeMount: undefined,
+                      // mounted: undefined,
+                      // updated: undefined,
+                      // click: undefined,
+                      // mouseMove: undefined,
+                      // legendClick: function (chartContext, options) {
+                      //   console.log('legendClick',chartContext, options)
+                      // },
+                      // selection: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
+                      // markerClick: undefined,
+                      // dataPointSelection: undefined,
+                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseLeave: undefined,
+                      // beforeZoom: undefined,
+                      // beforeResetZoom: undefined,
+                      // zoomed: undefined,
+                      // scrolled: undefined,
+                      // scrolled: undefined,
+                    },
                   },
                   dataLabels: {
                     enabled: true
@@ -1738,8 +1592,7 @@ phoneStatusesChart:null,
                   stroke: {
                     curve: "smooth"
                   },
-                  series: chart.chart.hours
-                  ,
+                  series: chart.chart.hours,
                   xaxis: {
                     categories: chart.chart.names
                   },
@@ -1760,35 +1613,11 @@ phoneStatusesChart:null,
                     // show:false,
                     position: 'right',
                     offsetX: 0,
-                    offsetY: 50
+                    offsetY: 50,
                   },
-                  events: {
-                    // animationEnd: undefined,
-                    // beforeMount: undefined,
-                    // mounted: undefined,
-                    // updated: undefined,
-                    // click: undefined,
-                    // mouseMove: undefined,
-                    // legendClick: function (chartContext, options) {
-                    //   console.log(chartContext, options)
-                    // },
-                    // selection: function (chartContext, options) {
-                    //   console.log(chartContext, options)
-                    // },
-                    // markerClick: undefined,
-                    // dataPointSelection: undefined,
-                    // dataPointMouseEnter: undefined,
-                    // dataPointMouseLeave: undefined,
-                    // beforeZoom: undefined,
-                    // beforeResetZoom: undefined,
-                    // zoomed: undefined,
-                    // scrolled: undefined,
-                    // scrolled: undefined,
-                  }
+               
                 };
                 this.phoneStatusesChartOptions = options2;
-                // console.log('set chart data phoneStatusesChartOptions',this.phoneStatusesChartOptions)
-
 
                 for (let i = 0; i < chart.data.length; i++) {
                   let name = data[i].x;
@@ -1804,51 +1633,65 @@ phoneStatusesChart:null,
       async renderStatusesChart(){
         if (this.statusesChart != null && this.statusesChart.ohYeahThisChartHasBeenRendered != null) {
           this.statusesChart.destroy();
+            // this.statusesChart.resetSeries()
         }
         // console.log('renderStatusesChart',this.statusesChartOptions.xaxis.categories)
-        this.statusesChart = new ApexChard(this.$refs.statusesChartRef, this.statusesChartOptions);
-        this.statusesChart.render().then(() => this.statusesChart.ohYeahThisChartHasBeenRendered = true);
+        this.statusesChart = new ApexChart(this.$refs.statusesChartRef, this.statusesChartOptions);
+        this.statusesChart.render()
+          .then(() => this.statusesChart.ohYeahThisChartHasBeenRendered = true)
+          .then(() => {
+            if(this.serverChartDataValue && this.selectedFilter){
+              for (var i = 0; i < this.serverChartPhoneDataValue.length; i++) {
+                setTimeout( this.statusesChart.toggleSeries(this.serverChartPhoneDataValue[i]), 700);
+              }
+            }
+          })
       },
 
       async renderPhoneStatusesChart(){
         if (this.phoneStatusesChart != null && this.phoneStatusesChart.ohYeahThisChartHasBeenRendered != null) {
           this.phoneStatusesChart.destroy();
         }
-        // console.log('renderPhoneStatusesChart',this.phoneStatusesChartOptions.xaxis.categories)
-        this.phoneStatusesChart = new ApexChard2(this.$refs.phoneStatusesChartRef, this.phoneStatusesChartOptions);
-        this.phoneStatusesChart.render().then(() => this.phoneStatusesChart.ohYeahThisChartHasBeenRendered = true);
+        this.phoneStatusesChart = new ApexChart2(this.$refs.phoneStatusesChartRef, this.phoneStatusesChartOptions);
+        this.phoneStatusesChart.render()
+          .then(() => this.phoneStatusesChart.ohYeahThisChartHasBeenRendered = true)
+          .then(() => {
+            if(this.serverChartPhoneDataValue && this.selectedFilter){
+              for (var i = 0; i < this.serverChartPhoneDataValue.length; i++) {
+                setTimeout( this.phoneStatusesChart.toggleSeries(this.serverChartPhoneDataValue[i]), 700);
+              }
+            }
+
+          })
       },
 
+      getLegendsData(){
 
-
-
-
-      chartHandler(chart,string){
-        // console.log(chart)
-        if(chart == 'Statuses') {
-          console.log(chart,string)
-        }
-        if(chart == 'Phone Statuses') {
-          console.log(chart,string)
+        let firstChartLegendElements = this.$refs.statusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        for (let i = 0; i < firstChartLegendElements.length; i++) {
+          if(firstChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
+            this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
+          }
         }
 
-        // if(string == 1) {
-        //   this.statusesChart.toggleSeries('ONLINE')
-        //   // this.$refs.demochart.render()
-        //   // this.$refs.statusesChartRef.toggleSeries('ONLINE')
-        //   console.log(1)
-        // }
-        // if(string == 2) {
-        //   this.statusesChart.toggleSeries('OFFLINE')
-        //   // this.$refs.statusesChartRef.toggleSeries('OFFLINE')
-        //   console.log(2)
-          
-        // }
+        let secondChartLegendElements = this.$refs.phoneStatusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        for (let i = 0; i < secondChartLegendElements.length; i++) {
+          if(secondChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
+            this.serverChartPhoneDataValue.push(secondChartLegendElements[i].getAttribute('seriesname'))
+          }
+        }
+          console.log(this.serverChartPhoneDataValue)
+          console.log(this.serverChartDataValue)
       },
-
+      // test(){
+      //    this.statusesChart.toggleSeries("OFFLINE")
+      // },
+      // test2(chart,series){
+      //    chart.toggleSeries(series)
+      // }
 
     },
- 
+    
     created: async function(){
       await this.setUsers();
       await this.getReportData();
