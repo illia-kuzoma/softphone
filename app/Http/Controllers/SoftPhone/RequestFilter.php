@@ -80,10 +80,13 @@ class RequestFilter extends Controller
             $text_team_id = $request->post('team_id');
             $text_user_id = $request->post('user_id');
             $text_status_types = $request->post('status_type');
+            $this->_checkString('status_type', $text_status_types);
             $this->_checkStatusType($text_status_types);
             $s_chart_status = $request->post('chart_status');
+            $this->_checkString('chart_status', $s_chart_status);
             $this->_checkChartStatus($s_chart_status);
             $s_chart_phone_status = $request->post('chart_phone_status');
+            $this->_checkString('chart_phone_status', $s_chart_phone_status);
             $this->_checkChartPhoneStatus($s_chart_phone_status);
 
             $o_filter = new \App\Models\RequestFilter;
@@ -103,7 +106,7 @@ class RequestFilter extends Controller
             $o_filter->save();
         }
         return response('', 200)
-        ->header('Content-Type', 'text/plain');
+            ->header('Content-Type', 'text/plain');
     }
 
     /**
@@ -195,6 +198,20 @@ class RequestFilter extends Controller
                     throw new \Exception('Status phone parameter missmatch.');
                 }
             }
+        }
+    }
+
+    /**
+     * Checks that value exists and it is a string type.
+     * @param string $text_name
+     * @param string $text_val
+     * @throws \Exception
+     */
+    private function _checkString(string $text_name, ?string $text_val)
+    {
+        if(!is_null($text_val) && !is_string($text_val))
+        {
+            throw new \Exception(sprintf('Parameter %s not a string.', $text_name));
         }
     }
 }
