@@ -602,10 +602,10 @@
       filtersList:[],
       selectedFilter:null,
 
-      // serverChartDataValue:'',
-      // serverChartPhoneDataValue:'',
-      serverChartDataValue:[],
-      serverChartPhoneDataValue:[],
+      serverChartDataValue:'',
+      serverChartPhoneDataValue:'',
+      // serverChartDataValue:[],
+      // serverChartPhoneDataValue:[],
       phoneStatusesChartOptions:{},
       statusesChartOptions:{},
       statusesChart:null,
@@ -1266,6 +1266,7 @@
         this.getReportData();
       },
       addNewFilter(newName){
+        this.getLegendsData();
         // console.log({
         //   name:newName,
         //   page:2,
@@ -1278,7 +1279,6 @@
         //   chart_status:this.serverChartDataValue,
         //   chart_phone_status:this.serverChartPhoneDataValue,
         // })
-        this.getLegendsData();
 
         var self = this;
         HttpService.methods.post('/request/filter',{
@@ -1345,8 +1345,8 @@
         this.period = e.period;
         this.serverChartDataValue = e.chart_status;
         this.serverChartPhoneDataValue = e.chart_phone_status;
-        // console.log(this.selectedDate);
-        // console.log(this.period);
+        console.log(this.serverChartDataValue);
+        console.log(this.serverChartPhoneDataValue);
 
         if(e.department_id){
           // console.log('--------------e.department_id--------------',e.department_id)
@@ -1445,7 +1445,7 @@
           this.chartDataPhoneStatuses = [];
         }
         data.map(chart=>{
-            console.log('___chart___',chart)
+            // console.log('___chart___',chart)
             if(chart.name=='status'){
                 let data = chart.data;
                 let obj = {};
@@ -1528,6 +1528,7 @@
                 };
 
                 this.statusesChartOptions = options;
+                this.renderStatusesChart();
                 // console.log('set chart data',this.statusesChartOptions)
 
                 for (let i = 0; i < data.length; i++) {
@@ -1618,6 +1619,7 @@
                
                 };
                 this.phoneStatusesChartOptions = options2;
+                this.renderPhoneStatusesChart();
 
                 for (let i = 0; i < chart.data.length; i++) {
                   let name = data[i].x;
@@ -1635,14 +1637,17 @@
           this.statusesChart.destroy();
             // this.statusesChart.resetSeries()
         }
+        let self = this;
         // console.log('renderStatusesChart',this.statusesChartOptions.xaxis.categories)
         this.statusesChart = new ApexChart(this.$refs.statusesChartRef, this.statusesChartOptions);
         this.statusesChart.render()
           .then(() => this.statusesChart.ohYeahThisChartHasBeenRendered = true)
           .then(() => {
             if(this.serverChartDataValue && this.selectedFilter){
-              for (var i = 0; i < this.serverChartPhoneDataValue.length; i++) {
-                setTimeout( this.statusesChart.toggleSeries(this.serverChartPhoneDataValue[i]), 700);
+              for (let i = 0; i < this.serverChartDataValue.length; i++) {
+                setTimeout( function() { 
+                  self.statusesChart.toggleSeries(self.serverChartDataValue[i]) 
+                }, 500);
               }
             }
           })
@@ -1652,16 +1657,18 @@
         if (this.phoneStatusesChart != null && this.phoneStatusesChart.ohYeahThisChartHasBeenRendered != null) {
           this.phoneStatusesChart.destroy();
         }
+        let self = this;
         this.phoneStatusesChart = new ApexChart2(this.$refs.phoneStatusesChartRef, this.phoneStatusesChartOptions);
         this.phoneStatusesChart.render()
           .then(() => this.phoneStatusesChart.ohYeahThisChartHasBeenRendered = true)
           .then(() => {
             if(this.serverChartPhoneDataValue && this.selectedFilter){
-              for (var i = 0; i < this.serverChartPhoneDataValue.length; i++) {
-                setTimeout( this.phoneStatusesChart.toggleSeries(this.serverChartPhoneDataValue[i]), 700);
+              for (let i = 0; i < this.serverChartPhoneDataValue.length; i++) {
+                setTimeout( function() { 
+                  self.phoneStatusesChart.toggleSeries(self.serverChartPhoneDataValue[i]) 
+                }, 500);
               }
             }
-
           })
       },
 
@@ -1670,18 +1677,18 @@
         let firstChartLegendElements = this.$refs.statusesChartRef.getElementsByClassName('apexcharts-legend-series')
         for (let i = 0; i < firstChartLegendElements.length; i++) {
           if(firstChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
-            this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
+            // this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
+             this.serverChartDataValue+=firstChartLegendElements[i].getAttribute('seriesname')+','
           }
         }
 
         let secondChartLegendElements = this.$refs.phoneStatusesChartRef.getElementsByClassName('apexcharts-legend-series')
         for (let i = 0; i < secondChartLegendElements.length; i++) {
           if(secondChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
-            this.serverChartPhoneDataValue.push(secondChartLegendElements[i].getAttribute('seriesname'))
+            // this.serverChartPhoneDataValue.push(secondChartLegendElements[i].getAttribute('seriesname'))
+            this.serverChartPhoneDataValue += secondChartLegendElements[i].getAttribute('seriesname')+','
           }
         }
-          console.log(this.serverChartPhoneDataValue)
-          console.log(this.serverChartDataValue)
       },
       // test(){
       //    this.statusesChart.toggleSeries("OFFLINE")
@@ -1708,12 +1715,12 @@
     computed: {
     },
     watch: {
-        'statusesChartOptions': function () {
-          this.renderStatusesChart();
-        },
-        'phoneStatusesChartOptions': function () {
-          this.renderPhoneStatusesChart();
-        }
+        // 'statusesChartOptions': function () {
+        //   // this.renderStatusesChart();
+        // },
+        // 'phoneStatusesChartOptions': function () {
+        //   // this.renderPhoneStatusesChart();
+        // }
     },
     mounted () {
     }
