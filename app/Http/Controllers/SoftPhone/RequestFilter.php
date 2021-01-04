@@ -153,7 +153,7 @@ class RequestFilter extends Controller
     {
         if($text_status_types)
         {
-            $a_status_type = explode(',', $text_status_types);
+            $a_status_type = array_filter(explode(',', $text_status_types));
             foreach($a_status_type as $text_status_type)
             {
                 if(!in_array(trim($text_status_type), [
@@ -170,8 +170,7 @@ class RequestFilter extends Controller
     {
         if($s_chart_status)
         {
-
-            $a_chart_status = explode(',', $s_chart_status);
+            $a_chart_status = array_filter(explode(',', $s_chart_status));
             foreach($a_chart_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
@@ -188,7 +187,7 @@ class RequestFilter extends Controller
     {
         if($s_chart_phone_status)
         {
-            $a_chart_phone_status = explode(',', $s_chart_phone_status);
+            $a_chart_phone_status = array_filter(explode(',', $s_chart_phone_status));
             foreach($a_chart_phone_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
