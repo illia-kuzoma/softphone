@@ -76,7 +76,6 @@
             <!-- <div class="controls-container multiselect-items"> -->
             <div class="controls-container" style='justify-content: space-between;'>
                 <div class="multiselect-items" style='display: flex;'>
-                <!-- <div> -->
                     <div>
                         <label class="typo__label">Select Department(s)</label>
                         <multiselect
@@ -234,6 +233,31 @@
             </div>
 
             <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
+              <!-- <div style='display:flex; align-items:center'>
+                <h2>Statuses</h2>
+                <multiselect
+                    style="width: 300px ; margin-left: 30px"
+                    :multiple="false"
+                    @close="setChartFilter(serverChartDataStatuses,serverChartDataValue,'chartDataStatuses')"
+                    v-if='serverChartDataStatuses'
+                    v-model="serverChartDataValue"
+                    :options="serverChartDataStatuses.filter_values"
+                    >
+                </multiselect>
+              </div> -->
+                    <!-- @click="chartHandler('Statuses',1)" -->
+                 <!--  <button 
+                          class="button button-li date-item color-grey"
+                          v-on:click="test()">test</button> -->
+                <h2>Statuses</h2>
+                <div
+
+                  ref="statusesChartRef"
+                  class="chart"
+                ></div>
+            </div>
+
+            <!-- <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
               <div style='display:flex; align-items:center'>
                 <h2>Statuses</h2>
                 <multiselect
@@ -244,26 +268,10 @@
                     v-model="serverChartDataValue"
                     :options="serverChartDataStatuses.filter_values"
                     >
-                   <!--  :close-on-select="false"
-                      :clear-on-select="false"
-                      :preserve-search="true"
-                      placeholder="Pick some"
-                      label="name"
-                      track-by="value"
-                      :preselect-first="true" -->
-                          <!-- <template
-                              slot="selection"
-                              slot-scope="{ values }">
-                                  <span
-                                      class="multiselect__single"
-                                      v-if="values.length && !isOpen"
-                                      >
-                                      {{ values.length }} options selected
-                                  </span>
-                        </template> -->
                 </multiselect>
               </div>
 
+             
               <line-chart
                   id="chartId"
                   v-if='chartDataStatuses'
@@ -282,19 +290,40 @@
                     >
                     &times;
                   </div>
-                  <!-- {{selectedUserChartStatuses}} -->
                   <p>User: {{selectedUserChartStatuses.x}}</p>
                   <p>Total Time: {{selectedUserChartStatuses.total_time}}</p>
                 </div>
               </div>
-                  <!-- @close="ffFff" -->
+            </div> -->
+
+            <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
+              <!-- <div style='display:flex; align-items:center'>
+                <h2>Phone Statuses</h2> 
+                <multiselect 
+                    style="width: 300px ; margin-left: 30px"
+                    :multiple="false"
+                    @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
+                    v-if='serverChartPhoneStatuses'
+                    v-model="serverChartPhoneDataValue"
+                    :options="serverChartPhoneStatuses.filter_values"
+                    >
+                </multiselect> 
+                
+              </div> -->
+              
+              <!-- @click="chartHandler('Phone Statuses',1)" -->
+              <h2>Phone Statuses</h2> 
+              <div 
+                ref="phoneStatusesChartRef"
+                class="chart"
+              ></div>
             </div>
 
             <div class="table-container" v-if='Object.keys(chartDataStatuses).length === 0'>
               <h1>No Chart Data For This Period</h1>
             </div>
 
-            <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
+            <!-- <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
               <div style='display:flex; align-items:center'>
                 <h2>Phone Statuses</h2> 
                 <multiselect 
@@ -306,29 +335,7 @@
                     :options="serverChartPhoneStatuses.filter_values"
                     >
                 </multiselect> 
-                <!-- <multiselect
-                    style="width: 300px ; margin-left: 30px"
-                    @close="setFilter"
-                    v-model="selectedFilter"
-                    :options="filtersList"
-                    :multiple="false"
-                    :close-on-select="false"
-                    :clear-on-select="false"
-                    :preserve-search="true"
-                    placeholder="Pick some"
-                    label="name"
-                    track-by="value"
-                    :preselect-first="true">
-                        <template
-                            slot="selection"
-                            slot-scope="{ values, search, isOpen }">
-                                <span
-                                    class="multiselect__single"
-                                    v-if="values.length && !isOpen">
-                                    {{ values.length }} options selected
-                                </span>
-                            </template>
-                </multiselect> -->
+                
               </div>
 
               <line-chart
@@ -349,13 +356,11 @@
                     >
                     &times;
                   </div>
-                  <!-- {{selectedUserChartPhoneStatuses}} -->
                   <p>User: {{selectedUserChartPhoneStatuses.x}}</p>
                   <p>Total Time: {{selectedUserChartPhoneStatuses.total_time}}</p>
                 </div>
               </div>
-                  <!-- @close="ffFff" -->
-            </div>
+            </div> -->
 
             <div class="table-container" v-if='Object.keys(chartDataPhoneStatuses).length === 0'>
               <h1>No Chart Data For This Period</h1>
@@ -517,21 +522,21 @@
 <script>
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css'
-  import LineChart from '@/components/Bar.vue'
   import HttpService from '@/services/HttpService'
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
   import router from '../router'
+  import ApexChart from "apexcharts/dist/apexcharts.js";
+  import ApexChart2 from "apexcharts/dist/apexcharts.js";
 
   export default {
     name: 'AgentStatus',
     components: {
       DatePicker,
-      LineChart,
       Multiselect,
     },
     data: () => ({
-      // firstLoad:true,
+ 
       selectedDate:null,
       // selectedUser:null,
       dateType:'date',
@@ -560,7 +565,6 @@
       tablePage:null,
       tableSort:null,
       tablePageCount:null,
-      // tableItemsPerPage:null,
 
       optionsTableTotal: {},
       tableTotalCallsData:[],
@@ -578,7 +582,7 @@
       searchText:null,
       selectedAgent:null,
       selectedAgentUid:null,
-      //multiple_value: null,
+
       agent_multiple_options:[],
       agent_multiple_selected_value:null,
       department_multiple_options:[],
@@ -598,57 +602,15 @@
       filtersList:[],
       selectedFilter:null,
 
-      serverChartDataValue:'OFFLINE',
-      serverChartPhoneDataValue:'OFFLINE',
-      // Use moment.js instead of the default
-      /*momentFormat: {
-        // Date to String
-        stringify: (date) => {
-          console.log(parent.parent.period);
-          console.log(date);
-          //console.log("period = "+ this.getPeriod());
-          console.log(moment(date));
-          console.log(moment(date).format('YYYY') );
-          console.log(moment(date).format('MMMM') );
-          console.log(moment(date).format('DD') );
-          console.log(moment(date).format('dddd') );
-          return date ? moment(date).format('MM/dd/YYY') : new Date()
-        },
-        // String to Date
-        parse: (value) => {
-          console.log("parse");
-          console.log(value);
-          let arr = value.split(' | ');
-          console.log(arr[0]);
-          console.log(arr[1]);
-          let period = arr[1];
-          let date = arr[0];
-          console.log(date);
-          let format =  'MM/dd/YYY';
-          if(period === 'year')
-          {
-            format = "YYYY"
-          }
-          else if(period === 'month')
-          {
-            format = "MMMM/YYYY"
-          }
-          else if(period === 'week')
-          {
-            format = "w ddd YYYY"
-          }
-          else if(period === 'day')
-          {
-            format = "MMMM"
-          }
+      serverChartDataValue:'',
+      serverChartPhoneDataValue:'',
+      // serverChartDataValue:[],
+      // serverChartPhoneDataValue:[],
+      phoneStatusesChartOptions:{},
+      statusesChartOptions:{},
+      statusesChart:null,
+      phoneStatusesChart:null,
 
-          console.log(date);
-          console.log(format);
-          console.log(moment(date, format).toDate());
-          return date ? moment(date, format).toDate() : null
-        }
-      },
-      date_o:null*/
     }),
     methods: {
       getPeriod(){
@@ -674,8 +636,6 @@
       },
       setDate(range){
 
-        console.log(localStorage.serve_host);
-
         this.period=range;
         this.searchText = '';
         switch(this.period) {
@@ -695,32 +655,32 @@
             }
 
             today = YYYY + '-' + MM + '-' + DD;
-            console.log("today=" + today);
+            // console.log("today=" + today);
             this.selectedDate = today;
             this.getDataByDate(this.selectedDate,'day')
             this.period='day';
             break;
 
           case 'day':
-            console.log("day=" + this.selectedDate);
+            // console.log("day=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'day')
             this.period='day';
             break;
 
           case 'week':
-            console.log("week=" + this.selectedDate);
+            // console.log("week=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'week')
             this.period='week';
             break;
 
           case 'month':
-            console.log("month=" + this.selectedDate);
+            // console.log("month=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'month')
             this.period='month';
             break;
 
           case 'year':
-            console.log("year=" + this.selectedDate);
+            // console.log("year=" + this.selectedDate);
             this.getDataByDate(this.selectedDate,'year')
             this.period='year';
             break;
@@ -868,7 +828,7 @@
       tokenIsCorrect(token){
         return !(!token || token === '-' || token === undefined);
       },
-      getReportData(refresh = false){
+      async getReportData(refresh = false){
         let self = this;
 
         let token = localStorage.token ;
@@ -881,7 +841,7 @@
           this.$loading(true);
           HttpService.methods.get('/report/agent/status/'+(refresh?'refresh/':'')+token)
           .then(function (response) {
-            console.log('getReportData',response)
+            // console.log('getReportData',response)
             self.$loading(false);
             if(response.data.error===true){
               localStorage.token = '';
@@ -909,7 +869,7 @@
           })
         }
       },
-      getDataByOptions(options){
+      async getDataByOptions(options){
         console.log('-------getDataByOptions---------',options)
         let self = this;
 
@@ -1018,7 +978,7 @@
             page
           )
           .then(function (response) {
-            self.$loading(false);
+              self.$loading(false);
 
               console.log('getDataByOptions status', options);
               // console.log(tableData);
@@ -1094,7 +1054,7 @@
           })
         }
       },
-      getDataByDate(startDate,period){
+      async getDataByDate(startDate,period){
         let self = this
         self.generateSelectedAgentIdString();
         self.generateSelectedDepartmentIdString();
@@ -1119,7 +1079,7 @@
         HttpService.methods.get('/report/agent/status/page/'+
           startDate + '/' + period + '/' + department  + '/' + team + "/" + agent + ss_type_name)
         .then(function (response) {
-          console.log('getDataByDate',response)
+          // console.log('getDataByDate',response)
           self.$loading(false);
           let tableData = response.data.status;
           // console.log(tableData);
@@ -1135,7 +1095,7 @@
         HttpService.methods.get('/report/agent/status/total/page/'+
           startDate + '/' + period + '/' + department  + '/' + team  + "/" + agent + ss_type_name)
         .then(function (response) {
-          console.log('getDataByDate',response)
+          // console.log('getDataByDate',response)
           self.$loading(false);
           let tableTotalData = response.data.total;
           self.setTableTotalData(tableTotalData);
@@ -1158,12 +1118,12 @@
       // },
       getAgentFromChartStatuses(element){
         // console.log(element)
-        this.selectedUserChartStatuses=this.serverChartDataStatuses.data.[element.index]
+        this.selectedUserChartStatuses=this.serverChartDataStatuses.data[element.index]
         // console.log(this.serverChartDataStatuses)
       },
       getAgentFromChartPhoneStatuses(element){
         // console.log(element)
-        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses.data.[element.index]
+        this.selectedUserChartPhoneStatuses=this.serverChartPhoneStatuses.data[element.index]
         // console.log(this.serverChartPhoneStatuses)
       },
       setTableData(data){
@@ -1306,6 +1266,7 @@
         this.getReportData();
       },
       addNewFilter(newName){
+        this.getLegendsData();
         // console.log({
         //   name:newName,
         //   page:2,
@@ -1368,9 +1329,10 @@
             })
       },
       setFilter(e){
-        // console.log('setFilter__________________',e)
-
         if (e==null){
+          this.statusesChart.resetSeries();
+          this.phoneStatusesChart.resetSeries();
+
           this.agent_multiple_selected_value=null;
           this.department_multiple_selected_value=null;
           this.team_multiple_selected_value=null;
@@ -1383,8 +1345,8 @@
         this.period = e.period;
         this.serverChartDataValue = e.chart_status;
         this.serverChartPhoneDataValue = e.chart_phone_status;
-        // console.log(this.selectedDate);
-        // console.log(this.period);
+        console.log(this.serverChartDataValue);
+        console.log(this.serverChartPhoneDataValue);
 
         if(e.department_id){
           // console.log('--------------e.department_id--------------',e.department_id)
@@ -1443,15 +1405,12 @@
         // this.getDataByOptions();
       },
       setChartFilter(object,filtervalue,arr){
-        // console.log('------------------------------------------',object,filtervalue,arr)
-
+        console.log(object,filtervalue,arr)
         if(filtervalue==null){
           return
         }
-        
-        // console.log(object,filtervalue,arr)
-        
         var positiveArr = object.data.filter(function(objElem) {
+          // console.log(objElem)
           return objElem.status_value == filtervalue;
         });
 
@@ -1464,7 +1423,6 @@
             }
 
             this.chartDataStatuses = obj;
-            // console.log('this.chartData',this.chartDataStatuses)   
         }
 
         if (arr == 'chartDataPhoneStatuses'){
@@ -1476,25 +1434,103 @@
             }
 
             this.chartDataPhoneStatuses = obj;
-            // console.log('this.chartData',this.chartDataPhoneStatuses)   
         }
-
-        // console.log(positiveArr)
       },
-      setChartData(data){
-        // console.log('setChartData',data)
+      async setChartData(data){
+        // console.log(this.statusesChart)
+        // console.log(this.phoneStatusesChart)
+
         if (data.length==0){
           this.chartDataStatuses = [];
           this.chartDataPhoneStatuses = [];
         }
         data.map(chart=>{
-            // console.log(chart)
+            // console.log('___chart___',chart)
             if(chart.name=='status'){
                 let data = chart.data;
                 let obj = {};
                 this.serverChartDataStatuses = chart
-                // this.serverChartDataStatuses = data
-                // console.log('========1===========',this.serverChartDataStatuses)
+
+                var options = {
+                  chart: {
+                    height: 350,
+                    type: "bar",
+                    stacked: true,
+                    animations: {
+                        enabled: false,
+                        // easing: 'easeinout',
+                        // speed: 800,
+                        // animateGradually: {
+                        //     enabled: true,
+                        //     delay: 150
+                        // },
+                        dynamicAnimation: {
+                          enabled: false,
+                            //     speed: 350
+                        }
+                    },
+                    events: {
+                      // animationEnd: undefined,
+                      // beforeMount: undefined,
+                      // mounted: undefined,
+                      // updated: undefined,
+                      // click: undefined,
+                      // mouseMove: undefined,
+                      // legendClick: function (chartContext, options) {
+                      //   console.log('legendClick',chartContext, options)
+                      // },
+                      // selection: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
+                      // markerClick: undefined,
+                      // dataPointSelection: undefined,
+                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseLeave: undefined,
+                      // beforeZoom: undefined,
+                      // beforeResetZoom: undefined,
+                      // zoomed: undefined,
+                      // scrolled: undefined,
+                      // scrolled: undefined,
+                    },
+                  },
+                  dataLabels: {
+                    enabled: false
+                  },
+                  // stroke: {
+                  //   curve: "smooth"
+                  // },
+                  series: chart.chart.hours,
+                  xaxis: {
+                    categories: chart.chart.names
+                  },
+                  responsive: [{
+                      breakpoint: 280,
+                      options: {
+                        legend: {
+                          position: 'bottom',
+                          offsetX: -10,
+                          offsetY: 0
+                        }
+                      }
+                  }],
+                  fill: {
+                    opacity: 1
+                  },
+                  legend: {
+                    position: 'right',
+                    offsetX: 0,
+                    offsetY: 50,
+                      // formatter: function(seriesName, opts) {
+                      //     return [seriesName, " - ", opts.w.globals.series[opts.seriesIndex]]
+                      // }
+                    },
+
+                };
+
+                this.statusesChartOptions = options;
+                this.renderStatusesChart();
+                // console.log('set chart data',this.statusesChartOptions)
+
                 for (let i = 0; i < data.length; i++) {
                   let name = data[i].x;
                   let count = data[i].y;
@@ -1502,16 +1538,88 @@
                 }
 
                 this.chartDataStatuses = obj;
-                // console.log('this.chartData',this.chartDataStatuses)   
-                // chartDataStatuses
-                // chartDataPhoneStatuses 
+
             }
             if(chart.name=='phone_status'){
                 let data = chart.data;
                 let obj = {};
                 this.serverChartPhoneStatuses = chart
-                // this.serverChartPhoneStatuses = data
-                // console.log('========2===========',this.serverChartPhoneStatuses)
+
+                var options2 = {
+                  chart: {
+                    height: 350,
+                    type: "bar",
+                    stacked: true,
+                    animations: {
+                      enabled: false,
+                      // easing: 'easeinout',
+                      // speed: 800,
+                      // animateGradually: {
+                      //     enabled: true,
+                      //     delay: 150
+                      // },
+                      dynamicAnimation: {
+                          enabled: false,
+                      //     speed: 350
+                      }
+                    },
+                    events: {
+                      // animationEnd: undefined,
+                      // beforeMount: undefined,
+                      // mounted: undefined,
+                      // updated: undefined,
+                      // click: undefined,
+                      // mouseMove: undefined,
+                      // legendClick: function (chartContext, options) {
+                      //   console.log('legendClick',chartContext, options)
+                      // },
+                      // selection: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
+                      // markerClick: undefined,
+                      // dataPointSelection: undefined,
+                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseLeave: undefined,
+                      // beforeZoom: undefined,
+                      // beforeResetZoom: undefined,
+                      // zoomed: undefined,
+                      // scrolled: undefined,
+                      // scrolled: undefined,
+                    },
+                  },
+                  dataLabels: {
+                    enabled: true
+                  },
+                  stroke: {
+                    curve: "smooth"
+                  },
+                  series: chart.chart.hours,
+                  xaxis: {
+                    categories: chart.chart.names
+                  },
+                  responsive: [{
+                    breakpoint: 280,
+                    options: {
+                      legend: {
+                        position: 'bottom',
+                        offsetX: -10,
+                        offsetY: 0
+                      }
+                    }
+                  }],
+                  fill: {
+                    opacity: 1
+                  },
+                  legend: {
+                    // show:false,
+                    position: 'right',
+                    offsetX: 0,
+                    offsetY: 50,
+                  },
+               
+                };
+                this.phoneStatusesChartOptions = options2;
+                this.renderPhoneStatusesChart();
 
                 for (let i = 0; i < chart.data.length; i++) {
                   let name = data[i].x;
@@ -1524,19 +1632,95 @@
             }
         })
       },
+      async renderStatusesChart(){
+        if (this.statusesChart != null && this.statusesChart.ohYeahThisChartHasBeenRendered != null) {
+          this.statusesChart.destroy();
+            // this.statusesChart.resetSeries()
+        }
+        let self = this;
+        // console.log('renderStatusesChart',this.statusesChartOptions.xaxis.categories)
+        this.statusesChart = new ApexChart(this.$refs.statusesChartRef, this.statusesChartOptions);
+        this.statusesChart.render()
+          .then(() => this.statusesChart.ohYeahThisChartHasBeenRendered = true)
+          .then(() => {
+            if(this.serverChartDataValue && this.selectedFilter){
+              for (let i = 0; i < this.serverChartDataValue.length; i++) {
+                setTimeout( function() { 
+                  self.statusesChart.toggleSeries(self.serverChartDataValue[i]) 
+                }, 500);
+              }
+            }
+          })
+      },
+
+      async renderPhoneStatusesChart(){
+        if (this.phoneStatusesChart != null && this.phoneStatusesChart.ohYeahThisChartHasBeenRendered != null) {
+          this.phoneStatusesChart.destroy();
+        }
+        let self = this;
+        this.phoneStatusesChart = new ApexChart2(this.$refs.phoneStatusesChartRef, this.phoneStatusesChartOptions);
+        this.phoneStatusesChart.render()
+          .then(() => this.phoneStatusesChart.ohYeahThisChartHasBeenRendered = true)
+          .then(() => {
+            if(this.serverChartPhoneDataValue && this.selectedFilter){
+              for (let i = 0; i < this.serverChartPhoneDataValue.length; i++) {
+                setTimeout( function() { 
+                  self.phoneStatusesChart.toggleSeries(self.serverChartPhoneDataValue[i]) 
+                }, 500);
+              }
+            }
+          })
+      },
+
+      getLegendsData(){
+
+        let firstChartLegendElements = this.$refs.statusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        for (let i = 0; i < firstChartLegendElements.length; i++) {
+          if(firstChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
+            // this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
+             this.serverChartDataValue+=firstChartLegendElements[i].getAttribute('seriesname')+','
+          }
+        }
+
+        let secondChartLegendElements = this.$refs.phoneStatusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        for (let i = 0; i < secondChartLegendElements.length; i++) {
+          if(secondChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
+            // this.serverChartPhoneDataValue.push(secondChartLegendElements[i].getAttribute('seriesname'))
+            this.serverChartPhoneDataValue += secondChartLegendElements[i].getAttribute('seriesname')+','
+          }
+        }
+      },
+      // test(){
+      //    this.statusesChart.toggleSeries("OFFLINE")
+      // },
+      // test2(chart,series){
+      //    chart.toggleSeries(series)
+      // }
+
     },
+    
     created: async function(){
       await this.setUsers();
       await this.getReportData();
       await this.getFilters();
 
-      let self = this;
-      setTimeout(async function () {
-          self.serverChartDataValue='OFFLINE';
-          self.serverChartPhoneDataValue='OFFLINE';
-          await self.setChartFilter(self.serverChartDataStatuses,'OFFLINE','chartDataStatuses');
-          await self.setChartFilter(self.serverChartPhoneStatuses,'OFFLINE','chartDataPhoneStatuses');
-      }, 3000);
+      // let self = this;
+      // setTimeout(async function () {
+      //     self.serverChartDataValue='OFFLINE';
+      //     self.serverChartPhoneDataValue='OFFLINE';
+      //     await self.setChartFilter(self.serverChartDataStatuses,'OFFLINE','chartDataStatuses');
+      //     await self.setChartFilter(self.serverChartPhoneStatuses,'OFFLINE','chartDataPhoneStatuses');
+      // }, 3000);
+    },
+    computed: {
+    },
+    watch: {
+        // 'statusesChartOptions': function () {
+        //   // this.renderStatusesChart();
+        // },
+        // 'phoneStatusesChartOptions': function () {
+        //   // this.renderPhoneStatusesChart();
+        // }
     },
     mounted () {
     }
