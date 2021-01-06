@@ -181,38 +181,45 @@
                       <label class="typo__label">Select filter</label>
 
 
+                          <!-- @close="setFilter" -->
                       <multiselect
+                          @select="setFilter"
+                          :preselect-first="false"
                           class='single-select'
-                          @close="setFilter"
                           v-model="selectedFilter"
+                          placeholder="Pick some"
+                          label="name"
+
                           :multiple="false"
                           :options="filtersList"
+
+                          track-by="value"
+                          :hide-selected="false"
                           :close-on-select="true"
-                          :clear-on-select="true"
+                          :clear-on-select="false"
                           :preserve-search="false"
                           :searchable="false"
                           :show-labels="false"
-                          placeholder="Pick some"
-                          label="name"
+
                           >
-                          <!-- track-by="value" -->
-                          <!-- :preselect-first="false" -->
                               <template
                                   slot="selection"
                                   slot-scope="{ values, search, isOpen }">
                                       <span
                                           class="multiselect__single"
                                           v-if="values.length && !isOpen">
-                                          {{ values.length }} options selected
+                                          <!-- {{ values.length }} options selected -->
                                       </span>
                                   </template>
                       </multiselect>
-                      <p 
-                        v-if='selectedFilter != null '
 
+
+                      <p
+                        v-if='selectedFilter != null '
                         v-on:click="deleteFilter(selectedFilter)">
                         &#10006;
                       </p>
+
                   </div>
                 </div>
 
@@ -1279,27 +1286,28 @@
           return ''
         }
 
-        let myArray =  string.split(',');
+        let arr =  string.split(',').filter(Boolean);
+        let filteredArr = arr.filter(Boolean);
 
-        let unique = [...new Set(myArray)];
+        let unique = [...new Set(filteredArr)];
         let newStr = unique + "";
 
         return newStr
       },
       addNewFilter(newName){
         this.getLegendsData();
-        // console.log({
-        //   name:newName,
-        //   page:2,
-        //   day:this.selectedDate,
-        //   period:this.period,
-        //   department_id:this.s_department_id,
-        //   team_id:this.s_team_id,
-        //   user_id:this.s_agent_id,
-        //   status_type:this.s_type_id,
-        //   chart_status:this.uniqString(this.serverChartDataValue),
-        //   chart_phone_status:this.uniqString(this.serverChartPhoneDataValue),
-        // })
+        console.log({
+          name:newName,
+          page:2,
+          day:this.selectedDate,
+          period:this.period,
+          department_id:this.s_department_id,
+          team_id:this.s_team_id,
+          user_id:this.s_agent_id,
+          status_type:this.s_type_id,
+          chart_status:this.uniqString(this.serverChartDataValue),
+          chart_phone_status:this.uniqString(this.serverChartPhoneDataValue),
+        })
 
         var self = this;
         HttpService.methods.post('/request/filter',{
@@ -1339,7 +1347,6 @@
       },
       deleteFilter(selectedFilter){
           var self = this;
-          // console.log(selectedFilter.id)
           HttpService.methods.delete(`/request/filter?id=${selectedFilter.id}`)
             .then(function () {
             // .then(function (response) {
@@ -1693,20 +1700,24 @@
       },
 
       getLegendsData(){
+        this.serverChartDataValue  = "";
+        this.serverChartPhoneDataValue = "";
 
-        let firstChartLegendElements = this.$refs.statusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        let firstChartLegendElements = this.$refs.statusesChartRef.getElementsByClassName('apexcharts-legend-series');
+        console.log(firstChartLegendElements)
         for (let i = 0; i < firstChartLegendElements.length; i++) {
           if(firstChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
             // this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
-             this.serverChartDataValue+=firstChartLegendElements[i].getAttribute('seriesname')+','
+             this.serverChartDataValue += ','+firstChartLegendElements[i].getAttribute('seriesname')+','
           }
         }
 
-        let secondChartLegendElements = this.$refs.phoneStatusesChartRef.getElementsByClassName('apexcharts-legend-series')
+        let secondChartLegendElements = this.$refs.phoneStatusesChartRef.getElementsByClassName('apexcharts-legend-series');
+        console.log(secondChartLegendElements)
         for (let i = 0; i < secondChartLegendElements.length; i++) {
           if(secondChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
             // this.serverChartPhoneDataValue.push(secondChartLegendElements[i].getAttribute('seriesname'))
-            this.serverChartPhoneDataValue += secondChartLegendElements[i].getAttribute('seriesname')+','
+            this.serverChartPhoneDataValue += ','+secondChartLegendElements[i].getAttribute('seriesname')+','
           }
         }
       },
