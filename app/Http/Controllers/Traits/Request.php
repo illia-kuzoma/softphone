@@ -22,7 +22,7 @@ trait Request
         }
         elseif(is_string($data))
         {
-            $a_id = explode(',', $data);
+            $a_id = array_filter(explode(',', $data));
             if(count($a_id) > 1)
             {
                 // Значит фильтруем по несольким ключам (пользователи, комманды, отделы ...)
