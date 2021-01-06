@@ -80,13 +80,10 @@ class RequestFilter extends Controller
             $text_team_id = $request->post('team_id');
             $text_user_id = $request->post('user_id');
             $text_status_types = $request->post('status_type');
-            $this->_checkString('status_type', $text_status_types);
             $this->_checkStatusType($text_status_types);
             $s_chart_status = $request->post('chart_status');
-            $this->_checkString('chart_status', $s_chart_status);
             $this->_checkChartStatus($s_chart_status);
             $s_chart_phone_status = $request->post('chart_phone_status');
-            $this->_checkString('chart_phone_status', $s_chart_phone_status);
             $this->_checkChartPhoneStatus($s_chart_phone_status);
 
             $o_filter = new \App\Models\RequestFilter;
@@ -149,11 +146,19 @@ class RequestFilter extends Controller
         //print_r($model->attributesToArray());exit;
     }
 
-    private function _checkStatusType(?string $text_status_types)
+    private function _checkStatusType($status_types)
     {
-        if($text_status_types)
+        if($status_types)
         {
-            $a_status_type = explode(',', $text_status_types);
+            $a_status_type = [];
+            if(is_string($status_types))
+            {
+                $a_status_type = array_unique(array_filter(explode(',', $status_types)));
+            }
+            elseif(is_array($status_types))
+            {
+                $a_status_type = array_unique($status_types);
+            }
             foreach($a_status_type as $text_status_type)
             {
                 if(!in_array(trim($text_status_type), [
@@ -166,12 +171,19 @@ class RequestFilter extends Controller
         }
     }
 
-    private function _checkChartStatus(?string $s_chart_status)
+    private function _checkChartStatus($chart_status)
     {
-        if($s_chart_status)
+        if($chart_status)
         {
-
-            $a_chart_status = explode(',', $s_chart_status);
+            $a_chart_status = [];
+            if(is_string($chart_status))
+            {
+                $a_chart_status = array_unique(array_filter(explode(',', $chart_status)));
+            }
+            elseif(is_array($chart_status))
+            {
+                $a_chart_status = array_unique($chart_status);
+            }
             foreach($a_chart_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
@@ -184,11 +196,19 @@ class RequestFilter extends Controller
         }
     }
 
-    private function _checkChartPhoneStatus(?string $s_chart_phone_status)
+    private function _checkChartPhoneStatus($s_chart_phone_status)
     {
         if($s_chart_phone_status)
         {
-            $a_chart_phone_status = explode(',', $s_chart_phone_status);
+            $a_chart_phone_status = [];
+            if(is_string($s_chart_phone_status))
+            {
+                $a_chart_phone_status = array_unique(array_filter(explode(',', $s_chart_phone_status)));
+            }
+            elseif(is_array($s_chart_phone_status))
+            {
+                $a_chart_phone_status = array_unique($s_chart_phone_status);
+            }
             foreach($a_chart_phone_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
@@ -198,20 +218,6 @@ class RequestFilter extends Controller
                     throw new \Exception('Status phone parameter missmatch.');
                 }
             }
-        }
-    }
-
-    /**
-     * Checks that value exists and it is a string type.
-     * @param string $text_name
-     * @param string $text_val
-     * @throws \Exception
-     */
-    private function _checkString(string $text_name, ?string $text_val)
-    {
-        if(!is_null($text_val) && !is_string($text_val))
-        {
-            throw new \Exception(sprintf('Parameter %s not a string.', $text_name));
         }
     }
 }
