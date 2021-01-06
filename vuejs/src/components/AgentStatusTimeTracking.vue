@@ -1340,7 +1340,7 @@
       deleteFilter(selectedFilter){
           var self = this;
           // console.log(selectedFilter.id)
-          HttpService.methods.delete(`/request/filter/?id=${selectedFilter.id}`)
+          HttpService.methods.delete(`/request/filter?id=${selectedFilter.id}`)
             .then(function () {
             // .then(function (response) {
               self.getFilters();
@@ -1351,9 +1351,7 @@
             })
       },
       setFilter(e){
-        console.log('setFilter',1)
         if (e==null){
-          console.log('setFilter',1)
           this.statusesChart.resetSeries();
           this.phoneStatusesChart.resetSeries();
 
@@ -1364,14 +1362,11 @@
           // this.setUsers();
           return
         } 
-        console.log('setFilter',2)
         
         this.selectedDate = e.day;
         this.period = e.period;
         this.serverChartDataValue = e.chart_status;
         this.serverChartPhoneDataValue = e.chart_phone_status;
-        console.log(this.serverChartDataValue);
-        console.log(this.serverChartPhoneDataValue);
 
         if(e.department_id){
           // console.log('--------------e.department_id--------------',e.department_id)
