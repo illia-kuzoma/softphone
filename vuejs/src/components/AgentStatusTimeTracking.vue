@@ -79,6 +79,7 @@
                     <div>
                         <label class="typo__label">Select Department(s)</label>
                         <multiselect
+                            style='width: fit-content'
                             @close="setUsers"
                             v-model="department_multiple_selected_value"
                             :options="department_multiple_options"
@@ -176,20 +177,26 @@
                             </template>
                         </multiselect>
                     </div>
-                    <div class='filter-selector'>
+                    <div class='filter-selector single-select'>
                       <label class="typo__label">Select filter</label>
+
+
                       <multiselect
+                          class='single-select'
                           @close="setFilter"
                           v-model="selectedFilter"
-                          :options="filtersList"
                           :multiple="false"
-                          :close-on-select="false"
-                          :clear-on-select="false"
-                          :preserve-search="true"
+                          :options="filtersList"
+                          :close-on-select="true"
+                          :clear-on-select="true"
+                          :preserve-search="false"
+                          :searchable="false"
+                          :show-labels="false"
                           placeholder="Pick some"
                           label="name"
-                          track-by="value"
-                          :preselect-first="true">
+                          >
+                          <!-- track-by="value" -->
+                          <!-- :preselect-first="false" -->
                               <template
                                   slot="selection"
                                   slot-scope="{ values, search, isOpen }">
@@ -1265,6 +1272,20 @@
         this.$loading(false);
         this.getReportData();
       },
+
+
+      uniqString(string){
+        if(string==''){
+          return ''
+        }
+
+        let myArray =  string.split(',');
+
+        let unique = [...new Set(myArray)];
+        let newStr = unique + "";
+
+        return newStr
+      },
       addNewFilter(newName){
         this.getLegendsData();
         // console.log({
@@ -1276,8 +1297,8 @@
         //   team_id:this.s_team_id,
         //   user_id:this.s_agent_id,
         //   status_type:this.s_type_id,
-        //   chart_status:this.serverChartDataValue,
-        //   chart_phone_status:this.serverChartPhoneDataValue,
+        //   chart_status:this.uniqString(this.serverChartDataValue),
+        //   chart_phone_status:this.uniqString(this.serverChartPhoneDataValue),
         // })
 
         var self = this;
@@ -1294,11 +1315,12 @@
             chart_phone_status:this.serverChartPhoneDataValue
         })
         .then(function () {
-        // .then(function (response) {
+
           self.getFilters();
           self.newFilterName='';
-          // self.filtersList = response.data ;
           self.selectedFilter = null;
+          self.serverChartDataValue='';
+          self.serverChartPhoneDataValue='';
 
         })
         .catch(function (error) {
@@ -1318,7 +1340,7 @@
       deleteFilter(selectedFilter){
           var self = this;
           // console.log(selectedFilter.id)
-          HttpService.methods.delete(`/request/filter/${selectedFilter.id}`)
+          HttpService.methods.delete(`/request/filter/?id=${selectedFilter.id}`)
             .then(function () {
             // .then(function (response) {
               self.getFilters();
@@ -1329,7 +1351,9 @@
             })
       },
       setFilter(e){
+        console.log('setFilter',1)
         if (e==null){
+          console.log('setFilter',1)
           this.statusesChart.resetSeries();
           this.phoneStatusesChart.resetSeries();
 
@@ -1337,9 +1361,10 @@
           this.department_multiple_selected_value=null;
           this.team_multiple_selected_value=null;
           this.type_multiple_selected_value=null;
-          this.setUsers();
+          // this.setUsers();
           return
         } 
+        console.log('setFilter',2)
         
         this.selectedDate = e.day;
         this.period = e.period;
@@ -1740,7 +1765,12 @@
             margin-right: 5px;
         }
     }
-
+    .single-select {
+      /deep/ .multiselect__content-wrapper{
+        width: initial !important;
+      }
+   
+    }
     button{
         border-radius:2px;
         padding: 0 16px;
