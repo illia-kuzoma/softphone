@@ -50,7 +50,7 @@ class RequestFilter extends Controller
 
                 if($value && in_array($field, $a_comma_separated))
                 {
-                    $value = explode(',', $value);
+                    $value = array_unique(array_filter(explode(',', $value)));
                 }
             }
         }
