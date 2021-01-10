@@ -7,7 +7,6 @@ use App\Http\Controllers\Traits\Request;
 use App\Http\Controllers\Traits\Response;
 use App\Http\Controllers\Traits\UserAuth;
 use App\Models\ReportAgentStatuses;
-use App\Models\Team;
 use App\Models\User;
 
 /**
@@ -58,22 +57,16 @@ class ReportAgentStatus extends Controller
         $a_agent_id = $this->_getIdsAsArray($uid);
         $a_type_id = $this->_getIdsAsArray($type, 'string');
 
-        $o_user = new User();
-        // Получаю список агентов согласно департментам и командам.
-        $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
+        list($a_department, $a_team, $a_agent_id) = $this->getTeamAndDepartmentList($a_department_id, $a_team_id, $a_agent_id);
 
-        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
-            $a_agent_id = $a_agent_id_by_teams;
-
-        $o_team = new Team();
-        $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
         $o_statuses = new ReportAgentStatuses($a_agent_id, $a_type_id);
 
         $out = array_merge([
             self::STATUS_DATA => $o_statuses->getStatusList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::STATUS_TOTAL => $o_statuses->getStatusTotalList($dateStart, $period, $searchWord, $sortField, $sortBy, $page),
             self::TEAM_IDS => $a_team,
-            self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period)
+            self::DIAGRAM_DATA => $o_statuses->getDiagramList($dateStart, $period),
+            'departments' =>  $a_department
         ], $this->getAgentsArr($a_agent_id));
         return json_encode($out);
     }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\Request;
 use App\Http\Controllers\Traits\Response;
 use App\Http\Controllers\Traits\UserAuth;
-use App\Models\Team;
 use App\Models\User;
 
 class ReportUnattended extends Controller
@@ -70,15 +69,8 @@ class ReportUnattended extends Controller
         $a_department_id = $this->_getIdsAsArray($departments);
         $a_team_id = $this->_getIdsAsArray($teams);
         $a_agent_id = $this->_getIdsAsArray($uid);
-        $o_user = new User();
-        // Получаю список агентов согласно департментам и командам.
-        $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
 
-        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
-            $a_agent_id = $a_agent_id_by_teams;
-
-        $o_team = new Team();
-        $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
+        list($a_department, $a_team, $a_agent_id) = $this->getTeamAndDepartmentList($a_department_id, $a_team_id, $a_agent_id);
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $calls = $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
@@ -86,7 +78,8 @@ class ReportUnattended extends Controller
         $out = array_merge([
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
-            self::TEAM_IDS => $a_team
+            self::TEAM_IDS => $a_team,
+            'departments' =>  $a_department
         ], $this->getAgentsArr($a_agent_id));
         return json_encode($out);
     }
