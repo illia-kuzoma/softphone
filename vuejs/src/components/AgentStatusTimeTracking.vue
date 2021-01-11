@@ -1296,18 +1296,18 @@
       },
       addNewFilter(newName){
         this.getLegendsData();
-        console.log({
-          name:newName,
-          page:2,
-          day:this.selectedDate,
-          period:this.period,
-          department_id:this.s_department_id,
-          team_id:this.s_team_id,
-          user_id:this.s_agent_id,
-          status_type:this.s_type_id,
-          chart_status:this.uniqString(this.serverChartDataValue),
-          chart_phone_status:this.uniqString(this.serverChartPhoneDataValue),
-        })
+        // console.log({
+        //   name:newName,
+        //   page:2,
+        //   day:this.selectedDate,
+        //   period:this.period,
+        //   department_id:this.s_department_id,
+        //   team_id:this.s_team_id,
+        //   user_id:this.s_agent_id,
+        //   status_type:this.s_type_id,
+        //   chart_status:this.uniqString(this.serverChartDataValue),
+        //   chart_phone_status:this.uniqString(this.serverChartPhoneDataValue),
+        // })
 
         var self = this;
         HttpService.methods.post('/request/filter',{
@@ -1463,10 +1463,19 @@
             this.chartDataPhoneStatuses = obj;
         }
       },
+      secondsToTime(mins){
+          let secs = mins * 60;
+          var t = new Date(1970,0,1);
+          t.setSeconds(secs);
+          var s = t.toTimeString().substr(0,8);
+          if(secs > 86399)
+              s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
+          return s;
+      },
       async setChartData(data){
         // console.log(this.statusesChart)
         // console.log(this.phoneStatusesChart)
-
+        let self = this;
         if (data.length==0){
           this.chartDataStatuses = [];
           this.chartDataPhoneStatuses = [];
@@ -1511,7 +1520,9 @@
                       // },
                       // markerClick: undefined,
                       // dataPointSelection: undefined,
-                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseEnter: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
                       // dataPointMouseLeave: undefined,
                       // beforeZoom: undefined,
                       // beforeResetZoom: undefined,
@@ -1550,8 +1561,15 @@
                       // formatter: function(seriesName, opts) {
                       //     return [seriesName, " - ", opts.w.globals.series[opts.seriesIndex]]
                       // }
+                  },
+                  tooltip: {
+                    y: {
+                      formatter: function(value) {
+                        let newStr = self.secondsToTime(value);
+                        return newStr
+                      },
                     },
-
+                  }, 
                 };
 
                 this.statusesChartOptions = options;
@@ -1605,7 +1623,9 @@
                       // },
                       // markerClick: undefined,
                       // dataPointSelection: undefined,
-                      // dataPointMouseEnter: undefined,
+                      // dataPointMouseEnter: function (chartContext, options) {
+                      //   console.log(chartContext, options)
+                      // },
                       // dataPointMouseLeave: undefined,
                       // beforeZoom: undefined,
                       // beforeResetZoom: undefined,
@@ -1643,7 +1663,14 @@
                     offsetX: 0,
                     offsetY: 50,
                   },
-               
+                  tooltip: {
+                    y: {
+                      formatter: function(value) {
+                        let newStr = self.secondsToTime(value);
+                        return newStr
+                      },
+                    },
+                  },   
                 };
                 this.phoneStatusesChartOptions = options2;
                 this.renderPhoneStatusesChart();
