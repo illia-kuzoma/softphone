@@ -66,11 +66,11 @@
                     </button>
 
                 </div>
-                <button
+                <!--<button
                     class="button button-li date-item color-grey"
                     v-on:click="updateData();"
                     > Update Data
-                </button>
+                </button>-->
             </div>
 
             <!-- <div class="controls-container multiselect-items"> -->
