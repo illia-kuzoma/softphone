@@ -21,7 +21,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RequestFilter extends Model
 {
+    /**
+     * Эта группа фильтров для пропущенных звонков.
+     */
     const FUNCTIONALITY_MISSED = 1;
+
+    /**
+     * Эта группа фильтров для функционала статусов.
+     */
     const FUNCTIONALITY_STATUSES = 2;
 
     const TABLE_NAME = "request_filters";

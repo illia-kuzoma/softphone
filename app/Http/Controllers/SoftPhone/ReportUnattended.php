@@ -18,6 +18,14 @@ class ReportUnattended extends Controller
     private const CALLS_DATA = 'calls';
     private const TEAM_IDS = 'teams';
 
+    /**
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
+     * @param bool $refresh Флаг, указывающий нужно ли подтянуть свежие данные с ЗОХО.
+     * @return string
+     */
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
         $user = $this->getUser($token);
@@ -40,10 +48,12 @@ class ReportUnattended extends Controller
     }
 
     /**
-     * @param $token
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uids
+     * Первый запрос на все данные идёт сюда.
+     *
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
      * @return string
      * @throws \Exception
      */
@@ -53,15 +63,17 @@ class ReportUnattended extends Controller
     }
 
     /**
-     * @param null $dateStart
-     * @param null $period
-     * @param null $departments
-     * @param null $teams
-     * @param null $uid
-     * @param null $searchWord
-     * @param null $sortField
-     * @param string $sortBy
-     * @param int $page
+     * Запрос на получение части данных, согласно переданным параметрам.
+     *
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $departments Строка ключей отделов, через запятую.
+     * @param string|null $teams Строка ключей комманд, через запятую.
+     * @param string|null $uid Строка ключей агентов, через запятую.
+     * @param string|null $searchWord Строка для поиска по значеням в БД.
+     * @param string|null $sortField Строка содержащая поле сортировки.
+     * @param string $sortBy Строка содержащая направление сортировки.
+     * @param int $page Номер страницы.
      * @return string
      */
     public function getCalls($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
@@ -85,10 +97,12 @@ class ReportUnattended extends Controller
     }
 
     /**
-     * @param $token
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uids
+     * Обновить данные в БД с серверов Зохо и получить данные с БД.
+     *
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
      * @return string
      * @throws \Exception
      */

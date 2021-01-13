@@ -5,8 +5,20 @@ namespace App\Http\Controllers\SoftPhone;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Работа с фильтрами.
+ *
+ * Class RequestFilter
+ * @package App\Http\Controllers\SoftPhone
+ */
 class RequestFilter extends Controller
 {
+    /**
+     * Check type of functional with witch filter operations do.
+     *
+     * @param $functionality
+     * @throws \Exception
+     */
     private function checkFunctionality( $functionality)
     {
         if(!in_array($functionality, [\App\Models\RequestFilter::FUNCTIONALITY_MISSED, \App\Models\RequestFilter::FUNCTIONALITY_STATUSES]))
@@ -14,6 +26,13 @@ class RequestFilter extends Controller
             throw new \Exception('Functionality parameter error');
         }
     }
+
+    /**
+     * Check name of filter.
+     *
+     * @param $name
+     * @throws \Exception
+     */
     private function checkName($name)
     {
         if(strlen($name)<1){
@@ -21,8 +40,13 @@ class RequestFilter extends Controller
         }
     }
 
-    //private function parseFields
-
+    /**
+     * Gets list of filters.
+     *
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
     public function list(Request $request): string
     {
         $functionality = $request->get('page');
@@ -44,12 +68,12 @@ class RequestFilter extends Controller
         $a_comma_separated = ['department_id', 'team_id', 'user_id', 'status_type', 'chart_status', 'chart_phone_status'];
         foreach($a_filter as &$item)
         {
-
             foreach($item as $field=>&$value)
             {
-
                 if($value && in_array($field, $a_comma_separated))
                 {
+                    // Значение с БД превращаю в массив. Удаляю глупые значения, дубляжи и
+                    // пересобираю массив с последовательно идущими индексами.
                     $value = array_values(array_unique(array_filter(explode(',', $value))));
                 }
             }
@@ -59,7 +83,10 @@ class RequestFilter extends Controller
     }
 
     /**
-     * слать заголовок Content-Type multipart/form-data
+     * Создание фильтра.
+     *
+     * Слать заголовок Content-Type multipart/form-data.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
@@ -107,7 +134,10 @@ class RequestFilter extends Controller
     }
 
     /**
+     * Удаление фильтра.
+     *
      * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
      */
     public function delete(Request $request)
@@ -121,6 +151,12 @@ class RequestFilter extends Controller
             ->header('Content-Type', 'text/plain');
     }
 
+    /**
+     * Применение фильтра без клиента. Сейчас не используется.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
     public function get(Request $request)
     {
         $id = $request->get('id');
@@ -146,6 +182,12 @@ class RequestFilter extends Controller
         //print_r($model->attributesToArray());exit;
     }
 
+    /**
+     * Check type of status.
+     *
+     * @param mixed $status_types Type array to check.
+     * @throws \Exception
+     */
     private function _checkStatusType($status_types)
     {
         if($status_types)
@@ -171,6 +213,12 @@ class RequestFilter extends Controller
         }
     }
 
+    /**
+     * Check value of status with name status.
+     *
+     * @param mixed $chart_status Status value to check.
+     * @throws \Exception
+     */
     private function _checkChartStatus($chart_status)
     {
         if($chart_status)
@@ -196,18 +244,24 @@ class RequestFilter extends Controller
         }
     }
 
-    private function _checkChartPhoneStatus($s_chart_phone_status)
+    /**
+     * Check value of status with name phone_status.
+     *
+     * @param mixed $chart_phone_status Value of phone status to check.
+     * @throws \Exception
+     */
+    private function _checkChartPhoneStatus($chart_phone_status)
     {
-        if($s_chart_phone_status)
+        if($chart_phone_status)
         {
             $a_chart_phone_status = [];
-            if(is_string($s_chart_phone_status))
+            if(is_string($chart_phone_status))
             {
-                $a_chart_phone_status = array_unique(array_filter(explode(',', $s_chart_phone_status)));
+                $a_chart_phone_status = array_unique(array_filter(explode(',', $chart_phone_status)));
             }
-            elseif(is_array($s_chart_phone_status))
+            elseif(is_array($chart_phone_status))
             {
-                $a_chart_phone_status = array_unique($s_chart_phone_status);
+                $a_chart_phone_status = array_unique($chart_phone_status);
             }
             foreach($a_chart_phone_status as $text_status)
             {

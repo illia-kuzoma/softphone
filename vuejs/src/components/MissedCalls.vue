@@ -173,14 +173,14 @@
                                     </span>
                                 </template>
                     </multiselect>
-                    <p 
+                    <p
                       v-if='selectedFilter != null '
 
                       v-on:click="deleteFilter(selectedFilter)">
                       &#10006;
                     </p>
                 </div>
-                
+
               </div>
 
               <div>
@@ -193,12 +193,12 @@
                       v-model="newFilterName"
                       style="padding:0 5px; width 150px">
                     <div class='filters-options'>
-                      <button 
-                        v-if="newFilterName != ''" 
+                      <button
+                        v-if="newFilterName != ''"
                         class="button button-li date-item color-grey"
                         v-on:click="newFilterName = ''">Cancel</button>
-                      <button 
-                        v-if="newFilterName != ''" 
+                      <button
+                        v-if="newFilterName != ''"
                         class="button button-li date-item color-grey"
                         v-on:click="addNewFilter(newFilterName)">Add</button>
                     </div>
@@ -766,6 +766,7 @@
           let tableData = response.data.calls
           self.setTableData(tableData);
           self.setChartData(response.data.diagrama)
+          self.setDepartmentMultiDropdown(response.data.departments)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
         })
@@ -892,7 +893,7 @@
       },
       addNewFilter(newName){
         var self = this;
-    
+
         HttpService.methods.post('/request/filter',{
             name:newName,
             page:1,
@@ -950,8 +951,8 @@
           this.type_multiple_selected_value=null;
           this.setUsers();
           return
-        } 
-        
+        }
+
         this.selectedDate = e.day;
         this.period = e.period;
         console.log(this.selectedDate);
@@ -995,7 +996,7 @@
             })
           });
         }
-      
+
         if(e.user_id){
           console.log('--------------e.user_id--------------',e.user_id)
           console.log(this.agent_multiple_options)

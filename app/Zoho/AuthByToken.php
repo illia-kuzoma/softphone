@@ -4,6 +4,8 @@ namespace App\Zoho;
 use zcrmsdk\oauth\ZohoOAuth;
 
 /**
+ * Data to configure zoho tokens locally.
+ *
  * Docs https://www.zoho.com/projects/help/rest-api/get-tickets-api.html
  *
  * Link to get grant token https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,Desk.tickets.READ,ZohoCRM.users.READ,ZohoCRM.org.READ,ZohoCRM.settings.READ,Desk.calls.READ,Desk.settings.READ,Desk.basic.READ,ZohoCRM.modules.accounts.READ,ZohoCRM.coql.READ,ZohoCRM.modules.leads.READ,ZohoSearch.securesearch.READ&client_id=1000.YZO05BI18M18TAUKJGUA38BKMVNYKH&response_type=code&access_type=offline&redirect_uri=https://www.wellnessliving.com&prompt=consent

@@ -8,7 +8,6 @@ use App\Models\User;
 
 trait Response
 {
-
     /**
      * Merges common response data with unique ones.
      *
@@ -26,6 +25,12 @@ trait Response
         );
     }
 
+    /**
+     * Added agents data to common response structure.
+     *
+     * @param array $a_agent_id
+     * @return array
+     */
     public function getAgentsArr($a_agent_id = [])
     {
         return [
@@ -33,12 +38,21 @@ trait Response
         ];
     }
 
+    /**
+     * Получение ключей отделов, комманд и людей от полученных на вход данных.
+     * Если агенты переданы без комманд и отделов, то их нужно заполнить от массива агентов.
+     * Если переданы отделы - получить комманды, гентов.
+     *
+     * @param $a_department_id
+     * @param $a_team_id
+     * @param $a_agent_id
+     * @return array
+     */
     public function getTeamAndDepartmentList($a_department_id, $a_team_id, $a_agent_id)
     {
         $o_user = new User();
         // Получаю список агентов согласно департментам и командам.
         $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
-
 
         $o_team = new Team();
         if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
