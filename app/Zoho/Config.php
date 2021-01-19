@@ -12,8 +12,13 @@ class Config
 
     private $a_access_data = [
         'prod' => [
-            'client_id'=>'1000.YZO05BI18M18TAUKJGUA38BKMVNYKH',
-            'client_secret'=>'e17bc239cf031167f2a20cfc707a518383c04a5cb0',
+            // softphone account TODO for future if it needs special store for these data.
+            //'client_id'=>'1000.YZO05BI18M18TAUKJGUA38BKMVNYKH',
+            //'client_secret'=>'e17bc239cf031167f2a20cfc707a518383c04a5cb0',
+
+            // Alex Kam account
+            'client_id'=>'1000.8NB0SF64WYI2SU5PMFN41J1M5T96ER',
+            'client_secret'=>'affedf3a971a39224dcc7c4796fe5fba6c926f84ed',
         ],
         'dev' => [
             'client_id'=>'1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH',
