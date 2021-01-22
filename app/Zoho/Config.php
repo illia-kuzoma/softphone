@@ -10,19 +10,33 @@ class Config
     public const logs_persistence_path = "logs";
     public $token_file_name = 'zcrm_oauthtokens.txt';
 
+    /**
+     * Consists access to applications created on ZOHO. Different accounts for prod and dev for
+     * easy development. If Amount of developers grow need to create additional applications on ZOHO.
+     * Because getting data from zoho related with tokens and they are refreshing, so every one will have different token.
+     *
+     *
+     * @var array
+     */
     private $a_access_data = [
         'prod' => [
-            // softphone account TODO for future if it needs special store for these data.
+            // softphone account TODO for future if it needs special store for these data. \App\Zoho\Auth::userEmail
             //'client_id'=>'1000.YZO05BI18M18TAUKJGUA38BKMVNYKH',
             //'client_secret'=>'e17bc239cf031167f2a20cfc707a518383c04a5cb0',
 
             // Alex Kam account
-            'client_id'=>'1000.8NB0SF64WYI2SU5PMFN41J1M5T96ER',
-            'client_secret'=>'affedf3a971a39224dcc7c4796fe5fba6c926f84ed',
+            'client_id'=>'1000.7Z028HI2GHKELNFROUPXMW668738QI',
+            'client_secret'=>'7f56880e52d0e4581d86a9c751580ada4664c10bf2',
+
         ],
         'dev' => [
-            'client_id'=>'1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH',
-            'client_secret'=>'15edb4b3e0912d41d05725898070ebc0840dafc600',
+            // softphone account TODO for future if it needs special store for these data.
+            /*'client_id'=>'1000.SP95RNDM8ATPVS67H15R5HMLNK5TMH',
+            'client_secret'=>'15edb4b3e0912d41d05725898070ebc0840dafc600',*/
+
+            // Alex Kam account
+            'client_id'=>'1000.D06W0XN2OPX71JMM797RQB0CAS19UT',
+            'client_secret'=>'3bcc5d654308ccf2ceaa4b2d87f47cdd4ad8a5bd14',
         ],
     ];
 
@@ -75,11 +89,36 @@ class Config
         return $dir;
     }
 
+    /**
+     * To add here your hostname to work at local machine.
+     *
+     * @return bool
+     */
+    private function _modeDevIs()
+    {
+        $is = false;
+        if(in_array(gethostname(), ["andrey-comp"]))
+            $is = true;
+
+        return $is;
+    }
+
+    private function _modeProdIs()
+    {
+        $is = false;
+        if(in_array(gethostname(), ["community-dev"]))
+            $is = true;
+
+        return $is;
+    }
+
     public function __construct($configuration = [])
     {
-        $client_data = $this->a_access_data['prod'];
-        if(gethostname() == "andrey-comp")
+        $client_data = [];
+        if($this->_modeDevIs())
             $client_data = $this->a_access_data['dev'];
+        if($this->_modeProdIs())
+            $client_data = $this->a_access_data['prod'];
 
         $configuration = array_merge([
           "client_id" => $client_data['client_id'],
