@@ -31,11 +31,6 @@ class AgentStatus extends Model
 
     private static $is_in_process = false;
 
-    public function tableIsFilling()
-    {
-
-    }
-
     public function __construct()
     {
         $this->table = self::TABLE_NAME;
@@ -141,8 +136,11 @@ class AgentStatus extends Model
         }
     }
 
+    /**
+     * Удаление записей которые были обработаны.
+     */
     public function deleteProcessed()
     {
-        //\DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
+        \DB::table(self::TABLE_NAME)->where('processed', true)->where('created_at', '<', date('Y-m-d H:i:s', time()-86400) )->delete();
     }
 }

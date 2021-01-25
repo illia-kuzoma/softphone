@@ -457,4 +457,25 @@ class User extends Model
         }
         return $this->checkUserRights();
     }
+
+    public function getTeamAndDepartmentList(array $user_id): array
+    {
+        $query = self::query()->select(['department_id','team_id'])->whereIn('id', $user_id);
+
+        $a_data = $query->get();
+        $a_department = [];
+        $a_team = [];
+        foreach($a_data as $a_datum){
+            if($a_datum->department_id)
+            {
+                $a_department[] = $a_datum->department_id;
+            }
+
+            if($a_datum->team_id)
+            {
+                $a_team = array_merge($a_team, explode(',', $a_datum->team_id));
+            }
+        }
+        return [$a_department, $a_team];
+    }
 }

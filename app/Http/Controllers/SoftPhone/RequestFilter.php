@@ -5,8 +5,20 @@ namespace App\Http\Controllers\SoftPhone;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Работа с фильтрами.
+ *
+ * Class RequestFilter
+ * @package App\Http\Controllers\SoftPhone
+ */
 class RequestFilter extends Controller
 {
+    /**
+     * Check type of functional with witch filter operations do.
+     *
+     * @param $functionality
+     * @throws \Exception
+     */
     private function checkFunctionality( $functionality)
     {
         if(!in_array($functionality, [\App\Models\RequestFilter::FUNCTIONALITY_MISSED, \App\Models\RequestFilter::FUNCTIONALITY_STATUSES]))
@@ -14,6 +26,13 @@ class RequestFilter extends Controller
             throw new \Exception('Functionality parameter error');
         }
     }
+
+    /**
+     * Check name of filter.
+     *
+     * @param $name
+     * @throws \Exception
+     */
     private function checkName($name)
     {
         if(strlen($name)<1){
@@ -21,8 +40,13 @@ class RequestFilter extends Controller
         }
     }
 
-    //private function parseFields
-
+    /**
+     * Gets list of filters.
+     *
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
     public function list(Request $request): string
     {
         $functionality = $request->get('page');
@@ -44,13 +68,13 @@ class RequestFilter extends Controller
         $a_comma_separated = ['department_id', 'team_id', 'user_id', 'status_type', 'chart_status', 'chart_phone_status'];
         foreach($a_filter as &$item)
         {
-
             foreach($item as $field=>&$value)
             {
-
                 if($value && in_array($field, $a_comma_separated))
                 {
-                    $value = explode(',', $value);
+                    // Значение с БД превращаю в массив. Удаляю глупые значения, дубляжи и
+                    // пересобираю массив с последовательно идущими индексами.
+                    $value = array_values(array_unique(array_filter(explode(',', $value))));
                 }
             }
         }
@@ -59,7 +83,10 @@ class RequestFilter extends Controller
     }
 
     /**
-     * слать заголовок Content-Type multipart/form-data
+     * Создание фильтра.
+     *
+     * Слать заголовок Content-Type multipart/form-data.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
@@ -80,13 +107,10 @@ class RequestFilter extends Controller
             $text_team_id = $request->post('team_id');
             $text_user_id = $request->post('user_id');
             $text_status_types = $request->post('status_type');
-            $this->_checkString('status_type', $text_status_types);
             $this->_checkStatusType($text_status_types);
             $s_chart_status = $request->post('chart_status');
-            $this->_checkString('chart_status', $s_chart_status);
             $this->_checkChartStatus($s_chart_status);
             $s_chart_phone_status = $request->post('chart_phone_status');
-            $this->_checkString('chart_phone_status', $s_chart_phone_status);
             $this->_checkChartPhoneStatus($s_chart_phone_status);
 
             $o_filter = new \App\Models\RequestFilter;
@@ -106,11 +130,14 @@ class RequestFilter extends Controller
             $o_filter->save();
         }
         return response('', 200)
-        ->header('Content-Type', 'text/plain');
+            ->header('Content-Type', 'text/plain');
     }
 
     /**
+     * Удаление фильтра.
+     *
      * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
      */
     public function delete(Request $request)
@@ -124,6 +151,12 @@ class RequestFilter extends Controller
             ->header('Content-Type', 'text/plain');
     }
 
+    /**
+     * Применение фильтра без клиента. Сейчас не используется.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
     public function get(Request $request)
     {
         $id = $request->get('id');
@@ -149,11 +182,25 @@ class RequestFilter extends Controller
         //print_r($model->attributesToArray());exit;
     }
 
-    private function _checkStatusType(?string $text_status_types)
+    /**
+     * Check type of status.
+     *
+     * @param mixed $status_types Type array to check.
+     * @throws \Exception
+     */
+    private function _checkStatusType($status_types)
     {
-        if($text_status_types)
+        if($status_types)
         {
-            $a_status_type = explode(',', $text_status_types);
+            $a_status_type = [];
+            if(is_string($status_types))
+            {
+                $a_status_type = array_unique(array_filter(explode(',', $status_types)));
+            }
+            elseif(is_array($status_types))
+            {
+                $a_status_type = array_unique($status_types);
+            }
             foreach($a_status_type as $text_status_type)
             {
                 if(!in_array(trim($text_status_type), [
@@ -166,12 +213,25 @@ class RequestFilter extends Controller
         }
     }
 
-    private function _checkChartStatus(?string $s_chart_status)
+    /**
+     * Check value of status with name status.
+     *
+     * @param mixed $chart_status Status value to check.
+     * @throws \Exception
+     */
+    private function _checkChartStatus($chart_status)
     {
-        if($s_chart_status)
+        if($chart_status)
         {
-
-            $a_chart_status = explode(',', $s_chart_status);
+            $a_chart_status = [];
+            if(is_string($chart_status))
+            {
+                $a_chart_status = array_unique(array_filter(explode(',', $chart_status)));
+            }
+            elseif(is_array($chart_status))
+            {
+                $a_chart_status = array_unique($chart_status);
+            }
             foreach($a_chart_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
@@ -184,11 +244,25 @@ class RequestFilter extends Controller
         }
     }
 
-    private function _checkChartPhoneStatus(?string $s_chart_phone_status)
+    /**
+     * Check value of status with name phone_status.
+     *
+     * @param mixed $chart_phone_status Value of phone status to check.
+     * @throws \Exception
+     */
+    private function _checkChartPhoneStatus($chart_phone_status)
     {
-        if($s_chart_phone_status)
+        if($chart_phone_status)
         {
-            $a_chart_phone_status = explode(',', $s_chart_phone_status);
+            $a_chart_phone_status = [];
+            if(is_string($chart_phone_status))
+            {
+                $a_chart_phone_status = array_unique(array_filter(explode(',', $chart_phone_status)));
+            }
+            elseif(is_array($chart_phone_status))
+            {
+                $a_chart_phone_status = array_unique($chart_phone_status);
+            }
             foreach($a_chart_phone_status as $text_status)
             {
                 if(!in_array(trim($text_status), [
@@ -198,20 +272,6 @@ class RequestFilter extends Controller
                     throw new \Exception('Status phone parameter missmatch.');
                 }
             }
-        }
-    }
-
-    /**
-     * Checks that value exists and it is a string type.
-     * @param string $text_name
-     * @param string $text_val
-     * @throws \Exception
-     */
-    private function _checkString(string $text_name, ?string $text_val)
-    {
-        if(!is_null($text_val) && !is_string($text_val))
-        {
-            throw new \Exception(sprintf('Parameter %s not a string.', $text_name));
         }
     }
 }

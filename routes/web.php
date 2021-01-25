@@ -64,6 +64,12 @@ Route::get('/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', 'Soft
 Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/{token?}/{startDate?}/{period?}/{uids?}', static function () {
     return redirect('/');
 });
+
+// get status charts data.
+Route::get('/report/agent/status/chart/{startDate?}/{period?}/{departments?}/{teams?}/{uid?}/{type?}/{value?}', 'SoftPhone\ReportAgentStatus@getChart');
+Route::match(array('POST', 'PUT', 'DELETE'),'/report/agent/status/page/{startDate?}/{period?}/{departments?}/{teams?}/{uid?}/{type?}/{value?}', static function () {
+    return redirect('/');
+});
 Route::get('/request/filter/all', 'SoftPhone\RequestFilter@list');
 Route::get('/request/filter', 'SoftPhone\RequestFilter@get');
 Route::post('/request/filter', 'SoftPhone\RequestFilter@save');

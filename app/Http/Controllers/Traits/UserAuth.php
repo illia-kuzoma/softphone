@@ -7,6 +7,12 @@ use App\Models\User;
 
 trait UserAuth
 {
+    /**
+     * Gets user object by token.
+     *
+     * @param string $token
+     * @return User|\Illuminate\Http\RedirectResponse
+     */
     public function getUser($token)
     {
         // |\Illuminate\Http\RedirectResponse

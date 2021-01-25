@@ -23,7 +23,7 @@ class ReportAgentStatuses extends ReportBase
 
     public function getDiagramList($dateStart = null, $period = null): array
     {
-        return (new ReportAgentTotalStatus($this->getAgentIdFilter(),$this->getTypeNameFilter()))->getGraphList($dateStart, $period);
+        return (new ReportAgentTotalStatus($this->getAgentIdFilter(),$this->getTypeNameFilter(),$this->getTypeValueFilter()))->getGraphList($dateStart, $period);
     }
 
     /**

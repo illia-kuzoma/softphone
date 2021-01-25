@@ -66,11 +66,11 @@
                     </button>
 
                 </div>
-                <button
+                <!--<button
                     class="button button-li date-item color-grey"
                     v-on:click="updateData();"
                     > Update Data
-                </button>
+                </button>-->
             </div>
 
             <!-- <div class="controls-container multiselect-items"> -->
@@ -233,12 +233,12 @@
                         v-model="newFilterName"
                         style="padding:0 5px; width 150px">
                       <div class='filters-options'>
-                        <button 
-                          v-if="newFilterName != ''" 
+                        <button
+                          v-if="newFilterName != ''"
                           class="button button-li date-item color-grey"
                           v-on:click="newFilterName = ''">Cancel</button>
-                        <button 
-                          v-if="newFilterName != ''" 
+                        <button
+                          v-if="newFilterName != ''"
                           class="button button-li date-item color-grey"
                           v-on:click="addNewFilter(newFilterName)">Add</button>
                       </div>
@@ -260,7 +260,7 @@
                 </multiselect>
               </div> -->
                     <!-- @click="chartHandler('Statuses',1)" -->
-                 <!--  <button 
+                 <!--  <button
                           class="button button-li date-item color-grey"
                           v-on:click="test()">test</button> -->
                 <h2>Statuses</h2>
@@ -285,7 +285,7 @@
                 </multiselect>
               </div>
 
-             
+
               <line-chart
                   id="chartId"
                   v-if='chartDataStatuses'
@@ -295,7 +295,7 @@
                   @clicked="getAgentFromChartStatuses"
                   class="chart">
               </line-chart>
-              <div 
+              <div
                 v-if="selectedUserChartStatuses"
                 class="user-container" >
                 <div class="user-info">
@@ -312,8 +312,8 @@
 
             <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
               <!-- <div style='display:flex; align-items:center'>
-                <h2>Phone Statuses</h2> 
-                <multiselect 
+                <h2>Phone Statuses</h2>
+                <multiselect
                     style="width: 300px ; margin-left: 30px"
                     :multiple="false"
                     @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
@@ -321,13 +321,13 @@
                     v-model="serverChartPhoneDataValue"
                     :options="serverChartPhoneStatuses.filter_values"
                     >
-                </multiselect> 
-                
+                </multiselect>
+
               </div> -->
-              
+
               <!-- @click="chartHandler('Phone Statuses',1)" -->
-              <h2>Phone Statuses</h2> 
-              <div 
+              <h2>Phone Statuses</h2>
+              <div
                 ref="phoneStatusesChartRef"
                 class="chart"
               ></div>
@@ -339,8 +339,8 @@
 
             <!-- <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
               <div style='display:flex; align-items:center'>
-                <h2>Phone Statuses</h2> 
-                <multiselect 
+                <h2>Phone Statuses</h2>
+                <multiselect
                     style="width: 300px ; margin-left: 30px"
                     :multiple="false"
                     @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
@@ -348,8 +348,8 @@
                     v-model="serverChartPhoneDataValue"
                     :options="serverChartPhoneStatuses.filter_values"
                     >
-                </multiselect> 
-                
+                </multiselect>
+
               </div>
 
               <line-chart
@@ -361,7 +361,7 @@
                   @clicked="getAgentFromChartPhoneStatuses"
                   class="chart">
               </line-chart>
-              <div 
+              <div
                 v-if="selectedUserChartPhoneStatuses"
                 class="user-container" >
                 <div class="user-info">
@@ -550,7 +550,7 @@
       Multiselect,
     },
     data: () => ({
- 
+
       selectedDate:null,
       // selectedUser:null,
       dateType:'date',
@@ -1100,6 +1100,7 @@
           // console.log(tableTotalData);
           self.setTableData(tableData);
           self.setChartData(response.data.diagrama)
+          self.setDepartmentMultiDropdown(response.data.departments)
           self.setTeamMultiDropdown(response.data.teams)
           self.setAgentMultiDropdown(response.data.agents);
         })
@@ -1368,8 +1369,8 @@
           this.type_multiple_selected_value=null;
           // this.setUsers();
           return
-        } 
-        
+        }
+
         this.selectedDate = e.day;
         this.period = e.period;
         this.serverChartDataValue = e.chart_status;
@@ -1413,7 +1414,7 @@
             })
           });
         }
-      
+
         if(e.user_id){
           // console.log('--------------e.user_id--------------',e.user_id)
           // console.log(this.agent_multiple_options)
@@ -1569,7 +1570,7 @@
                         return newStr
                       },
                     },
-                  }, 
+                  },
                 };
 
                 this.statusesChartOptions = options;
@@ -1670,7 +1671,7 @@
                         return newStr
                       },
                     },
-                  },   
+                  },
                 };
                 this.phoneStatusesChartOptions = options2;
                 this.renderPhoneStatusesChart();
@@ -1682,7 +1683,7 @@
                 }
 
                 this.chartDataPhoneStatuses = obj;
-                // console.log('this.chartData',this.chartDataPhoneStatuses)            
+                // console.log('this.chartData',this.chartDataPhoneStatuses)
             }
         })
       },
@@ -1699,8 +1700,8 @@
           .then(() => {
             if(this.serverChartDataValue && this.selectedFilter){
               for (let i = 0; i < this.serverChartDataValue.length; i++) {
-                setTimeout( function() { 
-                  self.statusesChart.toggleSeries(self.serverChartDataValue[i]) 
+                setTimeout( function() {
+                  self.statusesChart.toggleSeries(self.serverChartDataValue[i])
                 }, 500);
               }
             }
@@ -1718,8 +1719,8 @@
           .then(() => {
             if(this.serverChartPhoneDataValue && this.selectedFilter){
               for (let i = 0; i < this.serverChartPhoneDataValue.length; i++) {
-                setTimeout( function() { 
-                  self.phoneStatusesChart.toggleSeries(self.serverChartPhoneDataValue[i]) 
+                setTimeout( function() {
+                  self.phoneStatusesChart.toggleSeries(self.serverChartPhoneDataValue[i])
                 }, 500);
               }
             }
@@ -1756,7 +1757,7 @@
       // }
 
     },
-    
+
     created: async function(){
       await this.setUsers();
       await this.getReportData();
@@ -1802,7 +1803,7 @@
       /deep/ .multiselect__content-wrapper{
         width: initial !important;
       }
-   
+
     }
     button{
         border-radius:2px;

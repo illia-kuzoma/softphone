@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\Request;
 use App\Http\Controllers\Traits\Response;
 use App\Http\Controllers\Traits\UserAuth;
-use App\Models\Team;
 use App\Models\User;
 
 class ReportUnattended extends Controller
@@ -19,6 +18,14 @@ class ReportUnattended extends Controller
     private const CALLS_DATA = 'calls';
     private const TEAM_IDS = 'teams';
 
+    /**
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
+     * @param bool $refresh Флаг, указывающий нужно ли подтянуть свежие данные с ЗОХО.
+     * @return string
+     */
     private function _getAll($token, $dateStart=null, $period=null, $uids=null, $refresh = false): string
     {
         $user = $this->getUser($token);
@@ -41,10 +48,12 @@ class ReportUnattended extends Controller
     }
 
     /**
-     * @param $token
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uids
+     * Первый запрос на все данные идёт сюда.
+     *
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
      * @return string
      * @throws \Exception
      */
@@ -54,15 +63,17 @@ class ReportUnattended extends Controller
     }
 
     /**
-     * @param null $dateStart
-     * @param null $period
-     * @param null $departments
-     * @param null $teams
-     * @param null $uid
-     * @param null $searchWord
-     * @param null $sortField
-     * @param string $sortBy
-     * @param int $page
+     * Запрос на получение части данных, согласно переданным параметрам.
+     *
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $departments Строка ключей отделов, через запятую.
+     * @param string|null $teams Строка ключей комманд, через запятую.
+     * @param string|null $uid Строка ключей агентов, через запятую.
+     * @param string|null $searchWord Строка для поиска по значеням в БД.
+     * @param string|null $sortField Строка содержащая поле сортировки.
+     * @param string $sortBy Строка содержащая направление сортировки.
+     * @param int $page Номер страницы.
      * @return string
      */
     public function getCalls($dateStart=null, $period=null, $departments=null, $teams=null, $uid=null, $searchWord=null, $sortField=null, $sortBy='DESC', $page = 1): string
@@ -70,15 +81,8 @@ class ReportUnattended extends Controller
         $a_department_id = $this->_getIdsAsArray($departments);
         $a_team_id = $this->_getIdsAsArray($teams);
         $a_agent_id = $this->_getIdsAsArray($uid);
-        $o_user = new User();
-        // Получаю список агентов согласно департментам и командам.
-        $a_agent_id_by_teams = $o_user->getIdArrByTeams($a_department_id, $a_team_id);
 
-        if(empty($a_agent_id)) // Если агенты не указаны, тогда беру их согласно указанным отделам и командам.
-            $a_agent_id = $a_agent_id_by_teams;
-
-        $o_team = new Team();
-        $a_team = $o_team->getAllArr($a_department_id, $a_team_id);
+        list($a_department, $a_team, $a_agent_id) = $this->getTeamAndDepartmentList($a_department_id, $a_team_id, $a_agent_id);
 
         $unattendedCalls = new \App\Models\ReportUnattended($a_agent_id);
         $calls = $unattendedCalls->getCallList($dateStart, $period, $searchWord, $sortField, $sortBy, $page);
@@ -86,16 +90,19 @@ class ReportUnattended extends Controller
         $out = array_merge([
             self::DIAGRAM_DATA => $unattendedCalls->getDiagramList($dateStart, $period),
             self::CALLS_DATA => $calls,
-            self::TEAM_IDS => $a_team
+            self::TEAM_IDS => $a_team,
+            'departments' =>  $a_department
         ], $this->getAgentsArr($a_agent_id));
         return json_encode($out);
     }
 
     /**
-     * @param $token
-     * @param null $dateStart
-     * @param null $period
-     * @param null $uids
+     * Обновить данные в БД с серверов Зохо и получить данные с БД.
+     *
+     * @param string $token Подтверждение что зпрос послан от авторизованного пользователя.
+     * @param string|null $dateStart Дата выборки.
+     * @param string|null $period Период выборки.
+     * @param string|null $uids Строка ключей агентов, через запятую.
      * @return string
      * @throws \Exception
      */

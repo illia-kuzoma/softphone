@@ -279,6 +279,11 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                                  $searchWord = '', $sortField = 'day', $sortBy = 'desc',
                                  $page = 1): array
     {
+        $searchWord = $this->getSearchWord($searchWord);
+        $sortField = $this->getSortField($sortField);
+        $sortBy = $this->getSortOrder($sortBy);
+        $page = $this->getPage($page);
+
         $pages_count = 1;
         $call_list = $this->getStatusListData($dateStart, $period, $searchWord, $sortField, $sortBy, $page,$pages_count);
         return [
@@ -292,11 +297,6 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                                        $searchWord = '', $sortField = 'day', $sortBy = 'desc',
                                        &$page, &$pages_count)
     {
-        $searchWord = $this->getSearchWord($searchWord);
-        $sortField = $this->getSortField($sortField);
-        $sortBy = $this->getSortOrder($sortBy);
-        $page = $this->getPage($page);
-
         [$dateFrom, $dateTo] = $this->getDateFromAndTo($this->getDateStart($dateStart), $this->getPeriod($period));
         $dateFrom .= ' 00:00:00';
         $dateTo .= ' 23:59:59';
@@ -327,6 +327,10 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         if(!empty($a_filter_by_types))
             $call_list_q->whereIn($this->table.'.name', $a_filter_by_types);
 
+        $a_filter_by_values = $this->getTypeValueFilter();
+        if(!empty($a_filter_by_values))
+            $call_list_q->whereIn($this->table.'.value', $a_filter_by_values);
+
         $call_list_q->where('day', '>=', $dateFrom);
         $call_list_q->where('day', '<=', $dateTo);
 
@@ -342,12 +346,15 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
                     ->orWhere('last_name', 'LIKE', '%'.$searchWord.'%');
             });
         }
-        $calls_cnt = $call_list_q->count();
-        $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
-        if($page > $pages_count){
-            $page = $pages_count;
+        if($page)
+        {
+            $calls_cnt = $call_list_q->count();
+            $pages_count = floor( $calls_cnt / self::PAGES_PER_PAGE ) + (( $calls_cnt % self::PAGES_PER_PAGE ) === 0 ? 0 : 1);
+            if($page > $pages_count){
+                $page = $pages_count;
+            }
+            $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         }
-        $call_list_q->offset(($page-1) * self::PAGES_PER_PAGE)->limit(self::PAGES_PER_PAGE);
         $call_list = $call_list_q->get();
         /*print_r($call_list->toArray());
         echo"_____________";*/
@@ -382,33 +389,40 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
      */
     public function getGraphList($dateStart, $period): array
     {
+        $page = 0;
+        $page_count = 0;
+        $a_statuses = ['status', 'phone_status']; // statuses for selection.
         $status_list = $this->getStatusListData($dateStart, $period,'', 'day', 'asc', $page, $page_count);
 
-        //print_r($status_list->toArray());exit;
+        $a_user_name = [];
         $result = $result_tmp = [];
         if ( ! empty( $status_list ) ) {
             foreach ( $status_list as $item ) {
-                if(in_array($item->name, ['status', 'phone_status']))
+                if(in_array($item->name, $a_statuses))
                 {
-                    if(!isset($result_tmp[$item->name][$this->_getIdVal($item)]))
+                    $a_user_name[$this->_getIdVal($item)] = $item->first_name.' '.$item->last_name;
+                    $key = $this->_getIdVal($item).' '.$item->value;
+                    if(!isset($result_tmp[$item->name][$key]))
                     {
-                        $result_tmp[$item->name][$this->_getIdVal($item)] = [
+                        $x = $item->first_name . ' ' . $item->last_name.', '. $item->value;
+                        $result_tmp[$item->name][$key]= [
                             'uid' => $this->_getIdVal($item),
                             'first_name' => $item->first_name,
                             'last_name' => $item->last_name,
-                            'x' => $item->first_name . ' ' . $item->last_name.', '. $item->value,
-                            'y' => $item->duration
+                            'x' => $x,
+                            'y' => $item->duration,
+                            'status_value' => $item->value
                         ];
                     }
                     else
                     {
-                        $result_tmp[$item->name][$this->_getIdVal($item)]['y'] += $item->duration;
+                        $result_tmp[$item->name][$key]['y'] += $item->duration;
                     }
                 }
             }
         }
 
-        foreach($result_tmp as $k=>$item )
+        foreach($result_tmp as $s_status_name=>&$item )
         {
             usort($item, function($a, $b){
                 return ($a['x'] <=> $b['x']);
@@ -416,18 +430,54 @@ class ReportAgentTotalStatus extends ReportAgentStatuses
         }
         unset($item);
 
-        foreach($result_tmp as $k=>$item )
-        {
-            foreach($item as &$user){
-                $user['total_time'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($user['y']);
-                $user['y'] = ceil($user['y']/60);
-            }
-            unset($user);
-            $result[] = [
-                'name' => $k,
-                'data' => array_values($item)
-            ];
+        $a_status_values = \DB::table(ReportAgentStatusesGroup::TABLE_NAME)->select([
+            'status_name',  'status_value'
+        ])->whereIn('status_name', $a_statuses)->groupBy(['status_value','status_name'])->get()->toArray();
+        $a_status_name_value = [];
+        foreach($a_status_values as $item){
+            $a_status_name_value[$item->status_name][] = $item->status_value;
         }
+
+        foreach($result_tmp as $s_status_name=>$item )
+        {
+            $a_user_stat = [];
+            foreach($item as &$a_user)
+            {
+                $minutes = ceil($a_user['y']/60);
+                foreach($a_status_name_value as $_status_name=>$status_value)
+                {
+                    if($s_status_name == $_status_name && !isset($a_user_stat[$a_user['uid']]))
+                    {
+                        $a_user_stat[$a_user['uid']] = array_fill_keys(array_values($status_value), 0);
+                    }
+                }
+                $a_user_stat[$a_user['uid']][$a_user['status_value']] = $minutes;
+                $a_user['total_time'] = ReportAgentStatusesGroup::calculateDurationFromSeconds($a_user['y']);
+                $a_user['y'] = $minutes;
+            }
+
+            $i = 0;
+            $a_chart = [];
+            $a_hours = [];
+            foreach($a_user_stat as $uid_key=>$_stat)
+            {
+                foreach($_stat as $_status_val=>$_duration)
+                {
+                    $a_hours[$_status_val]['name'] = $_status_val;
+                    $a_hours[$_status_val]['data'][$i] = $_duration;
+                }
+                $a_chart['names'][$i++]=$a_user_name[$uid_key];
+            }
+            $a_chart['hours'] = array_values($a_hours);
+            unset($a_user);
+
+            $result[] = [
+                'name' => $s_status_name,
+                'data' => array_values($item),
+                'filter_values' => $a_status_name_value[$s_status_name],
+                'chart' => $a_chart,
+            ];
+        };
 
         return $result;
     }
