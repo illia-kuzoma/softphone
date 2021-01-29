@@ -54,6 +54,8 @@ class ZohoV2Request extends Command
      */
     public function handle()
     {
+        $a=new Agent();
+        print_r($a->getAgentByMail('maria@wellnessliving.com'));exit;
 
         echo (new DateTime())->getDateTime();exit;
         //102325000124362121(ok) 102325000124350224(ok) 102325000123555435(You are not authorized to access this resource)

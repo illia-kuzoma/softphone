@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Zoho\V1\Agent;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,13 @@ class User extends Model
     private $user;
 
     /**
+     * Актуально когда ользовтель только что создан и у него на самом деле дата авторизации получается несущестует, ее не было.
+     *
+     * @var bool true if user long time not authorized or never.
+     */
+    private $is_old_auth = false;
+
+    /**
      * Возвращает результат проверки токена.
      *
      * @return bool
@@ -41,6 +49,12 @@ class User extends Model
     public function setUserData($email)
     {
         $getUserByEmail = \DB::table( $this->table)->where( 'email','=', $email  )->first();
+        if(!$getUserByEmail)
+        {
+            $this->createUser($email);
+            $getUserByEmail = \DB::table( $this->table)->where( 'email','=', $email  )->first();
+        }
+
         $this->user     = $getUserByEmail;
     }
 
@@ -51,15 +65,15 @@ class User extends Model
      * @param $pass
      * @throws Exception
      */
-    public function getUserByLoginAndPass($email, $pass)
-    {
-        $this->setUserData($email);
-        if($this->user){
-            if($this->user->password != md5($pass)){
-                throw new \Exception("User password is wrong!");
-            }
-        }
-    }
+    /* public function getUserByLoginAndPass($email, $pass)
+     {
+         $this->setUserData($email);
+         if($this->user){
+             if($this->user->password != md5($pass)){
+                 throw new \Exception("User password is wrong!");
+             }
+         }
+     }*/
 
     /**
      * Finds and set user by token.
@@ -148,7 +162,7 @@ class User extends Model
         return $data;
     }
 
-        /**
+    /**
      * Insert new User
      * @param $userData
      */
@@ -375,10 +389,12 @@ class User extends Model
         {
             $s_pass_md5 = md5($s_password);
             $a_update = ['date_login'=> Carbon::now(), 'password'=> $s_pass_md5];
-            if($s_token)
+            if(!$s_token)
             {
-                $this->user->token = $a_update['token'] = $s_token;
+                $s_token = md5(uniqid(rand(), true));
             }
+            $this->user->token = $a_update['token'] = $s_token;
+
             \DB::table( $this->table)->where( 'email', $this->user->email  )
                 ->update($a_update);
             $this->user->password = $s_pass_md5;
@@ -410,7 +426,7 @@ class User extends Model
      */
     public function isOldAuth()
     {
-        return (strtotime($this->user->date_login) + 60) < time();
+        return $this->is_old_auth || (strtotime($this->user->date_login) + 60) < time();
     }
 
     /**
@@ -434,7 +450,7 @@ class User extends Model
     private function checkUserRights()
     {
         if(($this->user->role == self::ROLE_AGENT && $this->user->status == self::STATUS_ACTIVE &&
-            in_array($this->user->zoho_role,['Administrator', 'Team Lead'])) || $this->user->role == self::ROLE_ADMIN)
+                in_array($this->user->zoho_role,['Administrator', 'Team Lead'])) || $this->user->role == self::ROLE_ADMIN)
         {
             return;
         }
@@ -452,7 +468,6 @@ class User extends Model
     {
         if(!$this->user )
         {
-            // Users, Agents and other actors are create when we update database by requesting ZOHO.
             throw new Exception("User doesn't exist in DB." );
         }
         return $this->checkUserRights();
@@ -477,5 +492,36 @@ class User extends Model
             }
         }
         return [$a_department, $a_team];
+    }
+
+    /**
+     * Создает в БД юзера если он есть в списке агентов.
+     *
+     * @param $s_login
+     * @throws Exception
+     */
+    public function createUser($s_login)
+    {
+        $o_agent = new Agent();
+        $a_agent = $o_agent->getAgentByMail($s_login);
+        // если нашли агента по имейлу.
+        if(!is_null($a_agent))
+        {
+            $agent_id = $a_agent['id'];
+            // получаю вспомогательные данные которых нет в массиве $a_agent.
+            $o_agent->getOne($agent_id);
+            $a_client_tmp = [
+                'email' => $a_agent['emailId'],// $o_agent->getAgentMail(),
+                'first_name' => $a_agent['firstName'],
+                'last_name' => $a_agent['lastName'],
+                'photo' => $a_agent['photoURL'],
+                'role' => 'agent',
+                'zoho_role' => $o_agent->getAgentRole(),
+                'status' => $o_agent->getAgentStatus(),
+                'user_id' => $agent_id
+            ];
+            $this->insertSingleUserData($a_client_tmp);
+            $this->is_old_auth = true;
+        }
     }
 }

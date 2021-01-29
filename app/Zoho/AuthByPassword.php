@@ -45,7 +45,7 @@ class AuthByPassword extends Auth
         $this->cause = $cause;
     }
 
-    public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoSupport/supportapi'): ?string
+    public function getToken($username = null, $password = null, $new = false, $scope = 'ZohoCRM/crmapi'): ?string
     {
         $param = "SCOPE=".$scope."&EMAIL_ID=" . $username . "&PASSWORD=" . urlencode($password);
         $ch = curl_init("https://accounts.zoho.com/apiauthtoken/nb/create");
@@ -61,33 +61,43 @@ class AuthByPassword extends Auth
         }else{
             $anArray = explode("\n", $result);
             $authToken = explode("=", $anArray['2']);
-             if(!empty($authToken['0']))
-             {
-                 $message = trim($authToken['1']);
-                 switch($authToken['0'])
-                 {
+            if(!empty($authToken['0']))
+            {
+                $message = trim($authToken['1']);
+                switch($authToken['0'])
+                {
                     case "AUTHTOKEN":
-                     {
-                         $s_token = $message;
-                     }break;
+                        {
+                            $s_token = $message;
+                        }break;
                     case "CAUSE":
-                     {
-                         $s_token = '';
-                         $this->setCause(['CAUSE'=>$authToken['1']]);
-                         if(!$s_token){ // Токен не был олучен от Зохо.
-                             // анализирую причину.
-                             switch($this->getCause()){
-                                 case'EXCEEDED_MAXIMUM_ALLOWED_AUTHTOKENS':
-                                     // в этом случае токен в порядке, а значит переданный от клиента пароль и имейл есть в зохо.
-                                     // А значит можно смело обновлять пароль в БД, даже если переданный от клиента не совпадает с тем что в БД.
-                                     break;
-                                 default: // вывожу сообщение от Зохо
-                                     throw new \Exception($this->getCause());
-                             }
-                         }
-                     }break;
-                 }
-             }
+                        {
+                            $s_token = '';
+                            $this->setCause(['CAUSE'=>$authToken['1']]);
+                            if(!$s_token){ // Токен не был олучен от Зохо.
+                                // анализирую причину.
+                                switch($this->getCause()){
+                                    case'EXCEEDED_MAXIMUM_ALLOWED_AUTHTOKENS':
+                                        // в этом случае токен в порядке, а значит переданный от клиента пароль и имейл есть в зохо.
+                                        // А значит можно смело обновлять пароль в БД, даже если переданный от клиента не совпадает с тем что в БД.
+                                        break;
+                                    case'DEPRECATED_AUTHTOKEN_SCOPE':
+                                        // https://help.zoho.com/portal/en/community/topic/deprecating-support-for-authtokens
+                                        // Изза того что Зохо закрыло этот канал получения данных о пользовательском токене то этот ответ я воспринимаю как
+                                        // с данными пользователя все хооршо, только зохо просит пользоватся тоеном приложения.
+
+                                        // в этом случае токен в порядке, а значит переданный от клиента пароль и имейл есть в зохо.
+                                        // А значит можно смело обновлять пароль в БД, даже если переданный от клиента не совпадает с тем что в БД.
+                                        break;
+                                    case'INVALID_PASSWORD':
+                                        // Ошибка в пароле.
+                                    default: // вывожу сообщение от Зохо
+                                        throw new \Exception($this->getCause());
+                                }
+                            }
+                        }break;
+                }
+            }
             curl_close($ch);
             return $s_token;
         }

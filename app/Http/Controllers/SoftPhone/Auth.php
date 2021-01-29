@@ -53,6 +53,7 @@ class Auth extends Controller
 
             if(!$user->excluded() && $user->isOldAuth())
             {
+                // Получение токена только если пользователь или специально создан и не существует в зохо или давно не входил в систему.
                 $o_zoho_pass = new AuthByPassword();
                 $s_token = $o_zoho_pass->getToken($s_login,$s_password);
             }

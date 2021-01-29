@@ -43,4 +43,47 @@ class Agent extends ZohoV1
         $a_agent = $this->a_agent;
         return $a_agent['status'];
     }
+
+    public function getAll($from, $limit)
+    {
+        $a_results = $this->request(
+            "https://desk.zoho.com/api/v1/agents", 'limit='.$limit.'&from='.$from.'',
+            [
+                'orgId:' . ((new Organization())->getIdWellnessliving())
+            ]
+        );
+        if(empty($a_results))
+        {
+            throw new \Exception(sprintf("Agents data is empty!"));
+        }
+        return $a_results;
+    }
+
+    public function getAgentByMail($email,$from = 0,$limit = 200): ?array
+    {
+        $a_results = $this->getAll($from, $limit);
+        foreach($a_results['data'] as $a_result)
+        {
+            if(!isset($a_result['emailId']))
+            {
+                continue;
+            }
+
+            if($a_result['emailId'] == $email)
+            {
+                return $a_result;
+            }
+        }
+        $i = 0;
+        if(count($a_results['data']) == $limit)
+        {
+            $from += $limit;
+            if(++$i == 100)
+            {
+                echo "Error agents cnt";return null;
+            }
+            $this->getAgentByMail($email, $from, $limit);
+        }
+        return null;
+    }
 }
