@@ -50,16 +50,25 @@ class Auth extends Controller
             $user = new User();
             $user->setUserData($s_login);
             $user->checkUser();
+            $o_zoho_pass = new AuthByPassword();
 
             if(!$user->excluded() && $user->isOldAuth())
             {
-                $o_zoho_pass = new AuthByPassword();
+                // Получение токена только если пользователь или специально создан и не существует в зохо или давно не входил в систему.
                 $s_token = $o_zoho_pass->getToken($s_login,$s_password);
             }
             else
             {
-                $user->isPasswordCorrect($s_password);
-                return \Redirect::to('/report/missed/'.$user->getToken());
+                if($user->isPasswordCorrect($s_password))
+                {
+                    return \Redirect::to('/report/missed/'.$user->getToken());
+                }
+                // Юзер уже может быть в БД с не верным паролем. Вот это получение токена как перестраховка. Так как тут может быт введен верный параль.
+                $s_token = $o_zoho_pass->getToken($s_login,$s_password);
+                if(is_null($s_token))
+                {
+                    throw new \Exception('Password not equal db password.' );
+                }
             }
         }
         catch(\Exception $e)
