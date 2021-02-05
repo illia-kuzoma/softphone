@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
+import Meta from 'vue-meta';
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify';
@@ -7,10 +8,11 @@ import Vuex from 'vuex'
 import VueLoading from "vuejs-loading-plugin";
 import VueApexCharts from 'vue-apexcharts'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-Vue.use(Vuex)
-Vue.use(VueApexCharts)
+Vue.use(Meta);
+Vue.use(Vuex);
+Vue.use(VueApexCharts);
 Vue.use(VueLoading, {
     //dark: true, // default false
     text: 'Loading ...', // default 'Loading'
@@ -25,4 +27,4 @@ new Vue({
   store,
     vuetify,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

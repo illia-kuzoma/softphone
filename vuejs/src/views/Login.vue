@@ -48,11 +48,6 @@
 
                   <div style='display:flex; justify-content:space-between'>
                     <p class='placeholder'>PASSWORD</p>
-                    <p
-                      class="placeholder forgot"
-                      @click="forgotFunc">
-                      Forgot Password?
-                    </p>
                   </div>
 
                   <input

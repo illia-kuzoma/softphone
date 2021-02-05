@@ -100,6 +100,9 @@ class Config
         if(in_array(gethostname(), ["andrey-comp"]))
             $is = true;
 
+        if(in_array(gethostname(), ["WIN-1COBLQQLJQU"]))
+            $is = true;
+
         return $is;
     }
 

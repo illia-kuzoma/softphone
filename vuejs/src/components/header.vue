@@ -21,6 +21,7 @@
           <div class="username" v-on:click='showModal'>
             <p class="name">{{userData.first_name}} {{userData.last_name}}</p>
             <p class="role">{{userData.role}}</p>
+            <a href="/" class="logout-btn"><p class="logout">Log Out</p></a>
           </div>
           <div class="submenu" >
             <p>Login</p>
@@ -39,6 +40,14 @@
           isShowDropdown: false,
           userData:null,
       }),
+      metaInfo: {
+          title: 'Communication Center',
+          meta: [
+              { vmid: 'description', property: 'description', content: 'Communication Center' },
+              { vmid: 'og:title', property: 'og:title', content: 'Communication Center' },
+              { vmid: 'og:description', property: 'og:description', content: 'Communication Center' },
+          ],
+      },
       methods: {
           showModal() {
               this.isShowDropdown = true
@@ -159,7 +168,7 @@
           color: #98a6ad;
 
         }
-        .role{
+        .role, .logout{
           font-family: Nunito;
           font-size: 12px;
           font-weight: normal;
@@ -167,6 +176,9 @@
           font-style: normal;
           line-height: 1.33;
           color: #98a6ad;
+        }
+        .logout-btn{
+            text-decoration: none;
         }
       }
     }
