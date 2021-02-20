@@ -97,7 +97,7 @@ class Config
     private function _modeDevIs()
     {
         $is = false;
-        if(in_array(gethostname(), ["andrey-comp"]))
+        if(in_array(gethostname(), ["andrey-comp",'LAPTOP-STQDD6H9']))
             $is = true;
 
         if(in_array(gethostname(), ["WIN-1COBLQQLJQU"]))

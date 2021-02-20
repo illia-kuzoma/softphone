@@ -30,89 +30,136 @@ class ReportAgentStatusesGroup extends ReportAgentStatuses
     public static $out_arr = [];
     public function fillTable()
     {
-        self::$out_arr = $this->getLast();
-        //print_r(self::$out_arr);exit;
-        self::$time_start = time();
-        //print_r(self::$out_arr);exit;
-        \DB::table(AgentStatus::TABLE_NAME)->where('processed', false)
-            ->orderBy('request_at')->orderBy('agent_id')->chunk(1000, function ($statuses, $index) {
+      self::$out_arr = $this->getLast();
+      //print_r(self::$out_arr);exit;
+      self::$time_start = time();
+      //print_r(self::$out_arr);exit;
+      \DB::table(AgentStatus::TABLE_NAME)->where('processed', false)
+        ->orderBy('request_at')->orderBy('agent_id')->chunk(1000, function ($statuses, $index) {
+          // echo count($statuses)."\n\n";
+          foreach ($statuses as $status_data) {
 
-            foreach ($statuses as $status_data) {
+            foreach($status_data as $field_name=>$field_value)
+            {
+              if(strripos($field_name, 'status') !== false)
+              {
+                $status_name = $field_name;
+                $index++;
 
-                foreach($status_data as $field_name=>$field_value)
+                if(empty(self::$out_arr[$status_data->agent_id]))
                 {
-                    if(strripos($field_name, 'status') !== false)
-                    {
-                        $status_name = $field_name;
-                        $index++;
-
-                        if(empty(self::$out_arr[$status_data->agent_id]))
-                        {
-                            self::$out_arr[$status_data->agent_id] = [];
-                        }
-
-                        $default_structure = self::getBaseStructure($status_data->request_at, $field_value);
-                        if(!isset(self::$out_arr[$status_data->agent_id][$status_name]))
-                        {
-                            $this->add([
-                                'agent_id' => $status_data->agent_id,
-                                'status_name' => $status_name,
-                                'status_value' => $field_value,
-                                'time_start' => $status_data->request_at,
-                                'created_at' => (new DateTime())->getDateTime()//date("Y-m-d H:i:s")
-                            ]);
-                            self::$out_arr[$status_data->agent_id][$status_name][] = $default_structure;
-                        }
-                        else
-                        {
-                            $i_count_statuses = count(self::$out_arr[$status_data->agent_id][$status_name]);
-                            $i_status_last = $i_count_statuses-1;
-                            $s_status_last = self::$out_arr[$status_data->agent_id][$status_name][$i_status_last]['status'];
-                            $s_time_last = self::$out_arr[$status_data->agent_id][$status_name][$i_status_last]['time'];
-                            //echo $status_data->agent_id.": name=".$status_name." ".$field_value ." ". $s_status_last ." ". $s_time_last ." < ". $status_data->request_at."\n";
-                            if($field_value != $s_status_last && $s_time_last < $status_data->request_at)
-                            {
-                                \DB::beginTransaction();
-                                try {
-                                    $this->updateBefore([
-                                        'agent_id' => $status_data->agent_id,
-                                        'status_name' => $status_name,
-                                        'time_start' => $s_time_last,
-                                    ], ['time_end' => $status_data->request_at]);
-
-                                    $this->add([
-                                        'agent_id' => $status_data->agent_id,
-                                        'status_name' => $status_name,
-                                        'status_value' => $field_value,
-                                        'time_start' => $status_data->request_at,
-                                        'created_at' => (new DateTime())->getDateTime() //date("Y-m-d H:i:s")
-                                    ]);
-
-                                    \DB::commit();
-                                    // all good
-                                } catch (\Exception $e) {
-                                    \DB::rollback();
-                                    // something went wrong
-                                }
-                                self::$out_arr[$status_data->agent_id][$status_name][] = $default_structure;
-                            }
-                        }
-                    }
+                  self::$out_arr[$status_data->agent_id] = [];
                 }
 
-                \DB::table(AgentStatus::TABLE_NAME)
-                    ->where('agent_id', $status_data->agent_id)
-                    ->where('created_at', $status_data->created_at)
-                    ->update(['processed' => true]);
+                $default_structure = self::getBaseStructure($status_data->request_at, $field_value);
+                if(!isset(self::$out_arr[$status_data->agent_id][$status_name]))
+                {
+                  $this->add([
+                    'agent_id' => $status_data->agent_id,
+                    'status_name' => $status_name,
+                    'status_value' => $field_value,
+                    'time_start' => $status_data->request_at,
+                    'created_at' => (new DateTime())->getDateTime()//date("Y-m-d H:i:s")
+                  ]);
+                  self::$out_arr[$status_data->agent_id][$status_name][] = $default_structure;
+                }
+                else
+                {
+                  $i_count_statuses = count(self::$out_arr[$status_data->agent_id][$status_name]);
+                  $i_status_last = $i_count_statuses-1;
+                  $s_status_last = self::$out_arr[$status_data->agent_id][$status_name][$i_status_last]['status'];
+                  $s_time_last = self::$out_arr[$status_data->agent_id][$status_name][$i_status_last]['time'];
+                  //echo $status_data->agent_id.": name=".$status_name." ".$field_value ." ". $s_status_last ." ". $s_time_last ." < ". $status_data->request_at."\n";
+                  if($field_value != $s_status_last && $s_time_last < $status_data->request_at)
+                  {
+                    \DB::beginTransaction();
+                    try {
+                      // обработка (закрытие) уже существующего в БД сьтатуса.
+                      //echo 'обработка (закрытие) уже существующего в БД сьтатуса'."\n";
+
+                      $o_date_end = new \DateTime(date("Y-m-d", strtotime($status_data->request_at)));
+                      $o_date_start = new \DateTime(date("Y-m-d", strtotime($s_time_last)));
+                      $i_days = date_diff($o_date_end, $o_date_start)->days;
+
+                      if($i_days)
+                      {
+                        $this->updateBefore([
+                          'agent_id' => $status_data->agent_id,
+                          'status_name' => $status_name,
+                          'time_start' => $s_time_last,
+                        ], ['time_end' => $o_date_start->format("Y-m-d").' 23:59:59']);
+
+                        if($i_days > 1)
+                        {
+                          for($i=1;$i<$i_days;$i++)
+                          {
+                            $s_date = $o_date_start->modify('+'.$i.' day')->format('Y-m-d');
+
+                            $this->add([
+                              'agent_id' => $status_data->agent_id,
+                              'status_name' => $status_name,
+                              'status_value' => $s_status_last,
+                              'time_start' => $s_date.' 00:00:00',
+                              'time_end' => $s_date.' 23:59:59',
+                              'created_at' => (new DateTime())->getDateTime() //date("Y-m-d H:i:s")
+                            ]);
+                          }
+                        }
+
+                        $this->add([
+                          'agent_id' => $status_data->agent_id,
+                          'status_name' => $status_name,
+                          'status_value' => $s_status_last,
+                          'time_start' => $o_date_end->format("Y-m-d").' 00:00:00',
+                          'time_end' => $status_data->request_at,
+                          'created_at' => (new DateTime())->getDateTime() //date("Y-m-d H:i:s")
+                        ]);
+                      }
+                      else
+                      {
+                        // выход с остатуса в тот же день что и вход.
+
+                        $this->updateBefore([
+                          'agent_id' => $status_data->agent_id,
+                          'status_name' => $status_name,
+                          'time_start' => $s_time_last,
+                        ], ['time_end' => $status_data->request_at]);
+                      }
+
+                      // Фиксирую новый статус
+                      $this->add([
+                        'agent_id' => $status_data->agent_id,
+                        'status_name' => $status_name,
+                        'status_value' => $field_value,
+                        'time_start' => $status_data->request_at,
+                        'created_at' => (new DateTime())->getDateTime() //date("Y-m-d H:i:s")
+                      ]);
+
+                      \DB::commit();
+                      // all good
+                    } catch (\Exception $e) {
+                      \DB::rollback();
+                      // something went wrong
+                    }
+                    self::$out_arr[$status_data->agent_id][$status_name][] = $default_structure;
+                  }
+                }
+              }
             }
 
-            //return false;
-            if(empty($statuses)/* || self::$time_start + 900 < time()*/)
-            {
-                return false;
-            }
+            \DB::table(AgentStatus::TABLE_NAME)
+              ->where('agent_id', $status_data->agent_id)
+              ->where('created_at', $status_data->created_at)
+              ->update(['processed' => true]);
+          }
+
+          if(empty($statuses)/* || self::$time_start + 900 < time()*/)
+          {
+            //echo "empty\n";
+            return false;
+          }
         });
-        self::$out_arr = [];
+      self::$out_arr = [];
     }
     public function add($data){
 
