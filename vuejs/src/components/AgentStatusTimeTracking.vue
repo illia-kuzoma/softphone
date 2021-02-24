@@ -177,12 +177,10 @@
                             </template>
                         </multiselect>
                     </div>
-                    <div class='filter-selector single-select'>
+                    <div class='filter-selector'>
                       <label class="typo__label">Select filter</label>
 
-
-                          <!-- @close="setFilter" -->
-                      <multiselect
+                      <!-- <multiselect
                           @select="setFilter"
                           :preselect-first="false"
                           class='single-select'
@@ -208,12 +206,27 @@
                                       <span
                                           class="multiselect__single"
                                           v-if="values.length && !isOpen">
-                                          <!-- {{ values.length }} options selected -->
                                       </span>
                                   </template>
-                      </multiselect>
+                      </multiselect> -->
 
+                      <vue-single-select
+                        class='single-select'
+                        option-label="name"
+                        v-model="selectedFilter"
+                        :options="filtersList"
+                        @input="setFilter" 
+                        >
+                        
+                        <template slot="option" slot-scope="{option}">
+                            <div @change="setFilter" >
+                                <span style="margin-left: 1rem;">
+                                    {{option.name}}
+                                </span>
+                            </div>
+                        </template>
 
+                      </vue-single-select>
                       <p
                         v-if='selectedFilter != null '
                         v-on:click="deleteFilter(selectedFilter)">
@@ -542,12 +555,14 @@
   import router from '../router'
   import ApexChart from "apexcharts/dist/apexcharts.js";
   import ApexChart2 from "apexcharts/dist/apexcharts.js";
+  import VueSingleSelect from "vue-single-select";
 
   export default {
     name: 'AgentStatus',
     components: {
       DatePicker,
       Multiselect,
+      VueSingleSelect
     },
     data: () => ({
 
@@ -1788,6 +1803,23 @@
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped lang="less">
     @import "../assets/less/main";
+
+
+    .single-select{
+      /deep/ .single-select-wrapper{
+        .relative{
+
+          input,  
+          .search-input{
+            border: 1px solid #e8e8e8 !important;
+
+          }
+        }
+      }
+
+
+    }
+
     .user{
         display:flex;
         p{
@@ -1799,12 +1831,7 @@
             margin-right: 5px;
         }
     }
-    .single-select {
-      /deep/ .multiselect__content-wrapper{
-        width: initial !important;
-      }
 
-    }
     button{
         border-radius:2px;
         padding: 0 16px;
