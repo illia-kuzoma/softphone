@@ -6,7 +6,7 @@
                 <div class="date-container">
                     <button
                         class="button button-li date-item color-grey"
-                        v-on:click="setDate('today'); setActive($event)"
+                        v-on:click="setDate('today'); setActive($event.target)"
                     >Today
                     </button>
                     <button
@@ -30,23 +30,23 @@
                     >&#9656;
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('day'); setActive($event)"
+                        class="button button-li date-item color-grey" ref="btn_day"
+                        v-on:click="setDate('day'); setActive($event.target)"
                     >Day
                     </button>
                     <button
-                        class="button button-li date-item color-grey color-dark"
-                        v-on:click="setDate('week'); setActive($event)"
+                        class="button button-li date-item color-grey color-dark" ref="btn_week"
+                        v-on:click="setDate('week'); setActive($event.target)"
                     >Week
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('month'); setActive($event)"
+                        class="button button-li date-item color-grey" ref="btn_month"
+                        v-on:click="setDate('month'); setActive($event.target)"
                     >Month
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('year'); setActive($event)"
+                        class="button button-li date-item color-grey" ref="btn_year"
+                        v-on:click="setDate('year'); setActive($event.target)"
                     >Year
                     </button>
                 </div>
@@ -149,9 +149,9 @@
                                 </template>
                     </multiselect>
                 </div>
-                <div class='filter-selector'>
+                <div class='filter-selector single-select'>
                     <label class="typo__label">Select filter</label>
-                    <multiselect
+                    <!--<multiselect
                         @close="setFilter"
                         v-model="selectedFilter"
                         :options="filtersList"
@@ -172,12 +172,28 @@
                                         {{ values.length }} options selected
                                     </span>
                                 </template>
-                    </multiselect>
-                    <p
-                      v-if='selectedFilter != null '
+                    </multiselect>-->
+                    <vue-single-select
+                            class='single-select'
+                            option-label="name"
+                            v-model="selectedFilter"
+                            :options="filtersList"
+                            @input="setFilter"
+                    >
 
-                      v-on:click="deleteFilter(selectedFilter)">
-                      &#10006;
+                        <template slot="option" slot-scope="{option}">
+                            <div @change="setFilter" >
+                                <span style="margin-left: 1rem;">
+                                    {{option.name}}
+                                </span>
+                            </div>
+                        </template>
+
+                    </vue-single-select>
+                    <p
+                            v-if='selectedFilter != null '
+                            v-on:click="deleteFilter(selectedFilter)">
+                        &#10006;
                     </p>
                 </div>
 
@@ -310,6 +326,7 @@
   import moment from 'moment'
   import Multiselect from 'vue-multiselect'
   import router from '../router'
+  import VueSingleSelect from "vue-single-select";
 
   export default {
     name: 'MissedCalls',
@@ -317,6 +334,7 @@
       DatePicker,
       LineChart,
       Multiselect,
+      VueSingleSelect
     },
     data: () => ({
       // firstLoad:true,
@@ -592,7 +610,7 @@
       },
       setActive(ev){
         document.querySelector('.color-dark').classList.remove('color-dark');
-        ev.target.classList.add('color-dark');
+        ev.classList.add('color-dark');
         let f = document.querySelector('.color-blue');
         if(f !== null)
         {
@@ -955,6 +973,7 @@
 
         this.selectedDate = e.day;
         this.period = e.period;
+        this.setActive(this.$refs['btn_' + e.period]);
         console.log(this.selectedDate);
         console.log(this.period);
 
@@ -1026,6 +1045,23 @@
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped lang="less">
     @import "../assets/less/main";
+
+
+    .single-select{
+        /deep/ .single-select-wrapper{
+            .relative{
+
+                input,
+                .search-input{
+                    border: 1px solid #e8e8e8 !important;
+
+                }
+            }
+        }
+
+
+    }
+
     .user{
         display:flex;
         p{
