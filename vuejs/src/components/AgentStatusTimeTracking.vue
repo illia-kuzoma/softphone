@@ -5,63 +5,63 @@
             <div class="controls-container">
                 <div class="date-container">
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('today'); setActive($event)"
+                            class="button button-li date-item color-grey"
+                            v-on:click="setDate('today'); setActive($event.target)"
                     >Today
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setBeforeDate(); setArrowActive($event)"
+                            class="button button-li date-item color-grey"
+                            v-on:click="setBeforeDate(); setArrowActive($event)"
                     >&#9666;
                     </button>
 
                     <date-picker
-                        v-model="selectedDate"
-                        type="date"
-                        class="date-item"
-                        valueType="YYYY-MM-DD"
-                        format="DD/MM/YYYY"
-                        v-on:change="dateSelected()"
+                            v-model="selectedDate"
+                            type="date"
+                            class="date-item"
+                            valueType="YYYY-MM-DD"
+                            format="DD/MM/YYYY"
+                            v-on:change="dateSelected()"
                     ></date-picker>
 
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setNextDate(); setArrowActive($event)"
+                            class="button button-li date-item color-grey"
+                            v-on:click="setNextDate(); setArrowActive($event)"
                     >&#9656;
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('day'); setActive($event)"
+                            class="button button-li date-item color-grey" ref="btn_day"
+                            v-on:click="setDate('day'); setActive($event.target)"
                     >Day
                     </button>
                     <button
-                        class="button button-li date-item color-grey color-dark"
-                        v-on:click="setDate('week'); setActive($event)"
+                            class="button button-li date-item color-grey color-dark" ref="btn_week"
+                            v-on:click="setDate('week'); setActive($event.target)"
                     >Week
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('month'); setActive($event)"
+                            class="button button-li date-item color-grey"
+                            v-on:click="setDate('month'); setActive($event.target)" ref="btn_month"
                     >Month
                     </button>
                     <button
-                        class="button button-li date-item color-grey"
-                        v-on:click="setDate('year'); setActive($event)"
+                            class="button button-li date-item color-grey"
+                            v-on:click="setDate('year'); setActive($event.target)" ref="btn_year"
                     >Year
                     </button>
                 </div>
 
                 <div class="search-container">
                     <input
-                        v-model="searchText"
-                        type="text"
-                        id="search"
-                        placeholder="Search..."
-                        name="search">
+                            v-model="searchText"
+                            type="text"
+                            id="search"
+                            placeholder="Search..."
+                            name="search">
                     <button
-                        id="search-button"
-                        class="button color-violet"
-                        v-on:click="search(searchText) ; "
+                            id="search-button"
+                            class="button color-violet"
+                            v-on:click="search(searchText) ; "
                     >Search
                     </button>
 
@@ -79,208 +79,208 @@
                     <div>
                         <label class="typo__label">Select Department(s)</label>
                         <multiselect
-                            style='width: fit-content'
-                            @close="setUsers"
-                            v-model="department_multiple_selected_value"
-                            :options="department_multiple_options"
-                            :multiple="true"
-                            :close-on-select="false"
-                            :clear-on-select="false"
-                            :preserve-search="true"
-                            placeholder="Pick some"
-                            label="name"
-                            track-by="value"
-                            :preselect-first="true">
-                                <template
+                                style='width: fit-content'
+                                @close="setUsers"
+                                v-model="department_multiple_selected_value"
+                                :options="department_multiple_options"
+                                :multiple="true"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :preserve-search="true"
+                                placeholder="Pick some"
+                                label="name"
+                                track-by="value"
+                                :preselect-first="true">
+                            <template
                                     slot="selection"
                                     slot-scope="{ values, search, isOpen }">
                                         <span
-                                            class="multiselect__single"
-                                            v-if="values.length && !isOpen">
+                                                class="multiselect__single"
+                                                v-if="values.length && !isOpen">
                                             {{ values.length }} options selected
                                         </span>
-                                    </template>
+                            </template>
                         </multiselect>
                     </div>
                     <div>
                         <label class="typo__label">Select Team(s)</label>
                         <multiselect
-                            @close="setUsers"
-                            v-model="team_multiple_selected_value"
-                            :options="team_multiple_options"
-                            :multiple="true"
-                            :close-on-select="false"
-                            :clear-on-select="false"
-                            :preserve-search="true"
-                            placeholder="Pick some"
-                            label="name"
-                            track-by="value"
-                            :preselect-first="true">
-                                <template
+                                @close="setUsers"
+                                v-model="team_multiple_selected_value"
+                                :options="team_multiple_options"
+                                :multiple="true"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :preserve-search="true"
+                                placeholder="Pick some"
+                                label="name"
+                                track-by="value"
+                                :preselect-first="true">
+                            <template
                                     slot="selection"
                                     slot-scope="{ values, search, isOpen }">
                                         <span
-                                            class="multiselect__single"
-                                            v-if="values.length && !isOpen">
+                                                class="multiselect__single"
+                                                v-if="values.length && !isOpen">
                                             {{ values.length }} options selected
                                         </span>
-                                    </template>
+                            </template>
                         </multiselect>
                     </div>
                     <div>
                         <label class="typo__label">Select agent(s)</label>
                         <multiselect
-                            @close="setUsers"
-                            v-model="agent_multiple_selected_value"
-                            :options="agent_multiple_options"
-                            :multiple="true"
-                            :close-on-select="false"
-                            :clear-on-select="false"
-                            :preserve-search="true"
-                            placeholder="Pick some"
-                            label="name"
-                            track-by="value"
-                            :preselect-first="true">
-                                <template
+                                @close="setUsers"
+                                v-model="agent_multiple_selected_value"
+                                :options="agent_multiple_options"
+                                :multiple="true"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :preserve-search="true"
+                                placeholder="Pick some"
+                                label="name"
+                                track-by="value"
+                                :preselect-first="true">
+                            <template
                                     slot="selection"
                                     slot-scope="{ values, search, isOpen }">
                                         <span
-                                            class="multiselect__single"
-                                            v-if="values.length && !isOpen">
+                                                class="multiselect__single"
+                                                v-if="values.length && !isOpen">
                                             {{ values.length }} options selected
                                         </span>
-                                    </template>
+                            </template>
                         </multiselect>
                     </div>
                     <div>
                         <label class="typo__label">Select type(s)</label>
                         <multiselect
-                            @close="setTypes"
-                            v-model="type_multiple_selected_value"
-                            :options="type_multiple_options"
-                            :multiple="true"
-                            :close-on-select="false"
-                            :clear-on-select="false"
-                            :preserve-search="true"
-                            placeholder="Pick some"
-                            label="name"
-                            track-by="value"
-                            :preselect-first="true">
+                                @close="setTypes"
+                                v-model="type_multiple_selected_value"
+                                :options="type_multiple_options"
+                                :multiple="true"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :preserve-search="true"
+                                placeholder="Pick some"
+                                label="name"
+                                track-by="value"
+                                :preselect-first="true">
                             <template
-                                slot="selection"
-                                slot-scope="{ values, search, isOpen }">
+                                    slot="selection"
+                                    slot-scope="{ values, search, isOpen }">
                                         <span
-                                            class="multiselect__single"
-                                            v-if="values.length && !isOpen">
+                                                class="multiselect__single"
+                                                v-if="values.length && !isOpen">
                                             {{ values.length }} options selected
                                         </span>
                             </template>
                         </multiselect>
                     </div>
                     <div class='filter-selector'>
-                      <label class="typo__label">Select filter</label>
+                        <label class="typo__label">Select filter</label>
 
-                      <!-- <multiselect
-                          @select="setFilter"
-                          :preselect-first="false"
-                          class='single-select'
-                          v-model="selectedFilter"
-                          placeholder="Pick some"
-                          label="name"
+                        <!-- <multiselect
+                            @select="setFilter"
+                            :preselect-first="false"
+                            class='single-select'
+                            v-model="selectedFilter"
+                            placeholder="Pick some"
+                            label="name"
 
-                          :multiple="false"
-                          :options="filtersList"
+                            :multiple="false"
+                            :options="filtersList"
 
-                          track-by="value"
-                          :hide-selected="false"
-                          :close-on-select="true"
-                          :clear-on-select="false"
-                          :preserve-search="false"
-                          :searchable="false"
-                          :show-labels="false"
+                            track-by="value"
+                            :hide-selected="false"
+                            :close-on-select="true"
+                            :clear-on-select="false"
+                            :preserve-search="false"
+                            :searchable="false"
+                            :show-labels="false"
 
-                          >
-                              <template
-                                  slot="selection"
-                                  slot-scope="{ values, search, isOpen }">
-                                      <span
-                                          class="multiselect__single"
-                                          v-if="values.length && !isOpen">
-                                      </span>
-                                  </template>
-                      </multiselect> -->
+                            >
+                                <template
+                                    slot="selection"
+                                    slot-scope="{ values, search, isOpen }">
+                                        <span
+                                            class="multiselect__single"
+                                            v-if="values.length && !isOpen">
+                                        </span>
+                                    </template>
+                        </multiselect> -->
 
-                      <vue-single-select
-                        class='single-select'
-                        option-label="name"
-                        v-model="selectedFilter"
-                        :options="filtersList"
-                        @input="setFilter" 
+                        <vue-single-select
+                                class='single-select'
+                                option-label="name"
+                                v-model="selectedFilter"
+                                :options="filtersList"
+                                @input="setFilter"
                         >
-                        
-                        <template slot="option" slot-scope="{option}">
-                            <div @change="setFilter" >
+
+                            <template slot="option" slot-scope="{option}">
+                                <div @change="setFilter" >
                                 <span style="margin-left: 1rem;">
                                     {{option.name}}
                                 </span>
-                            </div>
-                        </template>
+                                </div>
+                            </template>
 
-                      </vue-single-select>
-                      <p
-                        v-if='selectedFilter != null '
-                        v-on:click="deleteFilter(selectedFilter)">
-                        &#10006;
-                      </p>
+                        </vue-single-select>
+                        <p
+                                v-if='selectedFilter != null '
+                                v-on:click="deleteFilter(selectedFilter)">
+                            &#10006;
+                        </p>
 
-                  </div>
+                    </div>
                 </div>
 
                 <div>
-                  <div class="filters multiselect-items" >
-                      <label class="typo__label">Add filter</label>
-                      <input
-                        type="text"
-                        placeholder="New filter name"
-                        class='mx-input multiselect__tags'
-                        v-model="newFilterName"
-                        style="padding:0 5px; width 150px">
-                      <div class='filters-options'>
-                        <button
-                          v-if="newFilterName != ''"
-                          class="button button-li date-item color-grey"
-                          v-on:click="newFilterName = ''">Cancel</button>
-                        <button
-                          v-if="newFilterName != ''"
-                          class="button button-li date-item color-grey"
-                          v-on:click="addNewFilter(newFilterName)">Add</button>
-                      </div>
-                  </div>
+                    <div class="filters multiselect-items" >
+                        <label class="typo__label">Add filter</label>
+                        <input
+                                type="text"
+                                placeholder="New filter name"
+                                class='mx-input multiselect__tags'
+                                v-model="newFilterName"
+                                style="padding:0 5px; width 150px">
+                        <div class='filters-options'>
+                            <button
+                                    v-if="newFilterName != ''"
+                                    class="button button-li date-item color-grey"
+                                    v-on:click="newFilterName = ''">Cancel</button>
+                            <button
+                                    v-if="newFilterName != ''"
+                                    class="button button-li date-item color-grey"
+                                    v-on:click="addNewFilter(newFilterName)">Add</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="chart-container" v-if="Object.keys(chartDataStatuses).length !== 0">
-              <!-- <div style='display:flex; align-items:center'>
-                <h2>Statuses</h2>
-                <multiselect
-                    style="width: 300px ; margin-left: 30px"
-                    :multiple="false"
-                    @close="setChartFilter(serverChartDataStatuses,serverChartDataValue,'chartDataStatuses')"
-                    v-if='serverChartDataStatuses'
-                    v-model="serverChartDataValue"
-                    :options="serverChartDataStatuses.filter_values"
-                    >
-                </multiselect>
-              </div> -->
-                    <!-- @click="chartHandler('Statuses',1)" -->
-                 <!--  <button
-                          class="button button-li date-item color-grey"
-                          v-on:click="test()">test</button> -->
+                <!-- <div style='display:flex; align-items:center'>
+                  <h2>Statuses</h2>
+                  <multiselect
+                      style="width: 300px ; margin-left: 30px"
+                      :multiple="false"
+                      @close="setChartFilter(serverChartDataStatuses,serverChartDataValue,'chartDataStatuses')"
+                      v-if='serverChartDataStatuses'
+                      v-model="serverChartDataValue"
+                      :options="serverChartDataStatuses.filter_values"
+                      >
+                  </multiselect>
+                </div> -->
+                <!-- @click="chartHandler('Statuses',1)" -->
+                <!--  <button
+                         class="button button-li date-item color-grey"
+                         v-on:click="test()">test</button> -->
                 <h2>Statuses</h2>
                 <div
 
-                  ref="statusesChartRef"
-                  class="chart"
+                        ref="statusesChartRef"
+                        class="chart"
                 ></div>
             </div>
 
@@ -324,30 +324,30 @@
             </div> -->
 
             <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
-              <!-- <div style='display:flex; align-items:center'>
+                <!-- <div style='display:flex; align-items:center'>
+                  <h2>Phone Statuses</h2>
+                  <multiselect
+                      style="width: 300px ; margin-left: 30px"
+                      :multiple="false"
+                      @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
+                      v-if='serverChartPhoneStatuses'
+                      v-model="serverChartPhoneDataValue"
+                      :options="serverChartPhoneStatuses.filter_values"
+                      >
+                  </multiselect>
+
+                </div> -->
+
+                <!-- @click="chartHandler('Phone Statuses',1)" -->
                 <h2>Phone Statuses</h2>
-                <multiselect
-                    style="width: 300px ; margin-left: 30px"
-                    :multiple="false"
-                    @close="setChartFilter(serverChartPhoneStatuses,serverChartPhoneDataValue,'chartDataPhoneStatuses')"
-                    v-if='serverChartPhoneStatuses'
-                    v-model="serverChartPhoneDataValue"
-                    :options="serverChartPhoneStatuses.filter_values"
-                    >
-                </multiselect>
-
-              </div> -->
-
-              <!-- @click="chartHandler('Phone Statuses',1)" -->
-              <h2>Phone Statuses</h2>
-              <div
-                ref="phoneStatusesChartRef"
-                class="chart"
-              ></div>
+                <div
+                        ref="phoneStatusesChartRef"
+                        class="chart"
+                ></div>
             </div>
 
             <div class="table-container" v-if='Object.keys(chartDataStatuses).length === 0'>
-              <h1>No Chart Data For This Period</h1>
+                <h1>No Chart Data For This Period</h1>
             </div>
 
             <!-- <div class="chart-container" v-if="Object.keys(chartDataPhoneStatuses).length !== 0">
@@ -390,22 +390,22 @@
             </div> -->
 
             <div class="table-container" v-if='Object.keys(chartDataPhoneStatuses).length === 0'>
-              <h1>No Chart Data For This Period</h1>
+                <h1>No Chart Data For This Period</h1>
             </div>
 
             <div class="table-container" v-if='tableCallsData.length>0'>
                 <v-data-table
-                    :headers="tableCallsHeaders"
-                    :items="tableCallsData"
-                    :items-per-page="20"
-                    :page.sync="tablePage"
-                    :options.sync='optionsTable'
-                    :hide-default-footer="true"
-                    class="v-data-table elevation-1"
-                    fixed-header
-                    @update:page="updatePage"
-                    @update:sort-desc="updateSortDesc"
-                    >
+                        :headers="tableCallsHeaders"
+                        :items="tableCallsData"
+                        :items-per-page="20"
+                        :page.sync="tablePage"
+                        :options.sync='optionsTable'
+                        :hide-default-footer="true"
+                        class="v-data-table elevation-1"
+                        fixed-header
+                        @update:page="updatePage"
+                        @update:sort-desc="updateSortDesc"
+                >
                     <template v-slot:item.user_data="{ item }">
                         <div class='user'>
                             <img :src="item.user_data.photo_url" alt="">
@@ -426,10 +426,10 @@
                     <template v-slot:item.business="{ item }">
                         <div class='business'>
                             <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.business.business_link)'
-                                class='url'
-                                :href="item.business.business_link"
+                                    target="_blank"
+                                    v-on:click='goOutTo(item.business.business_link)'
+                                    class='url'
+                                    :href="item.business.business_link"
                             >{{ item.business.business_name }}
                             </a>
                         </div>
@@ -438,10 +438,10 @@
                     <template v-slot:item.contact="{ item }">
                         <div class='user'>
                             <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.contact.contact_link)'
-                                class='url'
-                                :href="item.contact.contact_link"
+                                    target="_blank"
+                                    v-on:click='goOutTo(item.contact.contact_link)'
+                                    class='url'
+                                    :href="item.contact.contact_link"
                             >{{ item.contact.contact_name }}
                             </a>
                         </div>
@@ -453,13 +453,13 @@
 
                 </v-data-table>
                 <v-pagination
-                    v-if="tablePageCount>1"
-                    v-model="tablePage"
-                    :length="tablePageCount"
-                    class="table-pagination"
-                    @input="changePage"
-                    :next-icon="nextIcon"
-                    :prev-icon="prevIcon"
+                        v-if="tablePageCount>1"
+                        v-model="tablePage"
+                        :length="tablePageCount"
+                        class="table-pagination"
+                        @input="changePage"
+                        :next-icon="nextIcon"
+                        :prev-icon="prevIcon"
                 ></v-pagination>
             </div>
 
@@ -470,17 +470,17 @@
             <div class="table-container" v-if='tableTotalCallsData.length>0'>
                 <h1>Total Table </h1>
                 <v-data-table
-                    :headers="tableTotalCallsHeaders"
-                    :items="tableTotalCallsData"
-                    :items-per-page="20"
-                    :page.sync="tableTotalPage"
-                    :options.sync='optionsTableTotal'
-                    :hide-default-footer="true"
-                    class="v-data-table elevation-1"
-                    fixed-header
-                    @update:page="updateTotalPage"
-                    @update:sort-desc="updateTotalSortDesc"
-                    >
+                        :headers="tableTotalCallsHeaders"
+                        :items="tableTotalCallsData"
+                        :items-per-page="20"
+                        :page.sync="tableTotalPage"
+                        :options.sync='optionsTableTotal'
+                        :hide-default-footer="true"
+                        class="v-data-table elevation-1"
+                        fixed-header
+                        @update:page="updateTotalPage"
+                        @update:sort-desc="updateTotalSortDesc"
+                >
                     <template v-slot:item.user_data="{ item }">
                         <div class='user'>
                             <img :src="item.user_data.photo_url" alt="">
@@ -501,10 +501,10 @@
                     <template v-slot:item.business="{ item }">
                         <div class='business'>
                             <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.business.business_link)'
-                                class='url'
-                                :href="item.business.business_link"
+                                    target="_blank"
+                                    v-on:click='goOutTo(item.business.business_link)'
+                                    class='url'
+                                    :href="item.business.business_link"
                             >{{ item.business.business_name }}
                             </a>
                         </div>
@@ -513,10 +513,10 @@
                     <template v-slot:item.contact="{ item }">
                         <div class='user'>
                             <a
-                                target="_blank"
-                                v-on:click='goOutTo(item.contact.contact_link)'
-                                class='url'
-                                :href="item.contact.contact_link"
+                                    target="_blank"
+                                    v-on:click='goOutTo(item.contact.contact_link)'
+                                    class='url'
+                                    :href="item.contact.contact_link"
                             >{{ item.contact.contact_name }}
                             </a>
                         </div>
@@ -528,13 +528,13 @@
 
                 </v-data-table>
                 <v-pagination
-                    v-if="tableTotalPageCount>1"
-                    v-model="tableTotalPage"
-                    :length="tableTotalPageCount"
-                    class="table-pagination"
-                    @input="changeTotalPage"
-                    :next-icon="nextIcon"
-                    :prev-icon="prevIcon"
+                        v-if="tableTotalPageCount>1"
+                        v-model="tableTotalPage"
+                        :length="tableTotalPageCount"
+                        class="table-pagination"
+                        @input="changeTotalPage"
+                        :next-icon="nextIcon"
+                        :prev-icon="prevIcon"
                 ></v-pagination>
             </div>
 
@@ -748,19 +748,19 @@
           case 'day':
 
             this.selectedDate = moment(selected_date.setDate(selected_date.getDate()-1))
-            .format("YYYY-MM-DD")
-            break;
-            case "week":
-              this.selectedDate = moment(selected_date.setDate(selected_date.getDate()-7))
               .format("YYYY-MM-DD")
-              break;
+            break;
+          case "week":
+            this.selectedDate = moment(selected_date.setDate(selected_date.getDate()-7))
+              .format("YYYY-MM-DD")
+            break;
           case 'month':
-              this.selectedDate = moment(selected_date.setMonth(selected_date.getMonth()-1,selected_date.getDate()))
+            this.selectedDate = moment(selected_date.setMonth(selected_date.getMonth()-1,selected_date.getDate()))
               .format("YYYY-MM-DD")
             break;
           case 'year':
             this.selectedDate = moment(selected_date.setFullYear(selected_date.getFullYear()-1,selected_date.getMonth(),selected_date.getDate()))
-            .format("YYYY-MM-DD")
+              .format("YYYY-MM-DD")
             break;
         }
         this.setDate(this.period)
@@ -773,19 +773,19 @@
           case 'day':
 
             this.selectedDate = moment(selected_date.setDate(selected_date.getDate()+1))
-            .format("YYYY-MM-DD")
+              .format("YYYY-MM-DD")
             break;
           case "week":
             this.selectedDate = moment(selected_date.setDate(selected_date.getDate()+7))
-            .format("YYYY-MM-DD")
+              .format("YYYY-MM-DD")
             break;
           case 'month':
             this.selectedDate = moment(selected_date.setMonth(selected_date.getMonth()+1,selected_date.getDate()))
-            .format("YYYY-MM-DD")
+              .format("YYYY-MM-DD")
             break;
           case 'year':
             this.selectedDate = moment(selected_date.setFullYear(selected_date.getFullYear()+1,selected_date.getMonth(),selected_date.getDate()))
-            .format("YYYY-MM-DD")
+              .format("YYYY-MM-DD")
             break;
         }
         this.setDate(this.period)
@@ -820,7 +820,7 @@
       },
       setActive(ev){
         document.querySelector('.color-dark').classList.remove('color-dark');
-        ev.target.classList.add('color-dark');
+        ev.classList.add('color-dark');
         let f = document.querySelector('.color-blue');
         if(f !== null)
         {
@@ -869,33 +869,33 @@
         else {
           this.$loading(true);
           HttpService.methods.get('/report/agent/status/'+(refresh?'refresh/':'')+token)
-          .then(function (response) {
-            // console.log('getReportData',response)
-            self.$loading(false);
-            if(response.data.error===true){
-              localStorage.token = '';
-              self.isValid = true
-              alert(response.data.message)
-            }
-            // below 2 ways to set data to header
-            self.$store.state.user = response.data.user;
-            self.userData = response.data.user;
+            .then(function (response) {
+              // console.log('getReportData',response)
+              self.$loading(false);
+              if(response.data.error===true){
+                localStorage.token = '';
+                self.isValid = true
+                alert(response.data.message)
+              }
+              // below 2 ways to set data to header
+              self.$store.state.user = response.data.user;
+              self.userData = response.data.user;
 
-            self.setChartData(response.data.diagrama);
-            self.setTableData(response.data.status);
-            self.setTableTotalData(response.data.total);
-            self.setAgentMultiDropdown(response.data.agents);
-            self.setDepartmentMultiDropdown(response.data.departments);
-            self.setTypeMultiDropdown(response.data.types);
-            self.datePickerSetDefaultPeriod(self.period)
-          })
-          .catch(function (error) {
-            self.errorHappen(error);
-            if(!self.tokenIsCorrect(token))
-            {
-              router.push('/')
-            }
-          })
+              self.setChartData(response.data.diagrama);
+              self.setTableData(response.data.status);
+              self.setTableTotalData(response.data.total);
+              self.setAgentMultiDropdown(response.data.agents);
+              self.setDepartmentMultiDropdown(response.data.departments);
+              self.setTypeMultiDropdown(response.data.types);
+              self.datePickerSetDefaultPeriod(self.period)
+            })
+            .catch(function (error) {
+              self.errorHappen(error);
+              if(!self.tokenIsCorrect(token))
+              {
+                router.push('/')
+              }
+            })
         }
       },
       async getDataByOptions(options){
@@ -1006,7 +1006,7 @@
             sortBy + '/' +
             page
           )
-          .then(function (response) {
+            .then(function (response) {
               self.$loading(false);
 
               console.log('getDataByOptions status', options);
@@ -1015,10 +1015,10 @@
               self.setTableData(tableData);
 
               self.setChartData(response.data.diagrama)
-          })
-          .catch(function (error) {
-            self.errorHappen(error)
-          })
+            })
+            .catch(function (error) {
+              self.errorHappen(error)
+            })
 
           HttpService.methods.get(
             '/report/agent/status/total/page/'+
@@ -1033,17 +1033,17 @@
             sortBy + '/' +
             page
           )
-          .then(function (response) {
-            self.$loading(false);
+            .then(function (response) {
+              self.$loading(false);
 
               console.log('getDataByOptions total', options);
               let tableTotalData = response.data.total;
               self.setTableTotalData(tableTotalData);
               self.setChartData(response.data.diagrama)
-          })
-          .catch(function (error) {
-            self.errorHappen(error)
-          })
+            })
+            .catch(function (error) {
+              self.errorHappen(error)
+            })
 
         } else {
 
@@ -1061,26 +1061,26 @@
             sortBy + '/' +
             page
           )
-          .then(function (response) {
-            self.$loading(false);
+            .then(function (response) {
+              self.$loading(false);
 
-            if(response.data.status){
-              console.log('getDataByOptions status', options);
-              // console.log(tableData);
-              let tableData = response.data.status;
-              self.setTableData(tableData);
-            }
+              if(response.data.status){
+                console.log('getDataByOptions status', options);
+                // console.log(tableData);
+                let tableData = response.data.status;
+                self.setTableData(tableData);
+              }
 
-            if(response.data.total){
-              console.log('getDataByOptions total', options);
-              let tableTotalData = response.data.total;
-              self.setTableTotalData(tableTotalData);
-            }
-            self.setChartData(response.data.diagrama)
-          })
-          .catch(function (error) {
-            self.errorHappen(error)
-          })
+              if(response.data.total){
+                console.log('getDataByOptions total', options);
+                let tableTotalData = response.data.total;
+                self.setTableTotalData(tableTotalData);
+              }
+              self.setChartData(response.data.diagrama)
+            })
+            .catch(function (error) {
+              self.errorHappen(error)
+            })
         }
       },
       async getDataByDate(startDate,period){
@@ -1107,32 +1107,32 @@
         this.$loading(true);
         HttpService.methods.get('/report/agent/status/page/'+
           startDate + '/' + period + '/' + department  + '/' + team + "/" + agent + ss_type_name)
-        .then(function (response) {
-          // console.log('getDataByDate',response)
-          self.$loading(false);
-          let tableData = response.data.status;
-          // console.log(tableData);
-          // console.log(tableTotalData);
-          self.setTableData(tableData);
-          self.setChartData(response.data.diagrama)
-          self.setDepartmentMultiDropdown(response.data.departments)
-          self.setTeamMultiDropdown(response.data.teams)
-          self.setAgentMultiDropdown(response.data.agents);
-        })
-        .catch(function (error) {
-          self.errorHappen(error);
-        });
+          .then(function (response) {
+            // console.log('getDataByDate',response)
+            self.$loading(false);
+            let tableData = response.data.status;
+            // console.log(tableData);
+            // console.log(tableTotalData);
+            self.setTableData(tableData);
+            self.setChartData(response.data.diagrama)
+            self.setDepartmentMultiDropdown(response.data.departments)
+            self.setTeamMultiDropdown(response.data.teams)
+            self.setAgentMultiDropdown(response.data.agents);
+          })
+          .catch(function (error) {
+            self.errorHappen(error);
+          });
         HttpService.methods.get('/report/agent/status/total/page/'+
           startDate + '/' + period + '/' + department  + '/' + team  + "/" + agent + ss_type_name)
-        .then(function (response) {
-          // console.log('getDataByDate',response)
-          self.$loading(false);
-          let tableTotalData = response.data.total;
-          self.setTableTotalData(tableTotalData);
-        })
-        .catch(function (error) {
-          self.errorHappen(error);
-        })
+          .then(function (response) {
+            // console.log('getDataByDate',response)
+            self.$loading(false);
+            let tableTotalData = response.data.total;
+            self.setTableTotalData(tableTotalData);
+          })
+          .catch(function (error) {
+            self.errorHappen(error);
+          })
       },
       // getTableData(){
       //   var self = this;
@@ -1208,11 +1208,11 @@
             }
           }
         }
-       /* if(s_agent_id !== "")
-        {
-          //s_agent_id = "/" + s_agent_id;
-          this.selectedAgentUid = null;
-        }*/
+        /* if(s_agent_id !== "")
+         {
+           //s_agent_id = "/" + s_agent_id;
+           this.selectedAgentUid = null;
+         }*/
         //console.log(s_agent_id);
         this.s_agent_id = s_agent_id;
       },
@@ -1283,8 +1283,8 @@
         // console.log('dateSelected +');
         // console.log(this.selectedDate);
         this.getDataByDate(this.selectedDate,this.period)
-          //this.setDate(this.period);
-         // this.selectedDate= this.selectedDate + " | " + this.period
+        //this.setDate(this.period);
+        // this.selectedDate= this.selectedDate + " | " + this.period
       },
       updateData(){
         this.getReportData(true)
@@ -1327,29 +1327,29 @@
 
         var self = this;
         HttpService.methods.post('/request/filter',{
-            name:newName,
-            page:2,
-            day:this.selectedDate,
-            period:this.period,
-            department_id:this.s_department_id,
-            team_id:this.s_team_id,
-            user_id:this.s_agent_id,
-            status_type:this.s_type_id,
-            chart_status:this.serverChartDataValue,
-            chart_phone_status:this.serverChartPhoneDataValue
+          name:newName,
+          page:2,
+          day:this.selectedDate,
+          period:this.period,
+          department_id:this.s_department_id,
+          team_id:this.s_team_id,
+          user_id:this.s_agent_id,
+          status_type:this.s_type_id,
+          chart_status:this.serverChartDataValue,
+          chart_phone_status:this.serverChartPhoneDataValue
         })
-        .then(function () {
+          .then(function () {
 
-          self.getFilters();
-          self.newFilterName='';
-          self.selectedFilter = null;
-          self.serverChartDataValue='';
-          self.serverChartPhoneDataValue='';
+            self.getFilters();
+            self.newFilterName='';
+            self.selectedFilter = null;
+            self.serverChartDataValue='';
+            self.serverChartPhoneDataValue='';
 
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
       },
       getFilters(){
         var self = this;
@@ -1362,16 +1362,16 @@
           })
       },
       deleteFilter(selectedFilter){
-          var self = this;
-          HttpService.methods.delete(`/request/filter?id=${selectedFilter.id}`)
-            .then(function () {
+        var self = this;
+        HttpService.methods.delete(`/request/filter?id=${selectedFilter.id}`)
+          .then(function () {
             // .then(function (response) {
-              self.getFilters();
-              self.selectedFilter=null;
-            })
-            .catch(function (error) {
-              console.log(error);
-            })
+            self.getFilters();
+            self.selectedFilter=null;
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
       },
       setFilter(e){
         if (e==null){
@@ -1388,6 +1388,7 @@
 
         this.selectedDate = e.day;
         this.period = e.period;
+        this.setActive(this.$refs['btn_' + e.period]);
         this.serverChartDataValue = e.chart_status;
         this.serverChartPhoneDataValue = e.chart_phone_status;
 
@@ -1406,9 +1407,9 @@
         if(e.team_id){
           // console.log('--------------e.user_id--------------',e.team_id)
           this.team_multiple_selected_value = [];
-            e.team_id.map(teamID=>{
-              // console.log(teamID)
-              this.team_multiple_options.map(team=> {
+          e.team_id.map(teamID=>{
+            // console.log(teamID)
+            this.team_multiple_options.map(team=> {
               if(team.value == teamID){
                 // console.log('__',team,teamID)
                 this.team_multiple_selected_value.push(team)
@@ -1458,35 +1459,35 @@
         });
 
         if (arr == 'chartDataStatuses'){
-            let obj = {};
-            for (let i = 0; i < positiveArr.length; i++) {
-              let name = positiveArr[i].x;
-              let count = positiveArr[i].y;
-              obj[name] = count;
-            }
+          let obj = {};
+          for (let i = 0; i < positiveArr.length; i++) {
+            let name = positiveArr[i].x;
+            let count = positiveArr[i].y;
+            obj[name] = count;
+          }
 
-            this.chartDataStatuses = obj;
+          this.chartDataStatuses = obj;
         }
 
         if (arr == 'chartDataPhoneStatuses'){
-            let obj = {};
-            for (let i = 0; i < positiveArr.length; i++) {
-              let name = positiveArr[i].x;
-              let count = positiveArr[i].y;
-              obj[name] = count;
-            }
+          let obj = {};
+          for (let i = 0; i < positiveArr.length; i++) {
+            let name = positiveArr[i].x;
+            let count = positiveArr[i].y;
+            obj[name] = count;
+          }
 
-            this.chartDataPhoneStatuses = obj;
+          this.chartDataPhoneStatuses = obj;
         }
       },
       secondsToTime(mins){
-          let secs = mins * 60;
-          var t = new Date(1970,0,1);
-          t.setSeconds(secs);
-          var s = t.toTimeString().substr(0,8);
-          if(secs > 86399)
-              s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
-          return s;
+        let secs = mins * 60;
+        var t = new Date(1970,0,1);
+        t.setSeconds(secs);
+        var s = t.toTimeString().substr(0,8);
+        if(secs > 86399)
+          s = Math.floor((t - Date.parse("1/1/70")) / 3600000) + s.substr(2);
+        return s;
       },
       async setChartData(data){
         // console.log(this.statusesChart)
@@ -1497,215 +1498,215 @@
           this.chartDataPhoneStatuses = [];
         }
         data.map(chart=>{
-            // console.log('___chart___',chart)
-            if(chart.name=='status'){
-                let data = chart.data;
-                let obj = {};
-                this.serverChartDataStatuses = chart
+          // console.log('___chart___',chart)
+          if(chart.name=='status'){
+            let data = chart.data;
+            let obj = {};
+            this.serverChartDataStatuses = chart
 
-                var options = {
-                  chart: {
-                    height: 350,
-                    type: "bar",
-                    stacked: true,
-                    animations: {
-                        enabled: false,
-                        // easing: 'easeinout',
-                        // speed: 800,
-                        // animateGradually: {
-                        //     enabled: true,
-                        //     delay: 150
-                        // },
-                        dynamicAnimation: {
-                          enabled: false,
-                            //     speed: 350
-                        }
-                    },
-                    events: {
-                      // animationEnd: undefined,
-                      // beforeMount: undefined,
-                      // mounted: undefined,
-                      // updated: undefined,
-                      // click: undefined,
-                      // mouseMove: undefined,
-                      // legendClick: function (chartContext, options) {
-                      //   console.log('legendClick',chartContext, options)
-                      // },
-                      // selection: function (chartContext, options) {
-                      //   console.log(chartContext, options)
-                      // },
-                      // markerClick: undefined,
-                      // dataPointSelection: undefined,
-                      // dataPointMouseEnter: function (chartContext, options) {
-                      //   console.log(chartContext, options)
-                      // },
-                      // dataPointMouseLeave: undefined,
-                      // beforeZoom: undefined,
-                      // beforeResetZoom: undefined,
-                      // zoomed: undefined,
-                      // scrolled: undefined,
-                      // scrolled: undefined,
-                    },
-                  },
-                  dataLabels: {
-                    enabled: false
-                  },
-                  // stroke: {
-                  //   curve: "smooth"
+            var options = {
+              chart: {
+                height: 350,
+                type: "bar",
+                stacked: true,
+                animations: {
+                  enabled: false,
+                  // easing: 'easeinout',
+                  // speed: 800,
+                  // animateGradually: {
+                  //     enabled: true,
+                  //     delay: 150
                   // },
-                  series: chart.chart.hours,
-                  xaxis: {
-                    categories: chart.chart.names
-                  },
-                  responsive: [{
-                      breakpoint: 280,
-                      options: {
-                        legend: {
-                          position: 'bottom',
-                          offsetX: -10,
-                          offsetY: 0
-                        }
-                      }
-                  }],
-                  fill: {
-                    opacity: 1
-                  },
+                  dynamicAnimation: {
+                    enabled: false,
+                    //     speed: 350
+                  }
+                },
+                events: {
+                  // animationEnd: undefined,
+                  // beforeMount: undefined,
+                  // mounted: undefined,
+                  // updated: undefined,
+                  // click: undefined,
+                  // mouseMove: undefined,
+                  // legendClick: function (chartContext, options) {
+                  //   console.log('legendClick',chartContext, options)
+                  // },
+                  // selection: function (chartContext, options) {
+                  //   console.log(chartContext, options)
+                  // },
+                  // markerClick: undefined,
+                  // dataPointSelection: undefined,
+                  // dataPointMouseEnter: function (chartContext, options) {
+                  //   console.log(chartContext, options)
+                  // },
+                  // dataPointMouseLeave: undefined,
+                  // beforeZoom: undefined,
+                  // beforeResetZoom: undefined,
+                  // zoomed: undefined,
+                  // scrolled: undefined,
+                  // scrolled: undefined,
+                },
+              },
+              dataLabels: {
+                enabled: false
+              },
+              // stroke: {
+              //   curve: "smooth"
+              // },
+              series: chart.chart.hours,
+              xaxis: {
+                categories: chart.chart.names
+              },
+              responsive: [{
+                breakpoint: 280,
+                options: {
                   legend: {
-                    position: 'right',
-                    offsetX: 0,
-                    offsetY: 50,
-                      // formatter: function(seriesName, opts) {
-                      //     return [seriesName, " - ", opts.w.globals.series[opts.seriesIndex]]
-                      // }
-                  },
-                  tooltip: {
-                    y: {
-                      formatter: function(value) {
-                        let newStr = self.secondsToTime(value);
-                        return newStr
-                      },
-                    },
-                  },
-                };
-
-                this.statusesChartOptions = options;
-                this.renderStatusesChart();
-                // console.log('set chart data',this.statusesChartOptions)
-
-                for (let i = 0; i < data.length; i++) {
-                  let name = data[i].x;
-                  let count = data[i].y;
-                  obj[name] = count;
+                    position: 'bottom',
+                    offsetX: -10,
+                    offsetY: 0
+                  }
                 }
+              }],
+              fill: {
+                opacity: 1
+              },
+              legend: {
+                position: 'right',
+                offsetX: 0,
+                offsetY: 50,
+                // formatter: function(seriesName, opts) {
+                //     return [seriesName, " - ", opts.w.globals.series[opts.seriesIndex]]
+                // }
+              },
+              tooltip: {
+                y: {
+                  formatter: function(value) {
+                    let newStr = self.secondsToTime(value);
+                    return newStr
+                  },
+                },
+              },
+            };
 
-                this.chartDataStatuses = obj;
+            this.statusesChartOptions = options;
+            this.renderStatusesChart();
+            // console.log('set chart data',this.statusesChartOptions)
 
+            for (let i = 0; i < data.length; i++) {
+              let name = data[i].x;
+              let count = data[i].y;
+              obj[name] = count;
             }
-            if(chart.name=='phone_status'){
-                let data = chart.data;
-                let obj = {};
-                this.serverChartPhoneStatuses = chart
 
-                var options2 = {
-                  chart: {
-                    height: 350,
-                    type: "bar",
-                    stacked: true,
-                    animations: {
-                      enabled: false,
-                      // easing: 'easeinout',
-                      // speed: 800,
-                      // animateGradually: {
-                      //     enabled: true,
-                      //     delay: 150
-                      // },
-                      dynamicAnimation: {
-                          enabled: false,
-                      //     speed: 350
-                      }
-                    },
-                    events: {
-                      // animationEnd: undefined,
-                      // beforeMount: undefined,
-                      // mounted: undefined,
-                      // updated: undefined,
-                      // click: undefined,
-                      // mouseMove: undefined,
-                      // legendClick: function (chartContext, options) {
-                      //   console.log('legendClick',chartContext, options)
-                      // },
-                      // selection: function (chartContext, options) {
-                      //   console.log(chartContext, options)
-                      // },
-                      // markerClick: undefined,
-                      // dataPointSelection: undefined,
-                      // dataPointMouseEnter: function (chartContext, options) {
-                      //   console.log(chartContext, options)
-                      // },
-                      // dataPointMouseLeave: undefined,
-                      // beforeZoom: undefined,
-                      // beforeResetZoom: undefined,
-                      // zoomed: undefined,
-                      // scrolled: undefined,
-                      // scrolled: undefined,
-                    },
-                  },
-                  dataLabels: {
-                    enabled: false
-                  },
-                  stroke: {
-                    curve: "smooth"
-                  },
-                  series: chart.chart.hours,
-                  xaxis: {
-                    categories: chart.chart.names
-                  },
-                  responsive: [{
-                    breakpoint: 280,
-                    options: {
-                      legend: {
-                        position: 'bottom',
-                        offsetX: -10,
-                        offsetY: 0
-                      }
-                    }
-                  }],
-                  fill: {
-                    opacity: 1
-                  },
+            this.chartDataStatuses = obj;
+
+          }
+          if(chart.name=='phone_status'){
+            let data = chart.data;
+            let obj = {};
+            this.serverChartPhoneStatuses = chart
+
+            var options2 = {
+              chart: {
+                height: 350,
+                type: "bar",
+                stacked: true,
+                animations: {
+                  enabled: false,
+                  // easing: 'easeinout',
+                  // speed: 800,
+                  // animateGradually: {
+                  //     enabled: true,
+                  //     delay: 150
+                  // },
+                  dynamicAnimation: {
+                    enabled: false,
+                    //     speed: 350
+                  }
+                },
+                events: {
+                  // animationEnd: undefined,
+                  // beforeMount: undefined,
+                  // mounted: undefined,
+                  // updated: undefined,
+                  // click: undefined,
+                  // mouseMove: undefined,
+                  // legendClick: function (chartContext, options) {
+                  //   console.log('legendClick',chartContext, options)
+                  // },
+                  // selection: function (chartContext, options) {
+                  //   console.log(chartContext, options)
+                  // },
+                  // markerClick: undefined,
+                  // dataPointSelection: undefined,
+                  // dataPointMouseEnter: function (chartContext, options) {
+                  //   console.log(chartContext, options)
+                  // },
+                  // dataPointMouseLeave: undefined,
+                  // beforeZoom: undefined,
+                  // beforeResetZoom: undefined,
+                  // zoomed: undefined,
+                  // scrolled: undefined,
+                  // scrolled: undefined,
+                },
+              },
+              dataLabels: {
+                enabled: false
+              },
+              stroke: {
+                curve: "smooth"
+              },
+              series: chart.chart.hours,
+              xaxis: {
+                categories: chart.chart.names
+              },
+              responsive: [{
+                breakpoint: 280,
+                options: {
                   legend: {
-                    // show:false,
-                    position: 'right',
-                    offsetX: 0,
-                    offsetY: 50,
-                  },
-                  tooltip: {
-                    y: {
-                      formatter: function(value) {
-                        let newStr = self.secondsToTime(value);
-                        return newStr
-                      },
-                    },
-                  },
-                };
-                this.phoneStatusesChartOptions = options2;
-                this.renderPhoneStatusesChart();
-
-                for (let i = 0; i < chart.data.length; i++) {
-                  let name = data[i].x;
-                  let count = data[i].y;
-                  obj[name] = count;
+                    position: 'bottom',
+                    offsetX: -10,
+                    offsetY: 0
+                  }
                 }
+              }],
+              fill: {
+                opacity: 1
+              },
+              legend: {
+                // show:false,
+                position: 'right',
+                offsetX: 0,
+                offsetY: 50,
+              },
+              tooltip: {
+                y: {
+                  formatter: function(value) {
+                    let newStr = self.secondsToTime(value);
+                    return newStr
+                  },
+                },
+              },
+            };
+            this.phoneStatusesChartOptions = options2;
+            this.renderPhoneStatusesChart();
 
-                this.chartDataPhoneStatuses = obj;
-                // console.log('this.chartData',this.chartDataPhoneStatuses)
+            for (let i = 0; i < chart.data.length; i++) {
+              let name = data[i].x;
+              let count = data[i].y;
+              obj[name] = count;
             }
+
+            this.chartDataPhoneStatuses = obj;
+            // console.log('this.chartData',this.chartDataPhoneStatuses)
+          }
         })
       },
       async renderStatusesChart(){
         if (this.statusesChart != null && this.statusesChart.ohYeahThisChartHasBeenRendered != null) {
           this.statusesChart.destroy();
-            // this.statusesChart.resetSeries()
+          // this.statusesChart.resetSeries()
         }
         let self = this;
         // console.log('renderStatusesChart',this.statusesChartOptions.xaxis.categories)
@@ -1751,7 +1752,7 @@
         for (let i = 0; i < firstChartLegendElements.length; i++) {
           if(firstChartLegendElements[i].getAttribute('data:collapsed') == 'true' ){
             // this.serverChartDataValue.push(firstChartLegendElements[i].getAttribute('seriesname'))
-             this.serverChartDataValue += ','+firstChartLegendElements[i].getAttribute('seriesname')+','
+            this.serverChartDataValue += ','+firstChartLegendElements[i].getAttribute('seriesname')+','
           }
         }
 
@@ -1789,12 +1790,12 @@
     computed: {
     },
     watch: {
-        // 'statusesChartOptions': function () {
-        //   // this.renderStatusesChart();
-        // },
-        // 'phoneStatusesChartOptions': function () {
-        //   // this.renderPhoneStatusesChart();
-        // }
+      // 'statusesChartOptions': function () {
+      //   // this.renderStatusesChart();
+      // },
+      // 'phoneStatusesChartOptions': function () {
+      //   // this.renderPhoneStatusesChart();
+      // }
     },
     mounted () {
     }
@@ -1806,16 +1807,16 @@
 
 
     .single-select{
-      /deep/ .single-select-wrapper{
-        .relative{
+        /deep/ .single-select-wrapper{
+            .relative{
 
-          input,  
-          .search-input{
-            border: 1px solid #e8e8e8 !important;
+                input,
+                .search-input{
+                    border: 1px solid #e8e8e8 !important;
 
-          }
+                }
+            }
         }
-      }
 
 
     }
@@ -1960,20 +1961,20 @@
                 border-radius: 5px;
                 box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.75);
                 .user-info{
-                  position:relative;
-                  p{
-                    padding-bottom:0;
-                    margin-bottom:0;
-                  }
-                  .close{
-                     font-size:20px;
-                     position: absolute;
-                     cursor:pointer;
-                     font-weight:bold;
-                     content: '';
-                     top: -21px;
-                     right: -12px;
-                  }
+                    position:relative;
+                    p{
+                        padding-bottom:0;
+                        margin-bottom:0;
+                    }
+                    .close{
+                        font-size:20px;
+                        position: absolute;
+                        cursor:pointer;
+                        font-weight:bold;
+                        content: '';
+                        top: -21px;
+                        right: -12px;
+                    }
                 }
             }
         }
@@ -2022,24 +2023,24 @@
             opacity: 0
         }
         .filter-selector{
-          position:relative;
-          p{
-            position:absolute;
-            bottom:0px;
-            right:0px;
-            cursor: pointer;
-          }
+            position:relative;
+            p{
+                position:absolute;
+                bottom:0px;
+                right:0px;
+                cursor: pointer;
+            }
         }
         .filters{
-          position:relative;
-          .filters-options{
-            position:absolute;
-            bottom:-36px;
-            left:0px;
-            width:100%;
-            display: flex;
-            justify-content: space-between;
-          }
+            position:relative;
+            .filters-options{
+                position:absolute;
+                bottom:-36px;
+                left:0px;
+                width:100%;
+                display: flex;
+                justify-content: space-between;
+            }
         }
     }
 </style>
